@@ -1,0 +1,114 @@
+{% load static %}
+<style>
+    .fixTableHead tbody { display:block; max-height:520px; overflow-y:scroll; }
+    .fixTableHead thead, .fixTableHead tbody tr { display:table; width:100%; table-layout:fixed; }
+    .fixTableHead thead tr th,.fixTableHead tbody tr td{
+        width:2% !important;
+    }
+    .fixTableHead thead tr th.actionsec{
+            width:10% !important;
+    }
+    .fixTableHead tbody tr td.actionsec{
+        width:9.6% !important;
+    }
+</style>
+<div class="row">
+    <div class="col-md-12">
+        <div class="row mb-2" id="topRow">
+            <div class="col-md-5 p-md-0">
+                <h6><b>Salary Head List &nbsp;&nbsp;</b></h6>
+            </div>
+            <div class="col-md-7 p-md-0">
+                <div class="row" >
+                    <div class="col-md-12 p-md-0 text-right">
+                         <input class="searchTable master_type_search" placeholder="Search" type="search" data-column="all" id="salary_head_search" onkeyup="master_search_bar(this)">
+                        <!--<input class="searchTable Core_Business_search" placeholder="Search" type="search" data-column="all">-->
+                        <button type="button" class="btn iconBox iconAddNew" onclick="addMaster('SalaryHead')"></button>
+
+                        </div>
+                        
+                     
+                    </div>
+                    
+                    
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+
+<div class="row mb-2">
+    <div class="col-md-12 pr-md-0 h-100" id="masterListTable">
+        <div class="primaryContainerBG h-100 commonTableBg tableBox" id="detailsBox" style="border-radius: 12px !important;">
+            
+            <input type="hidden" name="page" id="page" value="2" />
+            <input type="hidden" name="page_status" id="page_status" value="0" />
+          
+            <table id="addOrgTable" class="table table-borderless table-striped table-hover mt-0 fixTableHead"
+            style="width: 100%;">
+            <thead>
+                <tr>
+                    <th class="salary_head_type">
+                        Salary Head Type
+                        <i class="fa fa-fw fa-sort float-right"></i>
+                     
+                    </th>
+                    <th class="salary_head_name">
+                        Salary Head Name
+                        <i class="fa fa-fw fa-sort float-right"></i>
+                     
+                    </th>
+                    <th>Action</th>
+                </tr>  
+
+            </thead>
+            <tbody id="tablebody">
+                {% if salary_head_details %}
+                {% for salary_head_detail in salary_head_details %}
+                <tr>
+                    <td class="State_name">{{ salary_head_detail.salary_head_type_name }}<br> </td>
+                    <td class="State_name">{{ salary_head_detail.salary_head_name }}<br> </td>
+                        <td >
+
+                             <div class="row">
+                            <div class="col-md-2">
+                                <a href="javascript:void(0)"  onclick="editMaster('SalaryHead','{{ salary_head_detail.id }}')"  >
+                                    <img src="{% static 'img/svg/editcopy.svg' %}" title="Edit" class="tableRowIcon"/>
+                                </a> 
+                            </div>
+                            <div class="col-md-1">
+                                <label class="switch">
+                                    <input type="checkbox" class="checkbox" name="salary_head_detail_status"
+                                    {% if salary_head_detail.status == 1 %} checked="" {% else %}
+                                    {% endif %}
+                                    onclick="changeMasterStatus('SalaryHead','{{salary_head_detail.id}}')">
+                                    <span class="slider round" title="Enable/Disable"></span>
+                                </label>
+                                
+                            </div>
+                        </div>
+                            </td>
+                            
+                        </tr>
+                        
+                        {% endfor %}
+                        <tr id="loading" style="display: none;">
+                            <td class="text-center" colspan="2"><i class="fa fa-spinner fa-spin" style="font-size:2rem"></i>
+                            </td>
+                        </tr>
+                        {% else %}
+                        <tr>
+                            <td colspan="2" style="text-align: center;">No Record Found...</td>
+                        </tr>
+                        {% endif %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+            </div>
+    </div>
+    <script>
+        
+    </script>

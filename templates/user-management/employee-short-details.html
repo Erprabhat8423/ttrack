@@ -1,0 +1,208 @@
+{% load static %}
+
+  <div class="row" style="height: 85%;">
+            
+            <div class="col-md-12 p-0">
+                
+                <div class="row">
+                     
+                    <div class="col-md-2 p-md-0">
+                                {% if employee.profile_image is not None %}
+                        <img src="{{ employee.profile_image }}" style="height: 100px;
+                        max-height: 130px;
+                        width: 214px;
+                        transform: scale(1) !important;
+                        border-radius: 5%;">
+                        {% else %}
+                        
+                        <img src="{% static 'img/png/dashboardLogo.gif' %}" style="width: 100%;">
+                        {% endif %}
+                    </div>
+                    <div class="col-md-10 p-md-0">
+                        <div class="row">
+                            <div class="col-md-8">
+                                <h6 style="font-size:15px;"><b>{{employee.first_name}} {{employee.middle_name}} {{employee.last_name}} </b></h6>
+                                <h6 class="smallText " style="font-size:15px;"><span style="color: #0052a0;">{{employee.role_name | capfirst}}</h6>
+                            </div>
+                            <div class="col-md-4 p-md-0 text-right">
+                                <h5 style="font-size:15px;">{% if employee.attendence_mode == 1 %}App <img src="{% static 'img/svg/contactNo.svg' %}">{% endif %}{% if employee.attendence_mode == 0 %}WEB <img src="{% static 'img/svg/web.svg' %}">{% endif %} 
+                                {% if employee.attendence_mode == 2 %}Both <img src="{% static 'img/png/both.png' %}" style="max-width: 38px;">{% endif %}&nbsp;&nbsp;</h5>
+                            </div>
+
+                        </div>
+                        <br clear="all">
+                    </div>
+                        
+                        <div class="row">
+                     <div class="col-md-6 p-md-0">
+                            <div class="d-flex" style="align-items: flex-start;">                                
+                                <img src="/static/img/svg/contactNo.svg" class="profileIconSize">
+                                <div>
+                                    <h6 class="smallText font_size_lg" >Contact No.</h6><h6 class="largeText font_size_lg" >  {% if employee.primary_contact_number is not None %}
+                                         {{employee.primary_contact_number}}
+                                         {% else %}
+                                         --
+                                         {%endif%}
+                                         
+                                    <!--     {% if contacts %}-->
+                                    <!--{{contacts.country_code}}-{{contacts.contact_number}}-->
+                                    <!--{% endif %}-->
+                                    </h6>
+                                </div>
+                            </div>
+                            </div>
+                             <div class="col-md-6 p-md-0">
+                                <div class="d-flex" style="align-items: flex-start;">                                
+                                      <img src="{% static 'img/svg/@.svg' %}" class="profileIconSize" />
+                                    <div>
+                                     <h6 class="smallText font_size_lg">Email ID</h6><h6 class="largeText font_size_lg" > {% if employee.official_email %}
+                                    {{ employee.official_email }}
+                                    {% else %}--{% endif %}</h6>
+                                    </div>
+                                </div>
+                            </div>
+                             <div class="col-md-6 p-md-0">
+                                <div class="d-flex" style="align-items: flex-start;">                                
+                                      <img src="{% static 'img/svg/contactPersonName.svg' %}" class="profileIconSize" />
+                                    <div>
+                                     <h6 class="smallText font_size_lg" >Employee Code</h6><h6 class="largeText font_size_lg">    
+                                     {% if employee.emp_sap_id is not None %}
+                                        {{employee.emp_sap_id}}
+                                            {% else %}
+                                             --
+                                        {%endif%}
+                                    </h6>
+                                    </div>
+                                </div>
+                            </div
+                            <div class="col-md-6 p-md-0">
+                                <div class="d-flex" style="align-items: flex-start;">                                
+                                        <img src="{% static 'img/svg/dob.svg' %}" class="profileIconSize" />
+                                    <div>
+                                     <h6 class="smallText font_size_lg">Date Of Birth</h6><h6 class="largeText font_size_lg">    
+                                     {% if employee.date_of_birth %}
+                                    {{employee.date_of_birth }}
+                                     {% else %}--{% endif %}
+                                    </h6>
+                                    </div>
+                                </div>
+                            </div>
+                    <div class="dropdown-divider w-100"></div>
+                        
+                  
+                    <div class="col-md-12 p-md-0 mt-md-3">
+                        <div class="row mb-md-2">
+                                                       <div class="col-md-6 p-md-0">
+                                        <div class="d-flex" style="align-items: flex-start;">                                
+                                               <img src="{% static 'img/svg/gender.svg' %}" class="profileIconSize" />
+                                            <div>
+                                             <h6 class="smallText font_size_lg" >Gender</h6><h6 class="largeText font_size_lg">    
+                                              {% if employee.gender is not None %}
+                                            {{employee.gender | capfirst }}
+                                            {% else %}
+                                     --
+                                     {%endif%}
+                                            </h6>
+                                            </div>
+                                        </div>
+                                </div>
+                                 <div class="col-md-6 p-md-0">
+                                        <div class="d-flex" style="align-items: flex-start;">                                
+                                              <img src="{% static 'img/svg/bloodgroup.svg' %}" class="profileIconSize" />
+                                            <div>
+                                             <h6 class="smallText font_size_lg" >Blood Group</h6><h6 class="largeText font_size_lg">    
+                                              {% if employee.blood_group %}{{employee.blood_group}}{% else %}-{% endif %}
+                                            </h6>
+                                            </div>
+                                        </div>
+                                </div>
+                        </div>
+                        
+                        <div class="row mb-md-2">
+                            <div class="col-md-12 p-md-0">
+                                <div class="row">
+                                    <div class="col-1 p-0">
+                                        <img src="{% static 'img/svg/address.svg' %}" class="profileIconSize" />
+                                    </div>
+                                    <div class="col-md-11 p-md-0">
+                                        <h6 class="smallText font_size_lg">Correspondance Address</h6>
+                                        <h6 class="largeText font_size_lg">{% if employee.address_line_1 %} {{employee.address_line_1}},{% endif %} {% if employee.address_line_2 %} {{employee.address_line_2}},{% endif %} {{employee.state_name}}, {{employee.country_name}},{{employee.pincode}}
+                                        </h6>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row mb-md-2">
+                            <div class="col-md-12 p-md-0">
+                                <div class="row">
+                                    <div class="col-1 p-0">
+                                        <img src="{% static 'img/svg/address.svg' %}" class="profileIconSize" />
+                                    </div>
+                                    <div class="col-md-11 p-md-0">
+                                        <h6 class="smallText font_size_lg">Permanent Address</h6>
+                                        <h6 class="largeText font_size_lg">{% if employee_permanent_address.address_line_1 %} {{employee_permanent_address.address_line_1}},{% endif %} {% if employee_permanent_address.address_line_2 %} {{employee_permanent_address.address_line_2}},{% endif %} {{employee_permanent_address.state_name}}, {{employee_permanent_address.country_name}},{{employee_permanent_address.pincode}}
+                                        </h6>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="dropdown-divider"></div>
+                        
+                             <div class="row mb-md-2">
+                                  
+                                 <div class="col-md-6 p-md-0">
+                                    <div class="d-flex" style="align-items: flex-start;">                                
+                                         <img src="{% static 'img/svg/contactPersonName.svg' %}" class="profileIconSize" />
+                                        <div>
+                                         <h6 class="smallText font_size_lg" >Last Login</h6><h6 class="largeText font_size_lg">    
+                                             {% if employee.last_login %}
+                                        {{employee.last_login }}
+                                         {% else %}--{% endif %}
+                                        </h6>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6 p-md-0">
+                                    <div class="d-flex" style="align-items: flex-start;">                                
+                                        <img src="{% static 'img/svg/job_type.svg' %}" class="profileIconSize" />
+                                        <div>
+                                            <h6 class="smallText font_size_lg">Job Type</h6><h6 class="largeText font_size_lg">    
+                                                {%if employee.contract_type%}
+                                                {{employee.contract_type }} {%else%}
+                                                --
+                                                {%endif%}
+                                            </h6>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6 p-md-0">
+                                    <div class="d-flex" style="align-items: flex-start;">                                
+                                        <img src="{% static 'img/svg/emobicicon05.svg' %}" class="profileIconSize" />
+                                        <div>
+                                             <h6 class="smallText font_size_lg">App Version</h6><h6 class="largeText font_size_lg">    
+                                                 
+                                                  {%if device_data %}
+                                                {{device_data.Appversion }} {%else%}
+                                                --
+                                                {%endif%}
+                                            </h6>
+                                        </div>
+                                    </div>
+                                </div>
+                        </div>
+                  </div>
+                    </div>
+                </div>
+            </div>
+             </div>
+      
+        <div class="row mt-3">
+            <!--<div class="dropdown-divider w-100"></div>-->
+            <div class="col-sm-12 text-center p-0  more_info_btn" >
+                <h6 class="m-0" onclick="viewEmployeeDetails('{{employee.id }}')" style="cursor: pointer;">
+                    <u>More Info</u></h6>
+                </div>
+            </div>
+
+
+        

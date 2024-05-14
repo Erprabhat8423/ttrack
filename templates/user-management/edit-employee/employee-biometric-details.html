@@ -1,0 +1,250 @@
+{% load static %}
+<form name="addAttendanceDetailsForms" id="addAttendanceDetailsForms" method="POST" autocomplete="off" action="" enctype="multipart/form-data">
+    {% csrf_token %}
+    <input type="hidden" name="last_user_id" id="last_user_id" value="{{ last_user_id }}" >
+    
+    <div class="modal-AddUser centered">
+        <div class="modal-header" id="headerStep1">
+            <div class="col-12 p-0">
+                <div class="row">
+                    <div class="col-6">
+                        <button class="iconCover" onclick="editEmployeeOfficialDetail('{{ last_user_id }}')">
+                            <img src="{% static 'img/svg/backarrow.svg' %}" style="width: 1rem" onclick="editEmployeeOfficialDetail('{{ last_user_id }}')" />
+                        </button>
+                        <h5 class="mt-md-2" style="display: inline">
+                            &nbsp;&nbsp; Attendance Settings
+                        </h5>
+                    </div>
+                    <div class="col-6">
+                        <button class="btn btn-save float-right" type="submit" >
+                            Save & Proceed
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        
+        <div class="modal-body" id="addUserModalBody" style="overflow: auto">
+            <div class="row">
+                <div class="col-md-12 p-0 fullWidth fulHeight" id="step1">
+                    <div class="row h-100">
+                        <div class="col-md-6">
+                            <div class="row">
+                            
+                                <div class="col-md-4 mt-3 pl-0">
+                                    <img src="{% static 'img/svg/address.svg' %}" class="profileIconSize">&nbsp;&nbsp;
+                                    <h6 class="mt-2 mb-0" style="display: inline-block;">
+                                        Check Location
+                                    </h6>
+                                </div>
+                                <div class="col-md-4 mt-3 pl-0">
+                                    <img src="{% static 'img/svg/address.svg' %}" class="profileIconSize">&nbsp;&nbsp;
+                                    <h6 class="mt-2 mb-0" style="display: inline-block;">
+                                        Periphery
+                                    </h6>
+                                </div>
+                              
+                            </div>
+                            <div class="row wrapper">
+                                
+                                <div class="col-md-4 mt-3 pl-0">
+                                    <select class="inputField selectField"  name="geofencing_type" id="geofencing_type" style="width: 100% !important;" >
+                                        
+                                        <option value="0" {% if employee_basic_details.geofencing == 0 %}  selected  {% else %}  {% endif %}>Inner</option>
+                                         <option value="1" {% if employee_basic_details.geofencing == 1 %} selected {% else %}  {% endif %}>Outer</option>
+                                         <option value="2" {% if employee_basic_details.geofencing == 2 %} selected {% else %}  {% endif %}>Open</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-4 mt-3 pl-0">
+                                    <input class="inputField" type="text" placeholder="Periphery" name="periphery"
+                                    id="periphery_id" maxlength="10"  value="{% if user.periphery %}{{ user.periphery }}{% endif %}"   />
+                                    <label class="error_msg float-right" id="periphery_error"></label>
+                                </div>
+                                
+                            </div>
+                            <div class="row">
+                            
+                                <div class="col-md-8 mt-3 pl-0">
+                                    <img src="{% static 'img/svg/address.svg' %}" class="profileIconSize">&nbsp;&nbsp;
+                                    <h6 class="mt-2 mb-0" style="display: inline-block;">
+                                        Working Shifts*
+                                    </h6>
+                                </div>
+                            </div>
+                            <div class="row wrapper">
+                                
+                                <div class="col-md-8 mt-3 pl-0">
+                                    <select class="inputField selectField" style="width: 100% !important;" name="working_shift_id[]" id="working_shift_id" >
+                                        {% for working_shift in working_shifts %}
+                                        <option value="{{working_shift.id}}" {% if working_shift.id == employee_basic_details.working_shift_id %} selected  {% endif %}>{{working_shift.working_shift }} ({{working_shift.start_timing}} - {{working_shift.end_timing}})</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+                            
+                            <div class="row" style="padding:15px !important; text-decoration:italic;">**If user will not define periphery it will be 500m by default for inner/outer setting.</p></div>
+
+                    <div id="newRow">     
+                    </div>   
+                </div>
+                {% if user_attendance_locations.latitude %}
+                <div class="col-md-6" id="map-div" style="height: 500px; width: 200px;">
+                </div>
+                {% else %}
+                    <div class="col-md-6"style="height: 500px; width: 200px; text-align:center; background-color:gray;">
+                        <p style="margin-top:30%;color:white;">Registerd Location is not found !</p>
+                    </div>
+                {% endif %}
+            </div>
+            
+        </div>
+        
+    </div>
+</div>
+
+
+<nav class="navbar fixed-bottom" id="modalFooter">
+    <div class="dropdown-divider w-100"></div>
+    <div class="col-3 offset-9 p-0">
+        <ul id="stepFooter">
+            <li id="li1" class="selectedstep">
+                <button class="btn btn-step activeStep" id="stepBtn1">
+                    &#10004;
+                </button>
+            </li>
+            <li id="li2" class="selectedstep">
+                <button class="btn btn-step activeStep" id="stepBtn2">
+                    &#10004;
+                </button>
+            </li>
+            <li id="li3" class="selectedstep">
+                <button class="btn btn-step activeStep" id="stepBtn3">
+                    &#10004;
+                </button>
+            </li>
+            <li id="li4">
+                <button class="btn btn-step" id="stepBtn4">
+                    &#10004;
+                </button>
+            </li>
+        </ul>
+    </div>
+</nav>
+</div>
+</form>
+
+<script>
+    $(document).ready(function(){
+       
+        $('.timepicker').mdtimepicker({
+            timeFormat: 'hh:mm:ss.000',
+            format: 'h:mm tt',     
+            theme: 'blue',       
+            readOnly: true,      
+            hourPadding: false    
+        });
+        $("#date_of_relieving").datepicker({
+            weekStart: 1,
+            changeMonth: true,
+            changeYear: true,  
+            yearRange: "-100:+0",
+            daysOfWeekHighlighted: "6,0",
+            autoclose: true,
+            todayHighlight: true,
+            dateFormat: 'dd/mm/yy',
+        });
+    });
+    
+    function initMap() {
+        var lat = parseFloat("{{ user_attendance_locations.latitude|safe }}");
+        var lng = parseFloat("{{ user_attendance_locations.longitude|safe }}")
+     
+        // Specify your coordinates
+        var myLatLng = { lat:lat, lng:lng };
+
+        // Create a map object and specify the DOM element for display
+        var map = new google.maps.Map(document.getElementById("map-div"), {
+          center: myLatLng,
+          zoom: 25
+        });
+
+        // Create a marker and set its position
+        var marker = new google.maps.Marker({
+          map: map,
+          position: myLatLng,
+          title: "My Location"
+        });
+      }
+    
+    
+    var employee_id = "{{last_user_id}}";
+    $('#addAttendanceDetailsForms').submit(function(e){
+        
+        if(validateForm()){
+            hideLoader();
+            return false;
+        }else{
+            $('#addUserModal').html('');
+        showLoader();
+        e.preventDefault();
+        $form = $(this)
+        var formData = new FormData(this);
+        console.log(employee_id)
+        url =  "{% url 'src:edit-employee-biometric-details' 1 %}";
+        url = url.replace(1,parseInt(employee_id));
+        $.ajax({
+            url: url,
+            type: 'POST',
+            data: formData,
+            success: function (response) {
+                $('.error').remove();
+                console.log(response)
+                if(response.error){
+                    $.each(response.errors, function(name, error){
+                        alert(error);
+                        window.location.reload();
+                    })
+                } else {
+                    hideLoader();
+                    editEmployeeDocumentDetail(response.last_user_id)
+                }
+            },
+            cache: false,
+            contentType: false,
+            processData: false
+        });
+    }});
+   
+    
+    $('.timepicker').mdtimepicker({
+        timeFormat: 'hh:mm:ss.000',
+        format: 'h:mm tt',     
+        theme: 'blue',       
+        readOnly: true,      
+        hourPadding: false    
+    });
+
+    function validateForm(){
+        error = 0;
+        $('#periphery_error').text('');
+
+        $('[name="periphery"]').css("border", "");
+        if ($('[name="periphery"]').val() == null || $('[name="periphery"]').val() == "") {
+            $('[name="periphery"]').parent().find('#periphery_error').text("Please enter periphery value.*");
+            $('[name="periphery"]').css("border", "1px solid #db8305");
+            error = error + 1;
+        }
+      
+       
+       
+
+        if(error > 0){
+            return true;
+        }else{
+            return false;
+        }
+    }
+    
+</script>
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDKWGtFSzHRH3Hdzlz1Ei6KZMjuTu0NcZ8&callback=initMap" async defer></script>

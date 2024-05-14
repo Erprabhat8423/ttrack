@@ -1,0 +1,1318 @@
+{% load static %}
+<style type="text/css">
+  #ajax_maps {
+    width: 100%;
+    height: 400px;
+  }
+</style>
+<div class="modal-ViewEmployee centered">
+  <div class="modal-header pb-0" id="headerViewEmployee">
+    <div class="col-12 p-0">
+      <div class="row">
+        <div class="col-6">
+          <h5 class="mt-md-2" style="color: #0052a0;">{{employee.salutation }} {{employee.first_name }} {{employee.middle_name }} {{employee.last_name }} | {{employee.role_name | capfirst }}</h5>
+          <input type="hidden" name="employeerole" id="employeerole" value="{% if employee.role_id  %}{{ employee.role_id  }}{% endif %}" > 
+        </div>
+        <div class="col-6">
+          <button class="btn btn-close float-right mt-3" type="button"
+          onclick="manipulateModal('viewEmployeeModal','close')">
+          Close
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="modal-body pt-0" id="viewEmpModalBody" style="overflow: auto">
+  <div class="row mb-3" id="infoPills">
+    <div class="col-sm-12 p-0">
+      <ul class="nav nav-tabs">
+        <li class="infoTabs" id="basicTab" onclick="changeInfoTab('basic')">Basic info
+        </li>
+        <li class="infoTabs" id="officialTab" onclick="changeInfoTab('official')">Official
+          Details
+        </li>
+        <li class="infoTabs" id="uploadsTab" onclick="changeInfoTab('uploads')">Uploads
+        
+        </li>
+         <li class="infoTabs" id="leaveTab" onclick="changeInfoTab('leave')">leave Ledger
+        </li>
+         <li class="infoTabs" id="empayrollTab" onclick="changeInfoTab('empayroll')">Salary Break ups
+        </li>
+      </ul>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-12 p-0 h-100 w-100" id="basic">
+      <div class="row">
+        <div class="col-md-8">
+          <div class="row">
+            <div class="col-md-12 p-0 mt-2">
+              <div class="row">
+                <div class="col-md-12 p-10">
+                  <img src="{% static 'img/svg/contactNo.svg' %}" class="profileIconSize">&nbsp;&nbsp;
+                  <h6 class="mt-2 mb-0 lightGrey" style="display: inline-block;">
+                    Contacts
+                  </h6>
+                  {% for user_contact in user_contacts %}
+                  <div class="row mt-2">
+                    <div class="col-md-4 pr-0">
+                      <h6 class="viewText mt-0">{{user_contact.country_code}} {{user_contact.contact_number}}</h6>
+                    </div>
+                    <div class="col-md-4 pr-0">
+                      <h6 class="viewText mt-0">{{user_contact.contact_type_name}}</h6>
+                      
+                    </div>
+                    {% if user_contact.is_primary == 1 %}
+                    <div class="col-md-4 pr-0">
+                      <button class="btn btn-step activeStep">
+                        &#10004;
+                      </button>
+                      <span class="viewText m-0">Primary</span>
+                    </div>
+                    {% endif %}
+                  </div>
+                  {% endfor %}
+                </div>
+                
+              </div>
+            </div>
+          </div>
+          <div class="row mt-3">
+            <div class="col-md-4">
+              <img src="{% static 'img/svg/dob.svg' %}" class="profileIconSize" />&nbsp;&nbsp;
+              <h6 class="mt-2 mb-0 lightGrey" style="display: inline-block;">
+                Date of Birth
+              </h6>
+              <h6 class="viewText">{{employee.date_of_birth | date:"d/m/Y"}}</h6>
+            </div>
+            
+            <div class="col-md-4">
+              <img src="{% static 'img/svg/bloodgroup.svg' %}" class="profileIconSize" />&nbsp;&nbsp;
+              <h6 class="mt-2 mb-0 lightGrey" style="display: inline-block;">
+                Blood group
+              </h6>
+              <h6 class="viewText">{% if employee.blood_group %}{{employee.blood_group}}{% else %}-{% endif %}</h6>
+            </div>
+            
+            <div class="col-md-4">
+              <img src="{% static 'img/svg/gender.svg' %}" class="profileIconSize" />&nbsp;&nbsp;
+              <h6 class="mt-2 mb-0 lightGrey" style="display: inline-block;">
+                Gender
+              </h6>
+              <h6 class="viewText">{{employee.gender | capfirst }}</h6>
+            </div>
+          </div>
+          <div class="row mt-3">
+            
+            <div class="col-md-4">
+              <img src="{% static 'img/svg/father.svg' %}" class="profileIconSize" />&nbsp;&nbsp;
+              <h6 class="mt-2 mb-0 lightGrey" style="display: inline-block;">
+                Father's Name
+              </h6>
+              <h6 class="viewText">{{employee.father_name }}</h6>
+            </div>
+            <div class="col-md-4">
+              <img src="{% static 'img/svg/mother.svg' %}" class="profileIconSize" />&nbsp;&nbsp;
+              <h6 class="mt-2 mb-0 lightGrey" style="display: inline-block;">
+                Mother's Name
+              </h6>
+              <h6 class="viewText">{{employee.mother_name }}</h6>
+            </div>
+            <div class="col-md-4">
+              <img src="{% static 'img/svg/@.svg' %}" class="profileIconSize" />&nbsp;&nbsp;
+              <h6 class="mt-2 mb-0 lightGrey" style="display: inline-block;">
+                Email id
+              </h6>
+              <h6 class="viewText">{{employee.official_email }}</h6>
+            </div>
+            <div class="col-md-4">
+              <img src="{% static 'img/svg/device_info.svg' %}" class="profileIconSize" />&nbsp;&nbsp;
+              <h6 class="mt-2 mb-0 lightGrey" style="display: inline-block;">
+                Device Info
+              </h6>
+              <h6 class="viewText" style="white-space: break-word;word-break: break-all;"> {% if employee.web_auth_token %}{{employee.web_auth_token}}{% else %}-{% endif %}</h6>
+            </div>
+          </div>
+         
+        </div>
+        <div class="col-md-4">
+          
+          <div class="row mt-3">
+            <div class="col-md-12">
+              <img src="{% static 'img/svg/address.svg' %}" class="profileIconSize" />&nbsp;&nbsp;
+              <h6 class="mt-2 mb-0 lightGrey" style="display: inline-block;">
+                Correspondance Address
+              </h6>
+              <h6 class="viewText">{% if employee_correspondence_address.address_line_1 %} {{employee_correspondence_address.address_line_1}},{% endif %} {% if employee_correspondence_address.address_line_2 %} {{employee_correspondence_address.address_line_2}},{% endif %} {{employee_correspondence_address.state_name}}, {{employee_correspondence_address.country_name}},{{employee_correspondence_address.pincode}}</h6>
+            </div>
+          </div>
+          <div class="row mt-3">
+            <div class="col-md-12">
+              <img src="{% static 'img/svg/address.svg' %}" class="profileIconSize" />&nbsp;&nbsp;
+              <h6 class="mt-2 mb-0 lightGrey" style="display: inline-block;">
+                Permanent Address
+              </h6>
+              <h6 class="viewText">{% if employee_permanent_address.address_line_1 %} {{employee_permanent_address.address_line_1}},{% endif %} {% if employee_permanent_address.address_line_2 %} {{employee_permanent_address.address_line_2}},{% endif %} {{employee_permanent_address.state_name}}, {{employee_permanent_address.country_name}},{{employee_permanent_address.pincode}}</h6>
+            </div>
+          </div>
+        </div>
+        
+      </div>
+    </div>
+
+    <div class="col-md-12 p-0  p-0 h-100 w-100" id="leave" style="display:none">
+      <div class="row">
+        <div class="col-md-12">
+            <button class="btn btn-save float-right" type="button" onclick="addLeaveLedger('{{employee.id }}')" >
+            Credit/Debit Leave
+            </button>
+            <table class="table table-striped table-borderless" style="font-size: 1rem;">
+              <thead>
+                <tr>
+                    <th>Date</th>
+                  <th>Leave Policy</th>
+                  <th>Leave Policy Type</th>
+                  <!--<th>No Of Leaves<br>(As for policy)</th>-->
+                  <!--{% comment %} <th>No Of Leave (Month)</th> {% endcomment %}-->
+                  <th> Credit Leave</th>
+                  <th> Debit Leave</th>
+                  <th> Balance Leave</th>
+                  <th>Remark</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% if leave_ledger %}
+                {% for leave in leave_ledger %}
+                <tr>
+                   {% if leave.leave_date %}
+                 <td>{{leave.leave_date}}</td>
+                  {% else %}
+                <td>-</td>
+                {% endif %}
+                  <td>{{ leave.leave_policy_name }}</td>
+                  <td>{{ leave.laave_type_name}}</td>
+                  <!--<td>{{ leave.year_leave_count}}</td>-->
+                  <!--{% comment %} <td>{{ leave.month_leave_counts}}</td> {% endcomment %}-->
+                  {% if leave.credit %}
+                  <td>{{ leave.credit}}</td>
+                  {% else %}
+                  <td>-</td>
+                  {% endif %}
+                  
+                  {% if leave.debit %}
+                  <td>{{ leave.debit}}</td>
+                  {% else %}
+                  <td>-</td>  
+                  {% endif %}
+                  <td>{{ leave.balance}}</td>
+                   {% if leave.remark %}
+                 <td>{{leave.remark}}</td>
+                  {% else %}
+                <td>-</td>
+                {% endif %}
+                </tr>
+                {% endfor %}
+                {% else %}
+                <th colspan="8" class="text-center">No Record Found</th>
+                {% endif %}
+              </tbody>
+            </table>
+        </div>
+      </div>
+    </div>
+
+
+
+    <div class="col-md-12 p-0 h-100 w-100" id="official">
+      <div class="row">
+        <div class="col-md-3">
+          <img src="{% static 'img/svg/org.svg' %}" class="profileIconSize" />&nbsp;&nbsp;
+          <h6 class="mt-2 mb-0 lightGrey" style="display: inline-block;">
+            Organization
+          </h6>
+          <h6 class="viewText">{{employee.organization_name}}</h6>
+        </div>
+        <div class="col-md-3">
+          <img src="{% static 'img/svg/depart_no.svg' %}" class="profileIconSize" />&nbsp;&nbsp;
+          <h6 class="mt-2 mb-0 lightGrey" style="display: inline-block;">
+            Department
+          </h6>
+          <h6 class="viewText">{{employee.department_name}}</h6>
+        </div>
+        <div class="col-md-3">
+          <img src="{% static 'img/svg/role.svg' %}" class="profileIconSize" />&nbsp;&nbsp;
+          <h6 class="mt-2 mb-0 lightGrey" style="display: inline-block;">
+            Roles
+          </h6>
+          <h6 class="viewText">{{employee.role_name}}</h6>
+        </div>
+        <div class="col-md-3">
+          <img src="{% static 'img/svg/aadhaar.svg' %}" class="profileIconSize" />&nbsp;&nbsp;
+          <h6 class="mt-2 mb-0 lightGrey" style="display: inline-block;">
+            Employee ID
+          </h6>
+          <h6 class="viewText">{{employee.emp_sap_id}}</h6>
+        </div>
+      </div>
+      <div class="row mt-3">
+        <div class="col-md-3" style="display:none;">
+          <img src="{% static 'img/svg/aadhaar.svg' %}" class="profileIconSize" />&nbsp;&nbsp;
+          <h6 class="mt-2 mb-0 lightGrey" style="display: inline-block;">
+            Total Leaves
+          </h6>
+          <h6 class="viewText">{%if employee.leave_count %}{{employee.leave_count}}{%else%} -- {%endif%}</h6>
+        </div>
+    
+          <div class="col-md-3">
+            <img src="{% static 'img/svg/dateofJoiniing.svg' %}" class="profileIconSize" />&nbsp;&nbsp;
+            <h6 class="mt-2 mb-0 lightGrey" style="display: inline-block;">
+              Date of Joining
+            </h6>
+            <h6 class="viewText">{{employee.date_of_joining|date:"d/m/Y" }}</h6>
+          </div>
+          <div class="col-md-3">
+            <img src="{% static 'img/svg/shift.svg' %}" class="profileIconSize" />&nbsp;&nbsp;
+            <h6 class="mt-2 mb-0 lightGrey" style="display: inline-block;">
+              Working Shift
+            </h6>
+            
+            <h6 class="viewText">
+                  {% for totalhour in totalhours%}
+                {{totalhour}}
+               {% endfor %}
+                </h6>
+          </div>
+          <div class="col-md-3">
+            <img src="{% static 'img/svg/dateofJoiniing.svg' %}" class="profileIconSize" />&nbsp;&nbsp;
+            <h6 class="mt-2 mb-0 lightGrey" style="display: inline-block;">
+              Qatar ID Expairy
+            </h6>
+            <h6 class="viewText">{{basic_data.qatar_id_expairy|date:"d/m/Y" }}</h6>
+          </div>
+          <div class="col-md-3">
+            <img src="{% static 'img/svg/dateofJoiniing.svg' %}" class="profileIconSize" />&nbsp;&nbsp;
+            <h6 class="mt-2 mb-0 lightGrey" style="display: inline-block;">
+              Visa ID Expairy
+            </h6>
+            <h6 class="viewText">{{basic_data.visa_id_expairy|date:"d/m/Y" }}</h6>
+          </div>
+        </div>
+        <div class="row mt-3">
+          <div class="col-md-3">
+            <img src="{% static 'img/svg/role.svg' %}" class="profileIconSize" />&nbsp;&nbsp;
+            <h6 class="mt-2 mb-0 lightGrey" style="display: inline-block;">
+              Reporting to
+            </h6>
+            <h6 class="viewText">{{employee.reporting_to_name}}</h6>
+          </div>
+          <div class="col-md-3">
+            <img src="{% static 'img/svg/@.svg' %}" class="profileIconSize" />&nbsp;&nbsp;
+            <h6 class="mt-2 mb-0 lightGrey" style="display: inline-block;">
+              Email id (Official)
+            </h6>
+            <h6 class="viewText">{{employee.official_email}}</h6>
+          </div>
+           <div class="col-md-4">
+                <img src="{% static 'img/svg/shift.svg' %}" class="profileIconSize" />&nbsp;&nbsp;
+                  <h6 class="mt-2 mb-0" style="display: inline-block;">
+                      Job Type
+                  </h6>
+                  <h6 class="viewText">{% if contract_type.contract_type %}{{contract_type.contract_type}} {%else%}-{% endif %}</h6>
+           </div>
+        </div>
+        
+        <!--<div class="row mt-3">-->
+        <!--  <div class="col-md-12">-->
+        <!--    <img src="{% static 'img/svg/address.svg' %}" class="profileIconSize" />&nbsp;&nbsp;-->
+        <!--    <h5 class="mt-2 mb-0" style="display: inline-block;">-->
+        <!--      Area Details-->
+        <!--    </h5>-->
+        <!--  </div>-->
+          
+        <!--  <div class="col-md-6">-->
+        <!--    <div class="row mt-3">-->
+        <!--      <div class="col-md-4">-->
+        <!--        <img src="{% static 'img/svg/role.svg' %}" class="profileIconSize" />&nbsp;&nbsp;-->
+        <!--        <h6 class="mt-2 mb-0" style="display: inline-block;">-->
+        <!--          Zone-->
+        <!--        </h6>-->
+        <!--      </div>-->
+        <!--      <div class="col-md-4">-->
+        <!--        <img src="{% static 'img/svg/role.svg' %}" class="profileIconSize" />&nbsp;&nbsp;-->
+        <!--        <h6 class="mt-2 mb-0" style="display: inline-block;">-->
+        <!--          Town-->
+        <!--        </h6>-->
+        <!--      </div>-->
+              
+        <!--    </div>-->
+        <!--    {% for area_allocated in user_areas %}-->
+        <!--    <div class="row cardRow mt-3">-->
+        <!--      <div class="col-md-4">-->
+        <!--        <h6 class="viewText">{{area_allocated.zone_name}}</h6>-->
+        <!--      </div>-->
+        <!--      <div class="col-md-4">-->
+        <!--        <h6 class="viewText">{{area_allocated.town_name}}</h6>-->
+        <!--      </div>-->
+              
+        <!--    </div>-->
+        <!--    {% endfor %}-->
+              
+        <!--  </div>-->
+        <!--</div>-->
+        <div class="row mt-3">
+          <div class="col-md-12">
+            
+             <h5 class="mt-2 mb-0 lightGrey" style="display: inline-block;font-weight:bold;">
+                 Bank Details
+             </h5>
+          </div>
+          <div class="dropdown-divider"></div>
+           <br><br>
+            <div class="col-md-3">
+              <img src="{% static 'img/svg/bank_name.svg' %}" class="profileIconSize" />&nbsp;&nbsp;
+                <h6 class="mt-2 mb-0" style="display: inline-block;">Bank Name</h6>
+              <h6 class="viewText">{% if bank_details.bank_name %}{{bank_details.bank_name}} {%else%}-{% endif %}</h6>
+            </div>
+            <div class="col-md-3">
+              <img src="{% static 'img/svg/Account_no.svg' %}" class="profileIconSize" />&nbsp;&nbsp;
+              <h6 class="mt-2 mb-0" style="display: inline-block;">
+                Bank Account No
+              </h6>
+              <h6 class="viewText">{% if bank_details.bank_account_no %}{{bank_details.bank_account_no}}{%else%}-{% endif %}</h6>
+            </div>
+            <div class="col-md-3">
+              <img src="{% static 'img/svg/IFSC.svg' %}" class="profileIconSize" />&nbsp;&nbsp;
+              <h6 class="mt-2 mb-0" style="display: inline-block;">
+               SWIFT Code
+              </h6>
+              <h6 class="viewText">{% if bank_details.ifsc_code %}{{bank_details.ifsc_code}}{%else%}-{% endif %}</h6>
+            </div>
+            <div class="col-md-3">
+              <img src="{% static 'img/svg/bank_address.svg' %}" class="profileIconSize" />&nbsp;&nbsp;
+              <h6 class="mt-2 mb-0" style="display: inline-block;">Bank Address</h6>
+              <h6 class="viewText">{% if bank_details.bank_address %}{{bank_details.bank_address}}{%else%}-{% endif %}</h6>
+            </div>
+      
+        </div>
+      </div>
+      <div class="col-md-12 p-0 fullWidth fulHeight" id="attendance">
+        <div class="row">
+            <div class="col-md-12">
+                <table class="table table-striped table-borderless" style="font-size: 1rem;">
+                  <thead>
+                    <tr>
+                      <th>Working Shift</th>
+                      <th>Start Time</th>
+                      <th>End Time</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {% for each_shift in working_shift%}
+                    <tr>
+                      <td>{{ each_shift.working_shift }}</td>
+                      <td>{{ each_shift.start_timing}}</td>
+                      <td>{{ each_shift.end_timing}}</td>
+                    </tr>
+                    {% endfor %}
+                  </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="row">
+          <div class="col-md-12">
+            <table class="table table-striped table-borderless" style="font-size: 1rem;">
+              <thead>
+                <tr>
+                  <th>Attendance Type</th>
+                  {% if employee.attendence_mode == 1 or employee.attendence_mode == 2 %}
+                    <th>Periphery</th>
+                    <th>Geofence</th>
+                  {% endif %}
+                </tr>
+              </thead>
+              <tbody>
+                  
+                <tbody>
+                {% if employee.attendence_mode != None %}
+              
+                <tr>
+                  <td>{% if employee.attendence_mode == 1 %}App {% elif employee.attendence_mode == 0 %} Web {% elif employee.attendence_mode == 2 %} Both {% else %} -- {% endif %}</td>
+                  {% if employee.attendence_mode == 1 or employee.attendence_mode == 2 %}
+                      <td>{{employee.periphery}} </td>
+                      <td>{% if employee.geofencing == 1 %} Outer {% elif employee.geofencing == 0 %} Inner {% else %} - {% endif %}</td>
+                  {% endif %}
+                </tr>
+              
+                {% else %}
+                <tr>
+                  <td colspan="4"><p>No Record Found.</p></td>
+                </tr>
+                {% endif %}
+              </tbody>
+              
+            </table>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-12 p-0 fullWidth fulHeight" id="uploads">
+        <div class="row">
+            <div class="col-md-12">
+            <ul class="documentsec drsec">
+            
+            
+            <div class="row">
+              <div class="col-md-3">
+                  <h5>Qatar ID</h5>
+                  <div class="card">
+                      {% if employee_documents.qatar_id %}
+                      <embed id="previewEmployeeQatarId" src="{{ employee_documents.qatar_id }}" class="w-50 w-100 imgStyle" style="transform: translate(0px, 0px);">
+                      {% else %}
+                      <embed id="previewEmployeeQatarId" src="{% static 'img/svg/GSTNGrey.svg' %}" class="w-50" style="transform: translate(50%,50%);">
+                      {% endif %}
+                      <input type="hidden" name="previous_qatar_id" id="previous_qatar_id" value="{% if employee_documents.qatar_id %}{{ employee_documents.qatar_id }} {% endif %}" >
+                      
+                  </div>
+              </div>
+              <div class="col-md-3">
+                <h5>Passport</h5>
+                <div class="card">
+                    {% if employee_documents.passport_card %}
+                    <embed id="previewEmployeePASSPORT" src="{{ employee_documents.passport_card }}" class="w-50 w-100 imgStyle" style="transform: translate(0px, 0px);">
+                    {% else %}
+                    <embed id="previewEmployeePASSPORT" src="{% static 'img/svg/GSTNGrey.svg' %}" class="w-50" style="transform: translate(50%,50%);">
+                    {% endif %}
+                    <input type="hidden" name="previous_passport" id="previous_passport" value="{% if employee_documents.passport_card %}{{ employee_documents.passport_card }} {% endif %}" >
+                </div>
+              </div>
+              <div class="col-md-3">
+                <h5>Resume</h5>
+                <div class="card">
+                    {% if employee_documents.resume %}
+                    <embed id="previewEmployeeResume" src="{{ employee_documents.resume }}" class="w-50 w-100 imgStyle" style="transform: translate(0px, 0px);">
+                    {% else %}
+                    <embed id="previewEmployeeResume" src="{% static 'img/svg/GSTNGrey.svg' %}" class="w-50" style="transform: translate(50%,50%);">
+                    {% endif %}
+                    <input type="hidden" name="previous_resume" id="previous_resume" value="{% if employee_documents.resume %}{{ employee_documents.resume }} {% endif %}" >
+                </div>
+              </div>
+              <div class="col-md-3">
+                <h5>Educational Documents</h5>
+                <div class="card">
+                    {% if employee_documents.educationaldoc %}
+                    <embed id="previewEmployeeEDUCATIONAL" src="{{ employee_documents.educationaldoc }}" class="w-50 w-100 imgStyle" style="transform: translate(0px, 0px);">
+                    {% else %}
+                    <embed id="previewEmployeeEDUCATIONAL" src="{% static 'img/svg/GSTNGrey.svg' %}" class="w-50" style="transform: translate(50%,50%);">
+                    {% endif %}
+                    <input type="hidden" name="previous_educationaldoc" id="previous_educationaldoc" value="{% if employee_documents.educationaldoc %}{{ employee_documents.educationaldoc }} {% endif %}" >
+                </div>
+              </div>
+              </div>
+              <div class="row">
+                  <div class="col-md-3">
+                    <h5>Offer Letter</h5>
+                    <div class="card">
+                        {% if employee_documents.offerletter %}
+                        <embed id="previewEmployeeOFFERL" src="{{ employee_documents.offerletter }}" class="w-50 w-100 imgStyle" style="transform: translate(0px, 0px);">
+                        {% else %}
+                        <embed id="previewEmployeeOFFERL" src="{% static 'img/svg/GSTNGrey.svg' %}" class="w-50" style="transform: translate(50%,50%);">
+                        {% endif %}
+                        <input type="hidden" name="previous_offerletter" id="previous_offerletter" value="{% if employee_documents.offerletter %}{{ employee_documents.offerletter }} {% endif %}" >
+                    </div>
+                  </div>
+                  <div class="col-md-3">
+                    <h5>Visa Letter</h5>
+                    <div class="card">
+                        {% if employee_documents.visaletter %}
+                        <embed id="previewEmployeeVisaLetter" src="{{ employee_documents.visaletter }}" class="w-50 w-100 imgStyle" style="transform: translate(0px, 0px);">
+                        {% else %}
+                        <embed id="previewEmployeeVisaLetter" src="{% static 'img/svg/GSTNGrey.svg' %}" class="w-50" style="transform: translate(50%,50%);">
+                        {% endif %}
+                        <input type="hidden" name="previous_visaletter" id="previous_visaletter" value="{% if employee_documents.visaletter %}{{ employee_documents.visaletter }} {% endif %}" >
+                    </div>
+                  </div>
+            </div>
+         
+          
+           
+        </ul>
+        </div>
+          
+        </div>
+      </div>
+       <!-- Employee Payroll Master -->
+
+     
+<div class="col-md-12 p-0 fullWidth fulHeight" id="empayroll" style="display: none;">
+    <div class="row">
+      <div class="col-md-3 p-0 text-center">
+          <h5 style="font-weight:bold;color: #0052a0;"><img src="{% static 'img/svg/salary.svg' %}" style="width:50px;" />&nbsp;&nbsp;Employee Salary Break ups</h5>
+      </div>
+      <div class="col-md-7 p-0 text-center">
+         
+      </div>
+      <div class="col-sm-2 col-md-2 text-center" id="updateButton">
+        {% if user_salary_details %}
+        <button class="btn btn-save btn-lg " type="submit" onclick="updatePayrollMaster('{{employee_id}}' ,'1');">
+          Update 
+        </button>
+        {% else %}
+        <button class="btn btn-save btn-lg " type="submit" onclick="updatePayrollMaster('{{employee_id}}','0');">
+          Save 
+        </button>
+        {% endif %}
+      </div>
+      
+      <hr style=" width:100%; color:black;">
+    </div>
+    <div class="row">
+    
+      
+      <div class="col-md-3">
+        <div class="col-md-12 p-0">
+          <div class="col-md-12 p-0">
+            
+            <h6 class="mt-2 mb-0" style="display: inline-block;">
+              Employee CTC (QTR)
+            </h6>
+          </div>
+          <div class="col-md-12 p-0 mt-2">
+            <input class="inputField" type="text" placeholder="Employee CTC " name="employee_ctc" id="employee_ctc"maxlength="15" onkeypress="return validateFloatKeyPress(this,event);" onkeyup="calculateMonthlyCTC();" value="{% if user_salary_details.ctc %}{{user_salary_details.ctc}}{% endif %}" style="width:100%" />
+            <label class="error_msg float-left" id="employee_ctc_error"></label>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="col-md-12 p-0">
+          <div class="col-md-12 p-0">
+            
+            <h6 class="mt-2 mb-0" style="display: inline-block;">
+              Employee Monthly Pay (QTR)
+            </h6>
+          </div>
+          <div class="col-md-12 p-0 mt-2">
+            <input class="inputField" type="text" readonly style="background-color:lightgrey;"placeholder="Employee Monthly Pay " name="employee_monthly_ctc" id="employee_monthly_ctc"  onkeypress="return validateFloatKeyPress(this,event);" onkeyup="calculateCTCToGrossSalary();" value="{% if user_salary_details.monthly_ctc %}{{user_salary_details.monthly_ctc}}{% endif %}" style="width:80%" />
+              <label class="error_msg float-left" id="employee_monthly_ctc_error"></label>
+          </div>
+        </div>
+      </div>
+       <div class="col-md-3">
+        <div class="col-md-12 p-0">
+          <div class="col-md-12 p-0">
+            
+            <h6 class="mt-2 mb-0" style="display: inline-block;">
+             Currency Type
+            </h6>
+          </div>
+            <div class="col-md-12 mt-2 p-0">
+                <select class="inputField selectField" style="width: 100% !important;" name="ctc_currancy_code"  id="ctc_currancy_code">
+                    {% for currancy in currency_code %}
+                    <option value="{{currancy.id}}" {% if user_salary_details.ctc_currency %}{% if user_salary_details.ctc_currency == currancy.id %} selected {% endif %}{% else %}{% if currancy.currency_code == 'QAR' %} selected{% endif %}{% endif %}>{{currancy.currency_code}}</option>
+                    {% endfor %}
+                </select>
+            </div>
+          </div>
+      </div>
+    </div>
+     <hr style=" width:100%; color:black;">
+   
+        <h6 style="font-weight:bold;color: #0052a0;"><img src="{% static 'img/svg/salary.svg' %}" style="height:25px;width:25px;" />&nbsp;&nbsp;Fixed</h6>
+    
+    <hr style="height:20px; width:100%; color:black;">
+    
+      {% if user_salary_details %}
+         {% for item in combined_list %}
+        
+              <div class="row fixed_row">
+                      <div class="col-md-3">
+                        <div class="col-md-12 p-0">
+                          <div class="col-md-12 p-0">
+                            
+                            <h6 class="mt-2 mb-0" style="display: inline-block;">
+                              Fixed Type
+                            </h6>
+                          </div>
+                           <div class="col-md-12 mt-2 p-0">
+                           <select class="inputField selectField" style="width: 100%;height:20;" name="fixed_type_name[]" id="fixed_type_{{ forloop.counter|add:'-1' }}" >
+                            <option value="">Select Type</option>
+                            {% for fixed in fixed_type %}
+                            <option value="{{fixed.id}}" {% if fixed.id == item.type_id %} selected
+                            
+                          
+                            {% endif %}>{{fixed.salary_head_name}}</option>
+                            {% endfor %}
+                            
+                        </select>
+                         <label class="error_msg float-right" id="fixed_type_error_{{ forloop.counter|add:'-1' }}"></label>
+                         </div>
+                        </div>
+                      </div>
+                      <div class="col-md-2">
+                        <div class="col-md-12 p-0">
+                          <div class="col-md-12 p-0">
+                            
+                            <h6 class="mt-2 mb-0" style="display: inline-block;">
+                               % In
+                            </h6>
+                          </div>
+                          <div class="col-md-12 p-0 mt-2">
+                            <input class="inputField" type="text" placeholder="% value " name="per_value[]" id="per_value_{{ forloop.counter|add:'-1' }}"  onkeyup="calculatePerToValue();" value="{% if user_salary_details %}{{item.per_val}}{% endif %}" style="width:100%" />
+                              <label class="error_msg float-left" id="per_value_error_{{ forloop.counter|add:'-1' }}`"></label>
+                          </div>
+                        </div>
+                      </div>
+                        <div class="col-md-3">
+                        <div class="col-md-12 p-0">
+                          <div class="col-md-12 p-0">
+                            
+                            <h6 class="mt-2 mb-0" style="display: inline-block;">
+                             Value(Of Monthly CTC)
+                            </h6>
+                          </div>
+                          <div class="col-md-12 p-0 mt-2">
+                            <input class="inputField" readonly style="background-color:lightgrey;" type="text" placeholder="Employee Monthly Pay " name="value_on_ctc[]" id="value_{{ forloop.counter|add:'-1' }}"  value="  {% if user_salary_details %}{{item.converted_val}}{% endif %}"  onkeyup="calculateCTCToGrossSalary();"  style="width:80%" />
+                              <label class="error_msg float-left" id="value_error_{{ forloop.counter|add:'-1' }}"></label>
+                          </div>
+                        </div>
+                      </div>
+                       <div class="col-md-2">
+                                  <div class="col-md-12 p-0">
+                                    <div class="col-md-12 p-0">
+                                      
+                                      <h6 class="mt-2 mb-0" style="display: inline-block;">
+                                      Currency Type
+                                      </h6>
+                                    </div>
+                                      <div class="col-md-12 mt-2 p-0">
+                                          <select class="inputField selectField" style="width: 100% !important;" name="currancy_code[]" id="currancy_code_{{ forloop.counter|add:'-1' }}" >
+                                              {% for currancy in currency_code %}
+                                              <option value="{{currancy.id}}" {% if user_salary_details %}{% if item.fixed_pay_currency == currancy.id %} selected {% endif %}{% else %}{% if currancy.currency_code == 'QAR' %} selected{% endif %}{% endif %}>{{currancy.currency_code}}</option>
+                                              {% endfor %}
+                                          </select>
+                                          <label class="error_msg float-right" id="currancy_code_error_{{ forloop.counter|add:'-1' }}"></label>
+                                      </div>
+                                    </div>
+                                </div>
+                          <div class="col-md-2" style="float:right;">
+                      
+                                  <a href="javascript:;" class="btn btn-danger" style="margin-top: 37px;" onclick="removeFixedRow(this)"><i class="fa fa-trash"></i></a>
+                          </div>
+                    
+                    </div>
+              {%endfor%}
+            {% endif %}
+       
+    <div id="addFixedRow">
+
+                    </div>
+   
+    
+    
+    
+    <div class="row  mt-3">
+        <div class="col-md-12 text-right">
+            <a href="javascript:;" class="btn btn-primary"  onclick="addFixedRow()"><i class="fa fa-plus" title="Add More Lead"></i></a>
+        </div>
+    </div> 
+    
+
+     <hr style="height:20px; width:100%; color:black;">
+             <h6 style="font-weight:bold;color: #0052a0;"><img src="{% static 'img/svg/salary.svg' %}" style="height:25px;width:25px;" />&nbsp;&nbsp;Additions</h6>
+    
+    <hr style="height:20px; width:100%; color:black;">
+      {% if user_salary_details %}
+         {% for item in additional_combined_list %}
+          <div class="row addition_row">
+                      <div class="col-md-3">
+                        <div class="col-md-12 p-0">
+                          <div class="col-md-12 p-0">
+                            
+                            <h6 class="mt-2 mb-0" style="display: inline-block;">
+                              Addition Type
+                            </h6>
+                          </div>
+                           <div class="col-md-12 mt-2 p-0">
+                           <select class="inputField selectField" style="width: 100%;height:20;" name="addition_type[]"  id="addition_type_{{ forloop.counter|add:'-1' }}"" >
+                            <option value="">Select Type</option>
+                            {% for addition in addition_type %}
+                            <option value="{{addition.id}}" {% if addition.id == item.additional_type_list %} selected
+                            
+                          
+                            {% endif %}>{{addition.salary_head_name}}</option>
+                            {% endfor %}
+                            
+                        </select>
+                        <label class="error_msg float-right" id="addition_type_error_{{ forloop.counter|add:'-1' }}"></label>
+                         </div>
+                        </div>
+                      </div>
+                      <div class="col-md-3" style="float:right;">
+                
+                              <a href="javascript:;" class="btn btn-danger" style="margin-top: 37px;" onclick="removeAdditionRow(this)"><i class="fa fa-trash"></i></a>
+                      </div>
+                                    
+
+                    </div>
+           {%endfor%}
+            {% endif %}
+
+    <div id="newAdditionRow">
+
+                    </div>
+    
+    <div class="row mt-3">
+        <div class="col-md-12 text-right">
+            <a href="javascript:;" class="btn btn-primary" onclick="addAdditionRow()"><i class="fa fa-plus" title="Add More Lead"></i></a>
+        </div>
+    </div> 
+     
+    <hr style="height:20px; width:100%; color:black;">
+       
+    
+    <div class="row mt-3">
+      {% comment %} left side view {% endcomment %}
+      <div class="col-sm-6">
+        <div class="row">
+         
+          
+          
+        </div>
+       
+          
+          
+        </div>
+        
+        
+       
+   
+        </div>
+        
+      </div>
+      <!-- end Employee Payroll Master -->
+      
+    </div>
+  </div>
+</div>
+<div class="overlayModal" id="addOrganisationModal" data-keyboard="false" data-backdrop="static">
+                                
+</div>
+<script>
+function addFixedRow(){
+            
+            count = $('.fixed_row').length
+            new_count = count;
+            newFixedRow = `
+             <div class="row fixed_row">
+                      <div class="col-md-3">
+                        <div class="col-md-12 p-0">
+                          <div class="col-md-12 p-0">
+                            
+                            <h6 class="mt-2 mb-0" style="display: inline-block;">
+                              Fixed Type
+                            </h6>
+                          </div>
+                           <div class="col-md-12 mt-2 p-0">
+                           <select class="inputField selectField" style="width: 100%;height:20;" name="fixed_type_name[]" id="fixed_type_`+new_count+`"" >
+                            <option value="">Select Type</option>
+                            {% for fixed in fixed_type %}
+                            <option value="{{fixed.id}}">{{fixed.salary_head_name}}</option>
+                            {% endfor %}
+                            
+                        </select>
+                         <label class="error_msg float-right" id="fixed_type_error_`+new_count+`"></label>
+                         </div>
+                        </div>
+                      </div>
+                      <div class="col-md-2">
+                        <div class="col-md-12 p-0">
+                          <div class="col-md-12 p-0">
+                            
+                            <h6 class="mt-2 mb-0" style="display: inline-block;">
+                               % In
+                            </h6>
+                          </div>
+                          <div class="col-md-12 p-0 mt-2">
+                            <input class="inputField" type="text" placeholder="% value " name="per_value[]" id="per_value_`+new_count+`"  onkeyup="calculatePerToValue();" value="" style="width:100%" />
+                              <label class="error_msg float-left" id="per_value_error_`+new_count+`"></label>
+                          </div>
+                        </div>
+                      </div>
+                        <div class="col-md-3">
+                        <div class="col-md-12 p-0">
+                          <div class="col-md-12 p-0">
+                            
+                            <h6 class="mt-2 mb-0" style="display: inline-block;">
+                              Value(Of Monthly CTC)
+                            </h6>
+                          </div>
+                          <div class="col-md-12 p-0 mt-2">
+                            <input class="inputField" readonly style="background-color:lightgrey;" type="text" placeholder="" name="value_on_ctc[]" id="value_`+new_count+`"  onkeyup="calculateCTCToGrossSalary();"  style="width:80%" />
+                              <label class="error_msg float-left" id="value_error_`+new_count+`"></label>
+                          </div>
+                        </div>
+                      </div>
+                        <div class="col-md-2">
+                            <div class="col-md-12 p-0">
+                              <div class="col-md-12 p-0">
+                                
+                                <h6 class="mt-2 mb-0" style="display: inline-block;">
+                                Currency Type
+                                </h6>
+                              </div>
+                                <div class="col-md-12 mt-2 p-0">
+                                    <select class="inputField selectField" style="width: 100% !important;" name="currancy_code[]" id="currancy_code_`+new_count+`" >
+                                        {% for currancy in currency_code %}
+                                        <option value="{{currancy.id}}" {% if currancy.currency_code == 'QAR' %} selected{% endif %}>{{currancy.currency_code}}</option>
+                                        {% endfor %}
+                                    </select>
+                                    <label class="error_msg float-right" id="currancy_code_error_`+new_count+`"></label>
+                                </div>
+                              </div>
+                          </div>
+                <div class="col-md-2" style="float:right;">
+                
+                <a href="javascript:;" class="btn btn-danger" style="margin-top: 37px;" onclick="removeFixedRow(this)"><i class="fa fa-trash"></i></a>
+        </div>
+        
+                    </div>
+
+               
+            `;
+            
+            $('#addFixedRow').append(newFixedRow);
+            
+            $(".selectField").select2();
+            $("[name='suggested_iso[]']").select2({placeholder:'Select'});
+            
+       
+            
+        }
+         $(".selectField").select2();
+        function addAdditionRow(){
+            count = $('.addition_row').length
+            new_count = count;
+            
+            newAdditionRow = `
+             <div class="row addition_row">
+                      <div class="col-md-3">
+                        <div class="col-md-12 p-0">
+                          <div class="col-md-12 p-0">
+                            
+                            <h6 class="mt-2 mb-0" style="display: inline-block;">
+                              Addition Type
+                            </h6>
+                          </div>
+                           <div class="col-md-12 mt-2 p-0">
+                           <select class="inputField selectField" style="width: 100%;height:20;" name="addition_type[]" id="addition_type_`+new_count+`"" >
+                            <option value="">Select Type</option>
+                            {% for addition in addition_type %}
+                            <option value="{{addition.id}}">{{addition.salary_head_name}}</option>
+                            {% endfor %}
+                            
+                        </select>
+                        <label class="error_msg float-right" id="addition_type_error_`+new_count+`"></label>
+                         </div>
+                        </div>
+                      </div>
+                      <div class="col-md-3" style="float:right;">
+                
+                <a href="javascript:;" class="btn btn-danger" style="margin-top: 37px;" onclick="removeAdditionRow(this)"><i class="fa fa-trash"></i></a>
+        </div>
+                      
+
+                    </div>
+
+               
+            `;
+            
+            $('#newAdditionRow').append(newAdditionRow);
+            
+            $(".selectField").select2();
+            $("[name='suggested_iso[]']").select2({placeholder:'Select'});
+            
+       
+            
+        }
+      $(".selectField").select2();
+  $(document).ready(function () {
+    
+    // Asynchronously Load the map API 
+    var script = document.createElement('script');
+    script.src = "//maps.googleapis.com/maps/api/js?libraries=places&key={{google_app_key}}&callback=initMap";
+    document.body.appendChild(script);
+    $('#pf').hide()
+    $('#tds').hide()
+    var pf = $('#pff').val();
+    var tds = $('#tdss').val();
+    updateToggleTdsPf(pf,tds);
+  });
+  function initMap() {
+    var map;
+    var bounds = new google.maps.LatLngBounds();
+    var mapOptions = {
+      mapTypeId: 'roadmap'
+    };
+    
+    // Display a map on the web page
+    map = new google.maps.Map(document.getElementById("ajax_maps"), mapOptions);
+    map.setTilt(50);
+    
+    // Multiple markers location, latitude, and longitude
+    var markers = [
+    {% for user_coordinate in user_coordinates %}
+    {% if user_coordinate.coordinate.latitude %}
+    ["{{user_coordinate.coordinate.latitude}}", "{{user_coordinate.coordinate.longitude}}", "{{user_coordinate.distributor_ss_name}}"],
+    {% endif %}
+    {% endfor %}
+    ];
+    
+    // Info window content
+    var infoWindowContent = [
+    {% for user_coordinate in user_coordinates %}
+    {% if user_coordinate.coordinate.latitude %}
+    ['<div class="info_content" style="padding:20px;line-height: 23px;background:#089000;color: #fff; border-radius:10px;">' +
+      '<h3 style="border-bottom:1px solid #ddd; margin:0 1px 7px 0;"><i class="fa fa-user"></i> {{user_coordinate.distributor_ss_name}}</h3>' +
+      '<p>Latitude: {{user_coordinate.coordinate.latitude}}, Longitude: {{user_coordinate.coordinate.longitude}}</p>' +
+      '</div>'],
+      {% endif %}
+      {% endfor %}
+      ];
+      
+      // Add multiple markers to map
+      var infoWindow = new google.maps.InfoWindow(), marker, i;
+      
+      // Place each marker on the map  
+      for( i = 0; i < markers.length; i++ ) {
+        var position = new google.maps.LatLng(markers[i][0], markers[i][1]);
+        bounds.extend(position);
+        marker = new google.maps.Marker({
+          position: position,
+          map: map,
+          title: markers[i][2],
+          icon: 'static/img/png/geo.gif'
+        });
+        
+        // Add info window to marker    
+        google.maps.event.addListener(marker, 'click', (function(marker, i) {
+          return function() {
+            infoWindow.setContent(infoWindowContent[i][0]);
+            infoWindow.open(map, marker);
+          }
+        })(marker, i));
+        
+        // Center the map to fit all markers on the screen
+        map.fitBounds(bounds);
+      }
+      
+      // Set zoom level
+      var boundsListener = google.maps.event.addListener((map), 'bounds_changed', function(event) {
+        this.setZoom(16);
+        google.maps.event.removeListener(boundsListener);
+      });
+      
+    }
+    // Load initialize function
+function calculateMonthlyCTC(){
+      var ctc          = $('#employee_ctc').val();
+      monthly_ctc =  Math.round(ctc/12)
+      $('#employee_monthly_ctc').val(monthly_ctc); 
+     }
+function calculatePerToValue(){
+      console.log('jhgsdgys')
+      count = $('.fixed_row').length
+      for (var i = 0; i < count; i++) {
+      var ctc          = $('#employee_ctc').val();
+      monthly_ctc =  Math.round(ctc/12)
+      var per_value          = $('#per_value_' + i).val()
+      real_value =  Math.round((monthly_ctc*per_value)/100)
+      $('#value_'+ i).val(real_value); 
+
+      }
+     }
+     function calculateCTCToGrossSalary(){
+      
+      var apipercent = $('#PLI_Percentage').val();
+     // var employeespcl = $('#employee_spcl').val();
+
+      var employeespclt = $('#employee_spclt').val();
+
+      var employeehrap = $('#employee_hrap').val();
+      var employeepf = $('#employee_pf').val();
+      var employeerole = $('#employeerole').val();
+      var ctc          = $('#employee_ctc').val();
+      if(employeepf == ""){
+        employeepf = '0'
+     }
+      if(employeehrap == ""){
+        employeehrap = '0'
+     }
+      if(employeespclt == ""){
+        employeespclt = '0'
+     }
+      if(ctc == ""){
+        ctc = '0'
+      }
+      if(apipercent == ""){
+        apipercent = '0'
+      }
+      ctc           = parseInt(ctc)
+      apipercent    = parseInt(apipercent)
+      employeespclt = parseInt(employeespclt)
+      employeepf    = parseInt(employeepf)
+      employeehrap  = parseInt(employeehrap)
+      if (ctc > 0 && employeespclt > 0){
+          if (employeerole == "25"){
+              if (ctc >=500000){
+                var pli =Math.round(ctc*10/100)
+              }else{
+                var pli = 0
+              }  
+          }else{
+              if (ctc >=500000){
+                if (apipercent!=0){
+                  var pli =Math.round(ctc*apipercent/100)
+                }else{
+                  var pli = 0
+                }
+              }else{
+                var pli = 0
+              }
+          }
+          var basic_salary = Math.round(((ctc-pli)*40)/100)
+          var gratuityamount = Math.round((basic_salary*4.81)/100) 
+          var emp_hra = Math.round((basic_salary*employeehrap)/100)
+          var basic_spcl = basic_salary +employeespclt
+          if (basic_salary > 180000){
+              var pfamount = Math.round(basic_salary*12/100)
+          } else if((basic_spcl)> 180000){
+            var pfamount = Math.round(180000*12/100)
+          }else{
+            var pfamount = Math.round(basic_spcl*12/100)
+          }
+        }
+      else{
+        var basic_salary = 0
+        var pli = 0
+        var pfamount = 0
+        var gratuityamount = 0
+        var emp_hra = 0
+      }
+      var tfp = basic_salary+pfamount+gratuityamount
+      //if (employeehrap > 0){
+       //  var emp_spl = ctc-tfp+emp_hra
+      //}else{
+      //  var emp_spl = ctc - tfp
+     // }
+      var month_basic = Math.round(basic_salary/12)
+      var month_pf = Math.round(pfamount/12)
+      var month_gratuityamount = Math.round(gratuityamount/12)
+      var month_tfp = Math.round(tfp/12)
+      var month_hra = Math.round(emp_hra/12)
+      var month_spl = Math.round(employeespclt/12)
+      var month_pli = Math.round(pli/12)
+      
+      $('#employee_pli').val(pli); 
+      $('#employee_pli_mt').val(month_pli); 
+      $('#pli_percent').val(apipercent); 
+      $('#employee_basic').val(basic_salary); 
+      $('#employee_basic_mt').val(month_basic); 
+      $('#employee_pf').val(pfamount); 
+      $('#employee_pf_mt').val(month_pf); 
+      $('#employee_gratuity').val(gratuityamount); 
+      $('#employee_gratuity_mt').val(month_gratuityamount); 
+      $('#employee_tfp').val(tfp); 
+      $('#employee_tfp_mt').val(month_tfp); 
+      $('#employee_hra').val(emp_hra); 
+      $('#employee_hra_mt').val(month_hra); 
+      $('#employee_spcl').val(employeespclt); 
+      $('#employee_spcl_mt').val(month_spl); 
+    }
+
+    function saveEmpPayrollMaster(employee_id,status){
+       fixedcounts = $('.fixed_row').length
+        additioncount = $('.addition_row').length
+        var emp_ctc           = $('#employee_ctc').val();
+        var ctc_currancy_code = $('#ctc_currancy_code').val();
+        var employee_monthly_ctc           = $('#employee_monthly_ctc').val();
+        if (fixedcounts > 0){
+           
+          var fixed_types = $("[name='fixed_type_name[]']").map(function() {
+            return $(this).val();
+          }).get();
+          
+          var per_values = $("[name='per_value[]']").map(function() {
+            return $(this).val();
+          }).get();
+          var values_on_ctc = $("[name='value_on_ctc[]']").map(function() {
+            return $(this).val();
+          }).get();
+          var currancy_codes = $("[name='currancy_code[]']").map(function() {
+            return $(this).val();
+          }).get();
+        }else{
+          var fixed_types          =  []
+          var per_values           =  []
+          var values_on_ctc        =  []
+        }
+        if (additioncount > 0){
+          var addition_types = $("[name='addition_type[]']").map(function() {
+            return $(this).val();
+          }).get();
+          
+        }
+        else{
+          var addition_types        =  []
+        }
+        console.log(per_values)
+        if (status == 0){
+          var url  = "{% url 'src:user-salary-slip' %}"
+        }else{
+          var url  = "{% url 'src:user-salary-slip' %}"
+        }
+        showLoader();
+        $.ajax({
+          url    : url,
+          method : 'POST',
+          data   : {
+                  employee_id : employee_id,
+                  emp_ctc:emp_ctc,
+                  currancy_code:currancy_codes,
+                  ctc_currancy_code:ctc_currancy_code,
+                  employee_monthly_ctc : employee_monthly_ctc,
+                  fixed_types:fixed_types,
+                  per_values:per_values,
+                  values_on_ctc:values_on_ctc,
+                  addition_types:addition_types,
+                  csrfmiddlewaretoken : '{{ csrf_token }}'
+                },
+          success: function (response) {
+            
+            hideLoader();
+            openToaster("success",response.message);
+            $("#updateButton").html('');
+            var updateButoonCode = `<button class="btn btn-save float-right" type="submit" onclick="updatePayrollMaster('{{employee_id}}' ,'1');">Update </button>`
+            $("#updateButton").append(updateButoonCode);
+
+          }
+        });
+
+    }
+
+    function updatePayrollMaster(employee_id,status){
+      fixedcount = $('.fixed_row').length
+      additioncount = $('.addition_row').length
+      console.log(additioncount)
+      var emp_ctc           = $('#employee_ctc').val();
+      var employee_monthly_ctc      = $('#employee_monthly_ctc').val();
+     
+      
+      var error_count = 0
+      document.getElementById('employee_ctc_error').innerHTML = '';
+      $('#employee_ctc').css("border", "");
+      if (emp_ctc == null || emp_ctc == "" ||emp_ctc == "0" ){
+          error_count = error_count + 1
+          document.getElementById('employee_ctc_error').innerHTML = 'Please enter Employee CTC.*';
+          $('#employee_ctc').css("border", "1px solid #db8305");
+      }
+      $('#fixed_type_error_' + i).css("border", "");
+      if ($('#ctc_currancy_code').val() == null || $('#ctc_currancy_code').val() == "") {
+          $('#ctc_currancy_code').parent().find('.error_msg').text("Please Select Fixed Type");
+          $('#ctc_currancy_code').siblings(".select2-container").css("border-radius", "0.6rem").css("border", "1px solid #db8305");
+          error_count = error_count + 1;
+      }
+     
+      for (var i = 0; i < fixedcount; i++) {
+      $('#fixed_type_error_' + i).css("border", "");
+      if ($('#fixed_type_' + i).val() == null || $('#fixed_type_' + i).val() == "") {
+          $('#fixed_type_' + i).parent().find('.error_msg').text("Please Select Fixed Type");
+          $('#fixed_type_' + i).siblings(".select2-container").css("border-radius", "0.6rem").css("border", "1px solid #db8305");
+          error_count = error_count + 1;
+      }
+      $('#per_value_error_' + i).css("border", "");
+      if ($('#per_value_' + i).val() == null || $('#per_value_' + i).val() == "" ) {
+          $('#per_value_' + i).parent().find('.error_msg').text("Please Enter Per Value");
+          $('#per_value_' + i).css("border-radius", "0.6rem").css("border", "1px solid #db8305");
+          error_count = error_count + 1;
+      }
+    
+      }
+      for (var j = 0; j < additioncount; j++) {
+      $('#addition_type_error_' + j).css("border", "");
+      if ($('#addition_type_' + j).val() == null || $('#addition_type_' + j).val() == "") {
+          $('#addition_type_' + j).parent().find('.error_msg').text("Please Select addition Type");
+          $('#addition_type_' + j).siblings(".select2-container").css("border-radius", "0.6rem").css("border", "1px solid #db8305");
+          error_count = error_count + 1;
+      }
+     
+      }
+      if(status == 0){
+        var msg = 'Do you want to save ?'
+      }else{
+        var msg = 'Do you want to update ?'
+      }
+        if(error_count == 0){
+
+        $.confirm({
+              title: 'Confirm!',
+              theme:'material',
+              content: msg,
+              buttons: {
+                  confirm: {
+                      btnClass: 'btn-blue',
+                      action: function(){
+                          saveEmpPayrollMaster(employee_id,status);
+                      }
+                  },
+                  cancel: {
+                      btnClass: 'btn-red',
+                      action: function(){
+                          
+                      }
+                  },
+                  
+                  
+              }
+        });
+      }
+      }
+  function removeFixedRow(element){
+            $(element).parents(':last .fixed_row').remove();
+            
+        }
+        function removeAdditionRow(element){
+            $(element).parents(':last .addition_row').remove();
+           
+        }
+    function updateToggleTdsPf(pf,tds){
+      if(pf > 0){
+        $('#pf').show();
+      }
+      if(tds > 0){
+        $('#tds').show();
+      }
+    }
+    
+    function addLeaveLedger(employee_id) {
+      
+      $('#addOrganisationModal').html('');
+     
+      showLoader();
+      url= "{% url 'src:add-leave-ledger' '1' %}",
+      url = url.replace('1',employee_id)
+      $.ajax({
+          url: url,
+          //url = url.replace('1',employee_id)
+          method: 'GET',
+          data: {},
+          success: function (data) {
+              hideLoader();
+              $("#addOrganisationModal").show();
+              $('#addOrganisationModal').html(data);
+              $('.selectField').select2();
+          },
+          error: function (err) {
+              console.log(err)
+          }
+      });
+    }
+    
+  </script>

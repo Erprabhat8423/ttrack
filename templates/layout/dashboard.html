@@ -1,0 +1,1193 @@
+{% extends 'layout/layout.html' %}
+
+{% load helper_tags %}
+
+{% block content %}
+
+{% load static %}
+
+{% block style %}
+<link rel="stylesheet" href="{% static 'css/paper-dashboard.css' %}" />
+{% endblock %}
+<style>
+    .widget-cards {
+        padding-top: 5px;
+        padding-bottom: 5px;
+        padding-left: 10px;
+        padding-right: 10px;
+    }
+
+    .activetab {
+        color: #fff;
+        background: #009cff;
+    }
+
+    .pull-left {
+        list-style: none;
+        cursor: pointer;
+    }
+
+    body {
+        background-color: #f9f9fa
+    }
+
+    @media (min-width:992px) {
+        .page-container {
+            max-width: 1140px;
+            margin: 0 auto
+        }
+
+        .page-sidenav {
+            display: block !important
+        }
+    }
+
+    .padding {
+        padding: 2rem
+    }
+
+    .w-32 {
+        width: 32px !important;
+        height: 32px !important;
+        font-size: .85em
+    }
+
+    .tl-item .avatar {
+        z-index: 2
+    }
+
+    .circle {
+        border-radius: 500px
+    }
+
+    .gd-warning {
+        color: #fff;
+        border: none;
+        background: #f4c414 linear-gradient(45deg, #f4c414, #f45414)
+    }
+
+    .timeline {
+        position: relative;
+        border-color: rgba(160, 175, 185, .15);
+        padding: 0;
+        margin: 0
+    }
+
+    .p-4 {
+        padding: 1.5rem !important
+    }
+
+    .block,
+    .card {
+        background: #fff;
+        border-width: 0;
+        border-radius: .25rem;
+        /*box-shadow: 0 1px 3px rgba(0, 0, 0, .05);*/
+        margin-bottom: 1.5rem
+    }
+
+    .mb-4,
+    .my-4 {
+        margin-bottom: 1.5rem !important
+    }
+
+    .tl-item {
+        border-radius: 3px;
+        position: relative;
+        display: -ms-flexbox;
+        display: flex
+    }
+
+    .tl-item>* {
+        padding: 10px 10px 10px 10px;
+    }
+
+    .tl-item .avatar {
+        z-index: 2
+    }
+
+    .tl-item:last-child .tl-dot:after {
+        display: none
+    }
+
+    .tl-item.active .tl-dot:before {
+        border-color: #448bff;
+        box-shadow: 0 0 0 4px rgba(68, 139, 255, .2)
+    }
+
+    .tl-item:last-child .tl-dot:after {
+        display: none
+    }
+
+    .tl-item.active .tl-dot:before {
+        border-color: #448bff;
+        box-shadow: 0 0 0 4px rgba(68, 139, 255, .2)
+    }
+
+    .tl-dot {
+        position: relative;
+        border-color: rgba(160, 175, 185, .15)
+    }
+
+    .tl-dot:after,
+    .tl-dot:before {
+        content: '';
+        position: absolute;
+        border-color: inherit;
+        border-width: 5px;
+        border-style: solid;
+        border-radius: 50%;
+        width: 10px;
+        height: 10px;
+        top: 15px;
+        left: 50%;
+        transform: translateX(-50%)
+    }
+
+    .tl-dot:after {
+        width: 0;
+        height: auto;
+        top: 25px;
+        bottom: -15px;
+        border-right-width: 0;
+        border-top-width: 0;
+        border-bottom-width: 0;
+        border-radius: 0
+    }
+
+    tl-item.active .tl-dot:before {
+        border-color: #448bff;
+        box-shadow: 0 0 0 4px rgba(68, 139, 255, .2)
+    }
+
+    .tl-dot {
+        position: relative;
+        border-color: rgba(160, 175, 185, .15)
+    }
+
+    .tl-dot:after,
+    .tl-dot:before {
+        content: '';
+        position: absolute;
+        border-color: inherit;
+        border-width: 2px;
+        border-style: solid;
+        border-radius: 50%;
+        width: 10px;
+        height: 10px;
+        top: 15px;
+        left: 50%;
+        transform: translateX(-50%)
+    }
+
+    .tl-dot:after {
+        width: 0;
+        height: auto;
+        top: 25px;
+        bottom: -15px;
+        border-right-width: 0;
+        border-top-width: 0;
+        border-bottom-width: 0;
+        border-radius: 0
+    }
+
+    .tl-content p:last-child {
+        margin-bottom: 0
+    }
+
+    .tl-date {
+        font-size: .85em;
+        margin-top: 2px;
+        min-width: 100px;
+        /*max-width: 100px*/
+    }
+
+    .avatar {
+        position: relative;
+        line-height: 1;
+        border-radius: 500px;
+        white-space: nowrap;
+        font-weight: 700;
+        border-radius: 100%;
+        display: -ms-flexbox;
+        display: flex;
+        -ms-flex-pack: center;
+        justify-content: center;
+        -ms-flex-align: center;
+        align-items: center;
+        -ms-flex-negative: 0;
+        flex-shrink: 0;
+        border-radius: 500px;
+        box-shadow: 0 5px 10px 0 rgba(50, 50, 50, .15)
+    }
+
+    .b-init {
+        border-color: #309AB2 !important;
+    }
+
+    .b-progress {
+        border-color: #D4B712 !important;
+    }
+
+    .b-win {
+        border-color: #4EA557 !important;
+    }
+
+    .b-lost {
+        border-color: #E24542 !important;
+    }
+
+    .box_lead_stats {
+        padding: 20px 0;
+        background: #fff;
+        border-radius: 20px;
+    }
+
+    .ps-0 {
+        padding-right: 0;
+    }
+    p.widget-cards-category span {
+    font-size: 10px;
+    font-weight:600;
+}
+.total_lead_text{
+        font-size: 16px;
+    font-weight: 600;
+}
+.font_size_14{
+    font-size:12px;
+}
+
+/**/
+.tl-content {
+    box-shadow: 0 6px 10px -4px rgba(0, 0, 0, 0.15);
+    margin: 4px 5px 4px 3px;
+    border-radius: 5px;
+    padding: 6px 6px 3px 6px;
+    width:100%;
+}
+  #chartdiv {
+        width: 100%;
+        height: 400px;
+        max-width: 100%;
+
+    }
+    #chartdiv1 {
+      width: 100%;
+      height: 400px;
+    }
+
+    /*------------------------------------------------------------------------*/
+</style>
+<div class="row" id="containerHeight" >
+    <div class="col-sm-12" id="topRow">
+        <h6><b>{{page_title}} &nbsp;&nbsp;</b><span
+                            class="fa fa-star add_to_fav {% checkedFavorite page_title request.get_full_path %}"
+                            onclick="updateFavorite(this,'{{page_title}}','{{ request.get_full_path }}')"></span></h6>
+    </div>
+    <div class="col-md-8 pr-md-0 h-100" >
+        <div class="primaryContainer h-100" id="mainbox">
+            <!--<div class="row mb-2" id="topRow">-->
+            <!--    <div class="col-md-5 p-md-0">-->
+                    
+            <!--    </div>-->
+            <!--</div>-->
+            <div class="box_lead_stats" id="containerHeight">
+                <div class="row">
+                    <div class="col-12">
+                        <div class="widget-cards-header ">
+                            <h6 class="widget-cards-title"><img style="width:20px; margin-right:5px" src="/static/img/svg/lead_stats.svg"><b>Lead Stats</b></h6>
+                        </div>
+                    </div>
+                    <div class="col-lg-4 col-md-4 col-sm-12 ps-0">
+                        <div class="widget-cards ">
+                            <div class="numbers">
+                                <p class="total_lead_text">Total Leads</p>
+                                <p class="widget-cards-title"><a href="filter-lead/0" target="_blank">{{total_leads}}</a><p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-2 col-md-2 col-sm-12 ps-0">
+                        <div class="widget-cards ">
+                            <div class="numbers">
+                                <p class="widget-cards-category">Initiated</p>
+                                <p class="widget-cards-title"><a href="filter-lead/1" target="_blank">{{initiated}}</a>
+                                    <p> 
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-2 col-md-2 col-sm-12 ps-0">
+                        <div class="widget-cards ">
+                            <div class="numbers">
+                                <p class="widget-cards-category">In Progress</p>
+                                <p class="widget-cards-title"><a href="filter-lead/2" target="_blank">{{in_progress}}</a>
+                                    <p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-2 col-md-2 col-sm-12 ps-0">
+                        <div class="widget-cards ">
+                            <div class="numbers">
+                                <p class="widget-cards-category">Closed <span style="color:#4EA557;">(Win)</span></p>
+                                <p class="widget-cards-title"><a href="filter-lead/3" target="_blank">{{close_win}}</a>
+                                    <p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-2 col-md-2 col-sm-12">
+                        <div class="widget-cards ">
+                            <div class="numbers">
+                                <p class="widget-cards-category">Closed <span style="color:#E24542;">(Lost)</span></p>
+                                <p class="widget-cards-title"><a href="filter-lead/4" target="_blank">{{close_Lost}}</a>
+                                    <p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                </div>
+                    <div class="row ">
+                        <div class="col-12 col-sm-6 col-lg-6 col-md-6 ">
+                            <div class="row " style="box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px; display: flex; align-items: space-between;">
+                                
+                                <div class="col-lg-3 col-md-3 col-sm-3 col-12 mt-2" style="width:100%;">
+                                    <select name="fy_year" class="inputField selectField" onchange="updateChart()" id="fy_id"  style="width:100%;">
+                                        <option value="">Please Select</option>
+                                        {% for year in fy_year %}
+                                        <option value="{{year.id}}" {% if year.id == fy_id %} selected {% endif %}>{{year.financial_year}}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                 <div class="col-lg-2 col-md-2 col-sm-2 col-12 mt-2" style="">
+                                      <select name="quarter" class="inputField selectField" onchange="updateChart()" id="q_id" style="margin-right: 10px;">
+                                        <option value="1" selected>Q1</option>
+                                        <option value="2">Q2</option>
+                                        <option value="3">Q3</option>
+                                        <option value="4">Q4</option>
+                                    </select>
+                                 </div>
+                                <div class="col-lg-4 col-md-4 col-sm-4 col-12  mt-2" style="">
+                                    <select name="employee" onchange="updateChart()" class="inputField selectField" style="outline: none; margin-right: 10px;" id="employee_id">
+                                        <option value="">Please Select</option>
+                                        {% for employee in employees %}
+                                        <option value="{{employee.id}}">{{employee.first_name}}{{employee.middle_name}} {{employee.last_name}}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                <div class="col-lg-3 col-md-3 col-sm-3 col-12  mt-2" style="">
+                                    <select name="lead_deal" class="inputField selectField" onchange="updateChart()" id="filter_id" style="margin-right: 10px;">
+                                        <option value="0">Lead</option>
+                                        <option value="1">Revenue</option>
+                                    </select>
+                                </div>
+                                <div id="chartdivmsg" style="position:fixed">
+                                </div>
+                                <div id="chartdiv"></div>
+                            </div>
+                        </div>
+                        <div class="col-12 col-sm-6 col-lg-6 col-md-6 ">
+                            <div class="row " style="box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px; display: flex; align-items: space-between;;">
+                                <div class="col-lg-4 col-md-4 col-sm-4 col-12  mt-2" style="">
+                                    <select name="fy_year1" class="inputField selectField" onchange="updateChart1()" id="fy_id1" >
+                                        <option value="">Please Select</option>
+                                        {% for year in fy_year %}
+                                        <option value="{{year.id}}" {% if year.id == fy_id %} selected {% endif %}>{{year.financial_year}}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                <div class="col-lg-4 col-md-4 col-sm-4 col-12  mt-2" style="">
+                                    <select name="employee1" onchange="updateChart1()" class="inputField selectField" style="outline: none; " id="employee_id1">
+                                        <option value="">Please Select</option>
+                                        {% for employee in employees %}
+                                        <option value="{{employee.id}}">{{employee.first_name}}{{employee.middle_name}} {{employee.last_name}}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                <div class="col-lg-4 col-md-4 col-sm-4 col-12  mt-2" style="">
+                                    <select name="lead_deal1" class="inputField selectField" onchange="updateChart1()" id="filter_id1">
+                                        <option value="0">Lead</option>
+                                        <option value="1">Revenue</option>
+                                    </select>
+                                </div>
+                                <div id="chartdiv1"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+        </div>
+    </div>
+    <div class="col-md-4 h-100" >
+        <div class="primaryContainerBG h-100" id="detailsBox" style="overflow: hidden;">
+            <div class="row bootstrap snippets bootdey">
+                <div class="col-md-12 col-xs-12 col-md-offset-6 p-0">
+                    <div class="panel" id="daily-feed">
+                        <div class="panel-heading">
+                            <h3 class="panel-title"><img style="width:20px;" src="/static/img/svg/activity_feeds.svg" class="tableRowIcon">
+                                Activity Feeds
+                                <!-- <span class="pull-right label label-round label-warning">10 Messages</span> -->
+                            </h3>
+                            <hr />
+                        </div>
+                        <div class="panel-body infinite-scroll" style="max-height: 750px; overflow:auto">
+                            <ul class="list-group list-group-dividered list-group-full infinite-scroll">
+                                <!----------------------------------------------------------------------------------------->
+                                <div class="page-content page-container" id="page-content">
+                                    <div class="row">
+                                        <div class="timeline block mb-4">
+                                            {% if lead_folloups %}
+                                            {% for lead_folloup in lead_folloups %}
+                                            {% if lead_folloup.lead_status == 1 %}
+                                            <div class="tl-item active">
+                                                
+                                                <div class="tl-dot b-init"></div>
+                                                <div class="tl-content">
+                                                    <div class="font_size_14" style="font-weight:bolder;">A Lead <a href="filter-leads/{{lead_folloup.lead_id}}" target="_blank">({{lead_folloup.lead_code}})</a>
+                                                        has been created successfully.</div>
+                                                    <div class="col-sm-12"
+                                                        style=" justify-content: space-between;padding:0;">
+                                                        <span class="text-muted mt-1 font-italic"
+                                                            style="font-size: .75em"><b>Remark:</b>
+                                                            {{lead_folloup.remark}}</span>
+                                                    </div>
+                                                    <div class="col-sm-12"
+                                                        style=" justify-content: space-between;padding:0;">
+                                                        <span class="text-muted mt-1 font-italic"
+                                                            style="font-size: .75em"><b>Added By:</b>
+                                                            {{lead_folloup.employee_name}}</span>
+                                                    </div>
+                                                    <div class="col-sm-12 tl-date text-muted mt-1" style="justify-content:flex-end;padding:0; text-align: right;">
+                                                        <span class="text-muted mt-1 font-italic" style="font-size:.85em">{{ lead_folloup.created_at|date:"j F Y g:i A" }}</span>
+                                                    </div>
+
+                                                </div>
+                                            </div>
+                                            {% elif lead_folloup.lead_status == 2 %}
+                                            <div class="tl-item active">
+                                                
+                                                <div class="tl-dot b-init"></div>
+                                                <div class="tl-content">
+                                                    <div  class="font_size_14" style="font-weight:bolder;">New follow Up has been added for
+                                                        lead <a href="filter-leads/{{lead_folloup.lead_id}}" target="_blank">({{lead_folloup.lead_code}}).</a></div>
+                                                    <div class="col-sm-12"
+                                                        style=" justify-content: space-between; padding:0;">
+                                                        <span class="text-muted mt-1 font-italic"
+                                                            style="font-size: .75em"><b>Remark:</b>
+                                                            {{lead_folloup.remark}}</span>
+
+                                                    </div>
+                                                    <div class="col-sm-12"
+                                                        style=" justify-content: space-between;padding:0;">
+                                                        <span class="text-muted mt-1 font-italic"
+                                                            style="font-size: .75em"><b>Added By:</b>
+                                                            {{lead_folloup.employee_name}}</span>
+                                                    </div>
+                                                    <div class="col-sm-12 tl-date text-muted mt-1" style="justify-content:flex-end;padding:0; text-align: right;">
+                                                        <span class="text-muted mt-1 font-italic" style="font-size:.85em">{{ lead_folloup.created_at|date:"j F Y g:i A" }}</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            {% elif lead_folloup.lead_status == 3 %}
+                                            <div class="tl-item active">
+                                                
+                                                <div class="tl-dot b-init"></div>
+                                                <div class="tl-content">
+                                                    <div class="font_size_14" style="font-weight:bolder;">Congratulations! Lead
+                                                        <a href="filter-leads/{{lead_folloup.lead_id}}" target="_blank">({{lead_folloup.lead_code}})</a> has been closed(Win) successfully.
+                                                    </div>
+                                                    <div class="col-sm-12"
+                                                        style=" justify-content: space-between; padding:0;">
+                                                        <span class="text-muted mt-1 font-italic"
+                                                            style="font-size: .75em"><b>Remark:</b>
+                                                            {{lead_folloup.remark}}</span>
+                                                    </div>
+                                                    <div class="col-sm-12"
+                                                        style=" justify-content: space-between;padding:0;">
+                                                        <span class="text-muted mt-1 font-italic"
+                                                            style="font-size: .75em"><b>Added By:</b>
+                                                            {{lead_folloup.employee_name}}</span>
+                                                    </div>
+                                                    <div class="col-sm-12"
+                                                        style=" justify-content: space-between;padding:0;">
+                                                        <span class="text-muted mt-1 font-italic"
+                                                            style="font-size: .75em"><b>Deal Amount:</b> {% if lead_folloup.currency_code %}{{lead_folloup.currency_code}}{% endif %} {{lead_folloup.deal_amount}}</span>
+                                                    </div>
+                                                    <div class="col-sm-12 tl-date text-muted mt-1" style="justify-content:flex-end;padding:0; text-align: right;">
+                                                        <span class="text-muted mt-1 font-italic" style="font-size:.85em">{{ lead_folloup.created_at|date:"j F Y g:i A" }}</span>
+                                                    </div>
+
+                                                </div>
+                                            </div>
+                                            {% elif lead_folloup.lead_status == 4 %}
+                                            <div class="tl-item active">
+                                                
+                                                
+                                                <div class="tl-dot b-init"></div>
+                                                <div class="tl-content">
+                                                    <div class="font_size_14" style="font-weight:bolder;">Alas! Lead
+                                                        <a href="filter-leads/{{lead_folloup.lead_id}}" target="_blank">({{lead_folloup.lead_code}})</a> has been lost due to
+                                                        {{lead_folloup.reson_name}}.</div>
+                                                    <div class="col-sm-12"
+                                                        style=" justify-content: space-between; padding:0;">
+                                                        <span class="text-muted mt-1 font-italic"
+                                                            style="font-size: .75em"><b>Remark:</b>
+                                                            {{lead_folloup.remark}}</span>
+                                                    </div>
+                                                    <div class="col-sm-12"
+                                                        style=" justify-content: space-between;padding:0;">
+                                                        <span class="text-muted mt-1 font-italic"
+                                                            style="font-size: .75em"><b>Added By:</b>
+                                                            {{lead_folloup.employee_name}}</span>
+                                                    </div>
+                                                    <div class="col-sm-12 tl-date text-muted mt-1" style="justify-content:flex-end;padding:0; text-align: right;">
+                                                        <span class="text-muted mt-1 font-italic" style="font-size:.85em">{{ lead_folloup.created_at|date:"j F Y g:i A" }}</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            {% endif %}
+
+                                            {% endfor %}
+                                            {% include 'layout/paginator.html' with page=lead_folloups %}
+                                            {% else %}
+                                            <p style="color:gray;text-align: center;margin-left:150px;box-shadow: none !important;">No Activity Found...</p>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </div>
+                                <!----------------------------------------------------------------------------------------->
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    </main>
+    <div class="overlayModal" id="addUserModal" data-keyboard="false" data-backdrop="static">
+    </div>
+
+    {% endblock content %}
+    {% block script %}
+    <script src="{% static 'js/jquery.jscroll.min.js' %}"></script>
+    <!--<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>-->
+    <!--<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.bundle.min.js"></script>-->
+    <script>
+        $('div.pagination').hide();
+        $(function () {
+            $('div.pagination').hide();
+            $('.infinite-scroll').jscroll({
+                autoTrigger: true,
+                loadingHtml: '<div style="margin-top:10px; text-align:center"><i class="fa fa-spinner fa-spin" style="font-size:2rem"></div>',
+                padding: 0,
+                nextSelector: '.pagination span.active + span a',
+                contentSelector: 'ul.infinite-scroll',
+                data: {
+                    id: 1
+                },
+                callback: function () {
+                    $('div.pagination').remove();
+                }
+            });
+        })
+    </script>
+    
+   
+<!-- Resources -->
+<script src="https://cdn.amcharts.com/lib/5/index.js"></script>
+<script src="https://cdn.amcharts.com/lib/5/xy.js"></script>
+<script src="https://cdn.amcharts.com/lib/5/radar.js"></script>
+<script src="https://cdn.amcharts.com/lib/5/themes/Animated.js"></script>
+
+
+<!-- Chart code -->
+<script>
+    
+    var root1;
+
+    function createChart(total_lead_target,lead_win_total,projected_lead_target){
+        console.log(total_lead_target,'total_lead_target')
+        am5.ready(function() {
+
+
+            if (!root1) {
+                root1 = am5.Root.new("chartdiv1");
+                // Set themes
+                root1.setThemes([
+                    am5themes_Animated.new(root1)
+                ]);
+            }
+            
+            // Clear existing chart
+            root1.container.children.clear();
+            var chart = root1.container.children.push(am5radar.RadarChart.new(root1, {
+                panX: false,
+                panY: true,
+                startAngle: 180,
+                endAngle: 360,
+                radius: am5.percent(90),
+                layout: root1.verticalLayout
+            }));
+
+
+            // Colors
+            var colors = am5.ColorSet.new(root1, {
+                step: 2
+            });
+
+            // Axis
+            var color1 = colors.next();
+
+            var axisRenderer1 = am5radar.AxisRendererCircular.new(root1, {
+                radius: -10,
+                stroke: color1,
+                strokeOpacity: 0.3,
+                strokeWidth: 6,
+                inside: true,
+                minGridDistance: 70
+            });
+
+            axisRenderer1.grid.template.setAll({
+                 forceHidden: true,
+                 minGridDistance:false,
+                 minorGridEnabled: true,
+                 visible: false
+
+            });
+
+            axisRenderer1.ticks.template.setAll({
+                stroke: color1,
+                visible: false,
+                length: 10,
+                strokeOpacity: 1,
+                inside: true
+            });
+
+            axisRenderer1.labels.template.setAll({
+            radius: 15,
+            inside: true
+
+            });
+
+            var xAxis1 = chart.xAxes.push(am5xy.ValueAxis.new(root1, {
+                maxDeviation: 10,
+                min: 0,
+                max: total_lead_target  ,
+                strictMinMax: true,
+                renderer: axisRenderer1
+            }));
+
+
+            //var label1 = chart.seriesContainer.children.push(am5.Label.new(root1, {
+            //fill: am5.color(0xffffff),
+           // x: -100,
+            //y: -60,
+            //width: 100,
+            //centerX: am5.percent(50),
+           // textAlign: "center",
+           // centerY: am5.percent(50),
+           // fontSize: "2em",
+           // text: "0",
+          //  background: am5.RoundedRectangle.new(root1, {
+           //     fill: color1
+          //  })
+          //  }));
+
+            var axisDataItem1 = xAxis1.makeDataItem({
+            value: 0,
+            fill: color1,
+            name: "Achieved (" + lead_win_total + ")",
+            });
+
+            var clockHand1 = am5radar.ClockHand.new(root1, {
+            pinRadius: 14,
+            radius: am5.percent(98),
+            bottomWidth: 10
+            });
+
+            clockHand1.pin.setAll({
+            fill: color1
+            });
+
+            clockHand1.hand.setAll({
+            fill: color1
+            });
+
+            var bullet1 = axisDataItem1.set("bullet", am5xy.AxisBullet.new(root1, {
+            sprite: clockHand1
+            }));
+
+            xAxis1.createAxisRange(axisDataItem1);
+
+            axisDataItem1.get("grid").set("forceHidden", false);
+            axisDataItem1.get("tick").set("forceHidden", false);
+
+            // Axis
+            var color2 = colors.next();
+
+            var axisRenderer2 = am5radar.AxisRendererCircular.new(root1, {
+            //innerRadius: -40,
+             stroke: color2,
+             strokeOpacity: 1,
+             strokeWidth: 3,
+             minGridDistance: 50
+            });
+
+            axisRenderer2.grid.template.setAll({
+                forceHidden: true,
+                 minGridDistance:false,
+                 minorGridEnabled: false,
+
+            });
+
+            axisRenderer2.ticks.template.setAll({
+            stroke: color2,
+            visible: true,
+            length: 10,
+            strokeOpacity: 1
+            });
+
+            axisRenderer2.labels.template.setAll({
+            radius: 15
+            });
+
+            var xAxis2 = chart.xAxes.push(am5xy.ValueAxis.new(root1, {
+                maxDeviation: 10,
+                min: 0,
+                max: total_lead_target ,
+                strictMinMax: true,
+                renderer: axisRenderer2
+            }));
+
+            //var label2 = chart.seriesContainer.children.push(am5.Label.new(root1, {
+            //    fill: am5.color(0xffffff),
+            //    x: 100,
+            //    y: -60,
+            //    width: 100,
+            //    centerX: am5.percent(50),
+            //    textAlign: "center",
+            //    centerY: am5.percent(50),
+            //    fontSize: "2em",
+            //    text: "0",
+            //    background: am5.RoundedRectangle.new(root1, {
+            //            fill: color2
+            //        })
+           // }));
+
+
+            var axisDataItem2 = xAxis2.makeDataItem({
+            value: 0,
+            fill: color2,
+             name: "Projected (" + projected_lead_target + ")",
+            });
+
+            var clockHand2 = am5radar.ClockHand.new(root1, {
+            pinRadius: 10,
+            radius: am5.percent(98),
+            bottomWidth: 10
+            });
+
+            clockHand2.pin.setAll({
+            fill: color2
+            });
+
+            clockHand2.hand.setAll({
+            fill: color2
+            });
+
+            var bullet2 = axisDataItem2.set("bullet", am5xy.AxisBullet.new(root1, {
+            sprite: clockHand2
+            }));
+
+            xAxis2.createAxisRange(axisDataItem2);
+
+            axisDataItem2.get("grid").set("forceHidden", true);
+            axisDataItem2.get("tick").set("forceHidden", true);
+
+
+            // Legend
+            var legend = chart.children.push(am5.Legend.new(root1, {
+            x: am5.p50,
+            centerX: am5.p50
+            }));
+            legend.data.setAll([axisDataItem1, axisDataItem2])
+
+
+            // Animate values
+            setInterval(function () {
+                var value1 =  lead_win_total 
+                axisDataItem1.animate({
+                    key: "value",
+                    to: value1,
+                    duration: 1000,
+                    easing: am5.ease.out(am5.ease.cubic)
+                });
+                
+                //label1.set("text", value1);
+                var value2 =  projected_lead_target 
+                
+                axisDataItem2.animate({
+                    key: "value",
+                    to: value2,
+                    duration: 1000,
+                    easing: am5.ease.out(am5.ease.cubic)
+                });
+                
+               // label2.set("text", value2);
+            }, 1000)
+
+            chart.appear(1000, 100);
+
+        });
+    }
+    var total_lead_target = {{total_lead_target}}
+    var lead_win_total = {{lead_win_total}}
+    var projected_lead_target = {{projected_lead_target}}
+    createChart(total_lead_target,lead_win_total,projected_lead_target)
+</script>
+<script>
+
+        function updateChart1() {
+            var userId1 = $("#employee_id1").val() || 0;
+            var YearId1 = $("#fy_id1").val() || 0;
+            var FilterId1 = $("#filter_id1").val() || 0;
+            $('#chartdiv1').next('div').remove();
+            $.ajax({
+                url: "{% url 'revenue-filter' %}",
+                method: 'GET',
+                data: { userId1: userId1, YearId1: YearId1, FilterId1: FilterId1 },
+                success: function(response) {
+                    if (response.target_value == 0) {
+                        // Hide the chart div
+                        $('#chartdiv1').hide();
+                        // Create a new div with the message "No data found" in red font
+                        var noDataDiv = $('<div>').text('No data found').css({
+                            'color': 'red',
+                            'height': '400px',
+                            'display': 'flex',
+                            'align-items': 'center',
+                            'justify-content': 'center',
+                            'margin-left':'228px',
+                        });
+
+                        // Append the new div where the chart div was
+                        $('#chartdiv1').after(noDataDiv);
+                    } else {
+                        $('#chartdiv1').next('div').remove();
+                        // Show the chart div
+                        $('#chartdiv1').show();
+                        createChart(response.target_value, response.acheived_value, response.expected_value);
+                    }
+                },
+
+                error: function(xhr, status, error) {
+                    console.error('Error updating chart values:', error);
+                }
+            });
+        }
+</script>
+
+<script src="https://cdn.amcharts.com/lib/5/index.js"></script>
+<script src="https://cdn.amcharts.com/lib/5/xy.js"></script>
+<script src="https://cdn.amcharts.com/lib/5/themes/Animated.js"></script>
+  
+
+<script>
+        var root;
+    
+        am5.ready(function() {
+            function createAndUpdateChart(data) {
+                if (!root) {
+                    root = am5.Root.new("chartdiv");
+    
+                    // Set themes
+                    root.setThemes([
+                        am5themes_Animated.new(root)
+                    ]);
+                }
+    
+                // Clear existing chart
+                root.container.children.clear();
+    
+                var chart = root.container.children.push(am5xy.XYChart.new(root, {
+                    panX: false,
+                    panY: false,
+                    paddingLeft: 0,
+                    layout: root.verticalLayout
+                }));
+                chart.get("colors").set("colors", [
+                    am5.color(0x309AB2),
+                    am5.color(0xD4B712),
+                    am5.color(0x4EA557),
+                    
+                ]);
+                chart.seriesContainer.draggable = true;
+                chart.seriesContainer.resizable =true;
+                chart.maxZoomLevel = 1;
+
+                 // Add legend
+                var legend = chart.children.push(am5.Legend.new(root, {
+                    centerX: am5.p50,
+                    x: am5.p50
+                }));
+        
+                // Create axes
+                var xRenderer = am5xy.AxisRendererX.new(root, {
+                    cellStartLocation: 0.1,
+                    cellEndLocation: 0.9,
+                    minorGridEnabled: true,   
+                    minGridDistance:true
+                });
+        
+                var xAxis = chart.xAxes.push(am5xy.CategoryAxis.new(root, {
+                    categoryField: "month",
+                    renderer: xRenderer,
+                    tooltip: am5.Tooltip.new(root, {})
+                }));
+        
+                xRenderer.grid.template.setAll({
+                    location: 1
+                });
+        
+                xAxis.data.setAll(data);
+        
+                var yAxis = chart.yAxes.push(am5xy.ValueAxis.new(root, {
+                    renderer: am5xy.AxisRendererY.new(root, {
+                        strokeOpacity: 1
+                    })
+                }));
+        
+                // Function to create series
+                function makeSeries(name, fieldName) {
+                    var series = chart.series.push(am5xy.ColumnSeries.new(root, {
+                        name: name,
+                        xAxis: xAxis,
+                        yAxis: yAxis,
+                        valueYField: fieldName,
+                        categoryXField: "month"
+                    }));
+        
+                    series.columns.template.setAll({
+                        tooltipText: "{name}:{valueY}",
+                        width: am5.percent(100),
+                        tooltipY: 0,
+                        strokeOpacity: 0
+                    });
+        
+                    series.data.setAll(data);
+        
+                    // Make stuff animate on load
+                    series.appear();
+        
+                    series.bullets.push(function () {
+                        return am5.Bullet.new(root, {
+                            locationY: 0,
+                            sprite: am5.Label.new(root, {
+                                text: "{valueY}",
+                                fill: root.interfaceColors.get("alternativeText"),
+                                centerY: 0,
+                                centerX: am5.p50,
+                                populateText: true
+                            })
+                        });
+                    });
+        
+                    legend.data.push(series);
+                }
+        
+                // Call makeSeries function for each series
+                makeSeries("Target", "target");
+                makeSeries("Achieved", "acheived");
+                makeSeries("Deal", "deal");
+        
+                // Make stuff animate on load
+                chart.appear(1000, 100);
+            }
+
+    
+            // Initial chart creation on page load
+            createAndUpdateChart({{ new_datas | safe }});
+    
+            // Function to update the chart with filter data using AJAX
+            function updateChart() {
+                $.ajax({
+                    url: "{% url 'filter-chart1' %}",
+                    type: "GET",
+                    success: function(response) {
+                        // Call createAndUpdateChart with updated data
+                        createAndUpdateChart(response);
+                    },
+                    error: function(xhr, status, error) {
+                        // Handle error
+                        console.error("Error:", error);
+                    }
+                });
+            }
+    
+            // Call updateChart function when needed
+            $('#employee_id').change(updateChart);
+            $('#fy_id').change(updateChart);
+            $('#filter_id').change(updateChart);
+        });
+    </script>
+    
+<script>
+    var root;
+
+    function createAndUpdateChart(data) {
+        if (!root) {
+            root = am5.Root.new("chartdiv");
+            // Set themes
+            root.setThemes([
+                am5themes_Animated.new(root)
+            ]);
+        }
+        
+        // Clear existing chart
+        root.container.children.clear();
+    
+        var chart = root.container.children.push(am5xy.XYChart.new(root, {
+            panX: false,
+            panY: false,
+            paddingLeft: 0,
+            layout: root.verticalLayout
+        }));
+        chart.seriesContainer.draggable = false;
+        chart.seriesContainer.resizable = false;
+        chart.get("colors").set("colors", [
+                    am5.color(0x309AB2),
+                    am5.color(0xD4B712),
+                    am5.color(0x4EA557)
+                    
+        ]);
+
+        // Add legend
+        var legend = chart.children.push(am5.Legend.new(root, {
+            centerX: am5.p50,
+            x: am5.p50
+        }));
+    
+        // Create axes
+        var xRenderer = am5xy.AxisRendererX.new(root, {
+            cellStartLocation: 0.1,
+            cellEndLocation: 0.9,
+            minorGridEnabled: true,
+            minGridDistance:true
+        });
+    
+        var xAxis = chart.xAxes.push(am5xy.CategoryAxis.new(root, {
+            categoryField: "month",
+            renderer: xRenderer,
+            tooltip: am5.Tooltip.new(root, {})
+        }));
+    
+        xRenderer.grid.template.setAll({
+            location: 1
+        });
+    
+        xAxis.data.setAll(data);
+    
+        var yAxis = chart.yAxes.push(am5xy.ValueAxis.new(root, {
+            renderer: am5xy.AxisRendererY.new(root, {
+                strokeOpacity: 0.1
+            })
+        }));
+    
+        // Function to create series
+        function makeSeries(name, fieldName) {
+            var series = chart.series.push(am5xy.ColumnSeries.new(root, {
+                name: name,
+                xAxis: xAxis,
+                yAxis: yAxis,
+                valueYField: fieldName,
+                categoryXField: "month"
+            }));
+    
+            series.columns.template.setAll({
+                tooltipText: "{name}:{valueY}",
+                width: am5.percent(90),
+                tooltipY: 0,
+                strokeOpacity: 0
+            });
+    
+            series.data.setAll(data);
+    
+            // Make stuff animate on load
+            series.appear();
+    
+            series.bullets.push(function () {
+                return am5.Bullet.new(root, {
+                    locationY: 0,
+                    sprite: am5.Label.new(root, {
+                        text: "{valueY}",
+                        fill: root.interfaceColors.get("alternativeText"),
+                        centerY: 0,
+                        centerX: am5.p50,
+                        populateText: true
+                    })
+                });
+            });
+    
+            legend.data.push(series);
+        }
+    
+        for (var key in data[0]) {
+            if (data[0].hasOwnProperty(key)) {
+                var capitalizedKey = key.charAt(0).toUpperCase() + key.slice(1);
+
+                if (key !== 'month') { // Added missing parentheses around 'key !== 'month''
+                    makeSeries(capitalizedKey, key);
+                }
+            }
+        }
+        
+        // Make stuff animate on load
+        chart.appear(1000, 100);
+    }
+    
+    // Initial chart creation on page load
+    createAndUpdateChart({{ new_datas | safe }});
+    
+    // Function to update the chart with filter data using AJAX
+    function updateChart() {
+        var userId = $("#employee_id").val() || 0;
+        var YearId = $("#fy_id").val() || 0;
+        var FilterId = $("#filter_id").val() || 0;
+        var quarterId = $("#q_id").val() || 0;
+        $('#chartdiv').next('div').remove();
+        $.ajax({
+            url: "{% url 'filter-chart1' %}",
+            type: "GET",
+            data: { userId: userId, YearId: YearId, FilterId: FilterId,quarterId:quarterId },
+            success: function(response) {
+                if (response.length === 0) {
+                    
+                    $('#chartdiv').hide();
+                    // Create a new div with the message "No data found" in red font
+                    var noDataDiv = $('<div>').text('No data found').css({
+                        'color': 'red',
+                        'height': '400px',
+                        'display': 'flex',
+                        'align-items': 'center',
+                        'justify-content': 'center',
+                        'margin-left': '228px'
+                    });
+        
+                    // Append the new div where the chart div was
+                    $('#chartdiv').after(noDataDiv);
+                } else {
+                    // Clear any previous "No data found" message
+                    $('#chartdiv').next('div').remove();
+                    // Show the chart div
+                    $('#chartdiv').show();
+                   
+                    createAndUpdateChart(response);
+                }
+            },
+            error: function(xhr, status, error) {
+                // Handle error
+                console.error("Error:", error);
+            }
+        });
+    }
+    
+</script>
+
+{% endblock %}

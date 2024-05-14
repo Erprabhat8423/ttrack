@@ -1,0 +1,192 @@
+{% if employee %}
+<table id="addOrgTable" class="table table-bordered table-hover mt-0" style="width: 100%;">
+    <thead>
+    <tr id="topborder" style="text-align:center; background-color: #4d86bf; color: #ffffff;">
+        <th>S.No.</th>
+        <th>Employee Code</th>
+        <th>Employee Name</th>
+
+        <th>Father Name</th>
+        <th>Email</th>
+        <th>Date Of Birth</th>
+        <th>Gender</th>
+        <th>Date Of Joining</th>
+        <th>PF No.</th>
+        <th>UAN</th>
+        <th>PAN No.</th>
+        <th>Account No.</th>
+        <th>IFSC Code</th> 
+        <th>ESI No.</th> 
+        <th>Name On Aadhar</th> 
+        <th>Aadhar No.</th> 
+        <th>Pay Date</th> 
+        <th>Pay Days</th> 
+        <th>Bank Name</th> 
+        <th>Location Name</th> 
+        <th>State Name</th> 
+        <th>Department</th> 
+
+        <th>Designation</th>  
+        <th>Ern Basic</th>  
+        <th>Ern HRA</th>  
+        <th>Ern Suppall</th>  
+        <th>Gross salary</th>  
+        <th>Emp PF</th>  
+        
+        <th>Emp ESI</th>  
+        <th>ITAX 1</th>  
+        <th>Grossded</th>  
+        <th>Net Pay</th>  
+        <th>EMPR PF</th>
+        <th>FPF</th>
+        <th>EMPR ESI</th>
+        <th>Total</th> 
+        </tr>
+    </thead> 
+
+<form id="saveForm" method="GET" enctype="multipart/form-data">
+                {% comment %} {% csrf_token %} {% endcomment %}
+            <tbody id="salary_body">
+
+            {% for emp in employee %}
+            <tr>    
+                <input type="hidden" name="basic_mt[]" id="basic_mt_{{emp.user_id}}" value="{{emp.employee_basic_mt}}" >
+                <input type="hidden" name="hrapercent[]" id="hrapercent_{{emp.user_id}}" value="{{emp.employeehrap}}" >
+                <input type="hidden" name="dateinmonth[]" id="dateinmonth_{{emp.user_id}}" value="{{emp.days_in_month}}" >
+                <input type="hidden" name="user_id[]" value="{{emp.user_id}}">
+                <input type="hidden" name="id[]" value="{{emp.id}}">
+                <td>{{forloop.counter}}</td>
+                <td>{{emp.employee_code}}</td>
+                <td>{{emp.employee_name}}</td>
+                <td>{% if emp.father_name %}{{emp.father_name }}{% else %}-{% endif %}</td>
+                <td>{% if emp.emp_email %}{{emp.emp_email }}{% else %}-{% endif %}</td>
+                <td>{% if emp.dob %}{{emp.dob }}{% else %}-{% endif %}</td>
+                <td>{% if emp.gender %}{{emp.gender }}{% else %}-{% endif %}</td>
+                <td>{% if emp.date_of_joining %}{{emp.date_of_joining }}{% else %}-{% endif %}</td>
+                <td>{% if emp.pf_no %}{{emp.pf_no }}{% else %}-{% endif %}</td>
+                <td>{% if emp.uan %}{{emp.uan }}{% else %}-{% endif %}</td>
+                <td>{% if emp.pan_no %}{{emp.pan_no }}{% else %}-{% endif %}</td>
+                <td>{% if emp.account_no %}{{emp.account_no }}{% else %}-{% endif %}</td>
+                <td>{% if emp.ifsc_code %}{{emp.ifsc_code }}{% else %}-{% endif %}</td>
+                <td>{% if emp.esi_no %}{{emp.esi_no }}{% else %}-{% endif %}</td>
+                <td>{{emp.addhar_name}}</td> 
+                <td>{% if emp.aadhar_no %}{{emp.aadhar_no }}{% else %}-{% endif %}</td>
+                <td>{{emp.days_in_month}}</td> 
+                <td >
+                    <div class="pay_days">{{emp.pay_days}}</div>
+                    <div class="input_pay_days numeric" style="display: none;" style="width:20%"> <input class="inputField" name="pay_days[]" onkeypress="return validateFloatKeyPress(this,event);" type="text" value="{{emp.pay_days}}" id="pay_days_{{emp.user_id}}" onkeyup="editSalaryCalculation('{{emp.user_id}}');"></div>
+                </td>
+                <td>{% if emp.bank_name %}{{emp.bank_name }}{% else %}-{% endif %}</td>
+                <td>{% if emp.working_location %}{{emp.working_location }}{% else %}-{% endif %}</td>
+                <td>{% if emp.working_state_name %}{{emp.working_state_name }}{% else %}-{% endif %}</td>
+                <td>{{emp.department_name }}</td>
+                <td>{{emp.role_name}}</td>
+                {% comment %} <td >
+                    <div class="ern_basic">{{emp.ern_basic}}</div>
+                    <div class="input_ern_basic" style="display: none;"> <input class="inputField" name="ern_basic[]" onkeypress="return validateFloatKeyPress(this,event);" type="text" value="{{emp.ern_basic}}" id="ern_basic_{{emp.user_id}}" onkeyup="editSalaryCalculation('{{emp.user_id}}');"></div>
+                </td> {% endcomment %}
+                <td id="ern_basic_{{emp.user_id}}">{{emp.ern_basic}}</td>
+                    <input type="hidden" name="ern_basic[]" id="ern_basics_{{emp.user_id}}" value="{{emp.ern_basic}}">
+                {% comment %} <td >
+                    <div class="ern_hra">{{emp.ern_hra}}</div>
+                    <div class="input_ern_hra" style="display: none;"> <input class="inputField" name="ern_hra[]" onkeypress="return validateFloatKeyPress(this,event);" type="text" value="{{emp.ern_hra}}" id="ern_hra_{{emp.user_id}}" onkeyup="editSalaryCalculation('{{emp.user_id}}');"></div>
+                </td> {% endcomment %}
+                <td id="ern_hra_{{emp.user_id}}">{{emp.ern_hra}}</td>
+                    <input type="hidden" name="ern_hra[]" id="ern_hras_{{emp.user_id}}" value="{{emp.ern_hra}}">
+                
+                <td >
+                    <div class="ern_spl">{{emp.ern_spl}}</div>
+                    <div class="input_ern_spl numeric" style="display: none;"> <input class="inputField" name="ern_spl[]" onkeypress="return validateFloatKeyPress(this,event);" type="text" value="{{emp.ern_spl}}" id="ern_spl_{{emp.user_id}}" onkeyup="editSalaryCalculation('{{emp.user_id}}');"></div>
+                </td>
+                {% comment %} <td >
+                    <div class="grosssalary">{{emp.grosssalary}}</div>
+                    <div class="input_grosssalary" style="display: none;"> <input class="inputField" name="grosssalary[]" onkeypress="return validateFloatKeyPress(this,event);" type="text" value="{{emp.grosssalary}}" id="grosssalary_{{emp.user_id}}" onkeyup="editSalaryCalculation('{{emp.user_id}}');"></div>
+                </td> {% endcomment %}
+                <td id="grosssalary_{{emp.user_id}}">{{emp.grosssalary}}</td>
+                    <input type="hidden" name="grosssalary[]" id="grosssalarys_{{emp.user_id}}" value="{{emp.grosssalary}}">
+                
+                {% comment %} <td >
+                    <div class="emp_pf">{{emp.emp_pf}}</div>
+                    <div class="input_emp_pf" style="display: none;"> <input class="inputField" name="emp_pf[]" onkeypress="return validateFloatKeyPress(this,event);" type="text" value="{{emp.emp_pf}}" id="emp_pf_{{emp.user_id}}" onkeyup="editSalaryCalculation('{{emp.user_id}}');"></div>
+                </td> {% endcomment %}
+                <td id="emp_pf_{{emp.user_id}}">{{emp.emp_pf}}</td>
+                    <input type="hidden" name="emp_pf[]" id="emp_pfs_{{emp.user_id}}" value="{{emp.emp_pf}}">
+                <td >
+                    <div class="emp_esi">{{emp.emp_esi}}</div>
+                    <div class="input_emp_esi numeric" style="display: none;"> <input class="inputField" name="emp_esi[]" onkeypress="return validateFloatKeyPress(this,event);" type="text" value="{{emp.emp_esi}}" id="emp_esi_{{emp.user_id}}" onkeyup="editSalaryCalculation('{{emp.user_id}}');"></div>
+                </td>
+                <td >
+                    <div class="itax">{{emp.itax}}</div>
+                    <div class="input_itax numeric" style="display: none;"> <input class="inputField" name="itax[]" onkeypress="return validateFloatKeyPress(this,event);" type="text" value="{{emp.itax}}" id="itax_{{emp.user_id}}" onkeyup="editSalaryCalculation('{{emp.user_id}}');"></div>
+                </td>
+                {% comment %} <td >
+                    <div class="grossded">{{emp.grossded}}</div>
+                    <div class="input_grossded" style="display: none;"> <input class="inputField" name="grossded[]" onkeypress="return validateFloatKeyPress(this,event);" type="text" value="{{emp.grossded}}" id="grossded_{{emp.user_id}}" onkeyup="editSalaryCalculation('{{emp.user_id}}');"></div>
+                </td> {% endcomment %}
+                <td id="grossded_{{emp.user_id}}">{{emp.grossded}}</td>
+                    <input type="hidden" name="grossded[]" id="grossdeds_{{emp.user_id}}" value="{{emp.grossded}}">
+                {% comment %} <td >
+                    <div class="net_pay">{{emp.net_pay}}</div>
+                    <div class="input_net_pay" style="display: none;"> <input class="inputField" name="net_pay[]" onkeypress="return validateFloatKeyPress(this,event);" type="text" value="{{emp.net_pay}}" id="net_pay_{{emp.user_id}}" onkeyup="editSalaryCalculation('{{emp.user_id}}');"></div>
+                </td> {% endcomment %}
+                <td id="net_pay_{{emp.user_id}}">{{emp.net_pay}}</td>
+                    <input type="hidden" name="net_pay[]" id="net_pays_{{emp.user_id}}" value="{{emp.net_pay}}">
+                {% comment %} <td >
+                    <div class="empr_pf">{{emp.empr_pf}}</div>
+                    <div class="input_empr_pf" style="display: none;"> <input class="inputField" name="empr_pf[]" onkeypress="return validateFloatKeyPress(this,event);" type="text" value="{{emp.empr_pf}}" id="empr_pf_{{emp.user_id}}" onkeyup="editSalaryCalculation('{{emp.user_id}}');"></div>
+                </td> {% endcomment %}
+                <td id="empr_pf_{{emp.user_id}}">{{emp.empr_pf}}</td>
+                    <input type="hidden" name="empr_pf[]" id="empr_pfs_{{emp.user_id}}" value="{{emp.empr_pf}}">
+                {% comment %} <td >
+                    <div class="fpf">{{emp.fpf}}</div>
+                    <div class="input_fpf" style="display: none;"> <input class="inputField" name="fpf[]" onkeypress="return validateFloatKeyPress(this,event);" type="text" value="{{emp.fpf}}" id="fpf_{{emp.user_id}}" onkeyup="editSalaryCalculation('{{emp.user_id}}');"></div>
+                </td> {% endcomment %}
+                <td id="fpf_{{emp.user_id}}">{{emp.fpf}}</td>
+                    <input type="hidden" name="fpf[]" id="fpfs_{{emp.user_id}}" value="{{emp.fpf}}">
+                <td >
+                    <div class="empr_esi">{{emp.empr_esi}}</div>
+                    <div class="input_empr_esi numeric" style="display: none;"> <input class="inputField" name="empr_esi[]" onkeypress="return validateFloatKeyPress(this,event);" type="text" value="{{emp.empr_esi}}" id="empr_esi_{{emp.user_id}}" onkeyup="editSalaryCalculation('{{emp.user_id}}');"></div>
+                </td>
+                <td id="total_{{emp.user_id}}">{{emp.total}}</td>
+                    <input type="hidden" name="total[]" id="totals_{{emp.user_id}}" value="{{emp.total}}">
+                {% comment %} <td >
+                    <div class="total">{{emp.total}}</div>
+                    <div class="input_total" style="display: none;"> <input class="inputField" name="total[]" onkeypress="return validateFloatKeyPress(this,event);" type="text" value="{{emp.total}}" id="total_{{emp.user_id}}" onkeyup="editSalaryCalculation('{{emp.user_id}}');"></div>
+                </td> {% endcomment %}
+            </tr>
+           
+            {% endfor %}
+            </tbody>
+        </form>
+</table>
+{% else %}
+    <p style="padding:1.65rem!important; text-align:center; box-shadow: 0 6px 10px -4px rgba(0, 0, 0, 0.15); font-size:20px; color: red; ">No Record Found...</p>
+{% endif %}
+
+<script>
+    {% if salary_generate > 0 and salary_regenerate > 0 %}
+    html = `<a onclick="generateSalary('2');" href="javascript:void(0)" id="order_exports" class="btn iconBox col-md-12 p-md-0 iconReGenerateIndent" style="width: 180px; margin-right: 150px; padding:0.1rem!important;"></a>`
+    {% elif employee and salary_generate == 0 %}
+    html = `<a onclick="exportSalary();" href="javascript:void(0)" id="order_exports" class="btn iconBox col-md-12 p-md-0 iconExports" style="width: 180px; margin-right: 150px; padding:0.1rem!important;"></a>`
+    {% elif salary_generate == 0 %}
+    html = `<a onclick="generateSalary('1');" href="javascript:void(0)" id="order_exports" class="btn iconBox col-md-12 p-md-0 iconGenerateIndent" style="width: 180px; margin-right: 150px; padding:0.1rem!important;"></a>`
+    {% elif employee and salary_generate > 0 %}
+    html = `<a onclick="exportSalary();" href="javascript:void(0)" id="order_exports" class="btn iconBox col-md-12 p-md-0 iconExports" style="width: 180px; margin-right: 150px; padding:0.1rem!important;"></a>`
+    {% elif salary_generate > 0 and salary_regenerate == 0 %}
+    html = `<a onclick="generateSalary('1');" href="javascript:void(0)" id="order_exports" class="btn iconBox col-md-12 p-md-0 iconGenerateIndent" style="width: 180px; margin-right: 150px; padding:0.1rem!important;"></a>`
+    {% endif %}
+    $('#button_div').html(html);
+    $('#buttons_div').html('');
+    {% if employee %}
+    var html = `<a onclick="editSalary();" href="javascript:void(0)" id="order_exports" class="btn iconBox col-md-12 p-md-0 iconEditSalary" style="width: 180px; padding:0.1rem!important;"></a>`
+    $('#buttons_div').html(html);
+    {% endif %}
+
+    {% if first_employee %}
+    $('#salary_update_date').html('{{first_employee}}');
+    {% else %}
+    $('#salary_update_date').html('');
+    {% endif %}
+    
+</script>
+

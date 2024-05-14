@@ -1,0 +1,84 @@
+{% load static %}
+{% if tarequest_lists %}
+    {% for assets_list in tarequest_lists %}
+        <tr class="odd {% if forloop.counter == 1 %}selected{% endif %}">
+            {% comment %} <td class="sorter-false checked_class" >{% if role_id == 0 or assets_list.status != 4 %}<input type="checkbox" class="checkbox" id="new_module_1" name="order_id[]" value="{{ assets_list.id }}">{% else %}<input type="checkbox" disabled checked>{% endif %}</td> {% endcomment %}
+            <td class="order_id" onclick="getOrderDetails('{{ assets_list.id }}')">{{ assets_list.user_name }}</td>
+            <td class="distributor_name" onclick="getOrderDetails('{{ assets_list.id }}')">{{assets_list.visit_place}}</td>
+            <td class="retailer_name" onclick="getOrderDetails('{{ assets_list.id }}')">{{assets_list.visit_to_date| date:"d/m/Y"}} {{assets_list.visit_from_date| date:"d/m/Y"}}</td>
+            <td class="created_by_name" onclick="getOrderDetails('{{ assets_list.id }}')">{{ assets_list.total_expenses }}</td>
+            <td class="status_name" onclick="getOrderDetails('{{ assets_list.id }}')">{{ assets_list.company_paid }}</td>
+            <td class="request_date" onclick="getOrderDetails('{{ assets_list.id }}')">{{ assets_list.balance }}</td>
+            <td class="request_date" onclick="getOrderDetails('{{ assets_list.id }}')">{% if assets_list.status == 0 %} Pending {% elif assets_list.status == 1 %} Approved   {% else %} {% endif %}</td>
+            <td>
+                <div class="row" style="display:flex; ">
+                    {% if assets_list.status == 1 %} 
+                    <img src="{% static 'img/svg/Check.svg' %}" class="tableRowIcon"  />  
+                    {% else %}
+                    <img src="{% static 'img/svg/Pending.svg' %}" class="checkbox" name="is_active"
+                    id="is_active_{{ assets_list.id }}"   onclick="updateStatus('{{ assets_list.id }}')"/>  
+                    {% endif %} 
+                </div>
+            </td>
+             
+        </tr>
+    {% endfor %}
+        <tr id="loading" style="display: none;">
+            <td class="text-center" colspan="6"><i class="fa fa-spinner fa-spin" style="font-size:2rem"></i>
+            </td>
+        </tr>
+{% else %}
+    <tr>
+        <td colspan="6" style="text-align: center;">No Record Found...</td>
+    </tr>
+{% endif %}
+// <script>
+//     getOrderDetails('{{first_order_id}}');
+//     html = `Ticket Count: {{assets_lists|length}}`;
+//     $('#order_count').html(html);
+// </script>
+<script>
+    function updateStatus(id) {
+              
+      
+        var question = "Do you really want to update the status?";
+        $.confirm({
+            title: 'Confirm!',
+            content: question,
+            buttons: {
+                confirm: function () {
+                     
+                    $.ajax({
+                        url: "{% url 'src:update-taRequest-status' %}",
+                        method: 'POST',
+                        data: {
+                            id: id,
+                           
+                            csrfmiddlewaretoken: '{{ csrf_token }}'
+                        },
+                        success: function (data) {
+                            if (data.error == false) {
+                                hideLoader();
+                                getOrderRecord();
+                                openToaster("success", data.message);
+                                
+                            }
+                        },
+                        error: function (err) {
+                            console.log(err)
+                        }
+                    });
+                    
+                },
+                cancel: function () {
+                    
+                    
+                }
+            }
+        });
+        //showLoader();
+       
+    }
+</script>
+
+

@@ -1,0 +1,599 @@
+{% extends 'layout/layout.html' %}
+
+{% load helper_tags %}
+
+{% block content %}
+
+{% load static %}
+
+{% block style %} 
+<link rel="stylesheet" href="{% static 'css/jquery-confirm.min.css' %}">
+{% endblock %}
+<style>
+.select2-container .select2-selection--single .select2-selection__rendered{
+padding: 0.3rem;
+margin-right:10px;
+text-align: left;
+}
+#topborder th {
+    border-top: 1px solid #e7e7e7 !important;
+}
+.table thead th {
+    vertical-align: top;
+}
+.tablesorter th {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    min-width: 200px;
+  }
+</style>
+<div class="row" id="containerHeight">
+    <div class="col-md-12 pr-md-0 h-100">
+        <div class="primaryContainer h-100" id="mainbox">
+            <div class="row mb-2" id="topRow">
+                <div class="col-md-4 p-md-0">
+                    <h6><b>{{page_title}} &nbsp;&nbsp;</b><span class="fa fa-star add_to_fav {% checkedFavorite page_title request.get_full_path %}" onclick="updateFavorite(this,'{{page_title}}','{{ request.get_full_path }}')"></span></h6>
+                </div>
+                <div class="col-md-8 p-md-0">
+                    
+                    <div class="row mb-2 mt-2" id="secondRow">
+                        <div class="col-md-7 p-md-0 text-right">
+                            
+                            <select class="inputField selectField" style="width: 35% !important; padding: 0.3rem;" placeholder="Select Route " name="organization_id" id="organization_id" onchange="getEmployeeSalarySheet();">
+                                <option value="">Select Organization</option>
+                                {% for organization in organization %}
+                               <option value="{{organization.id}}">{{organization.organization_name}}</option>
+                               {% endfor %}
+                            </select>
+                            
+                            <input class="inputField" placeholder="Salary Date" name="salary_datepicker" id="salary_datepicker" value="{{ today_date|date:'m/Y' }}" style="width: 35%; padding: 0.3rem;" onchange="getEmployeeSalarySheet(); " readonly>
+                        
+                        </div>
+                        <div class="col-md-4 p-md-0">
+                            <div class="row">
+                            <div class="col-md-5 p-md-0 ml-1" id="button_div">
+                            <!-- <a onclick="generateSalary();" href="javascript:void(0)" id="order_exports" class="btn iconBox col-md-6 p-md-0 iconGenerateIndent" style="width: 180px; margin-right: 150px; padding:0.1rem!important;"></a> -->
+                            {% if salary_generate > 0 and salary_regenerate > 0 %}
+                            <a onclick="generateSalary('2');" href="javascript:void(0)" id="order_exports" class="btn iconBox col-md-12 p-md-0 iconReGenerateIndent" style="width: 180px; margin-right: 150px; padding:0.1rem!important;"></a>
+                            {% elif salary_generate == 0 and employee %}
+                            <a onclick="exportSalary();" href="javascript:void(0)" id="order_exports" class="btn iconBox col-md-12 p-md-0 iconExports" style="width: 180px; margin-right: 150px; padding:0.1rem!important;"></a>
+                            {% elif salary_generate == 0 %}
+                            <a onclick="generateSalary('1');" href="javascript:void(0)" id="order_exports" class="btn iconBox col-md-12 p-md-0 iconGenerateIndent" style="width: 180px; margin-right: 150px; padding:0.1rem!important;"></a>
+                            {% elif salary_generate > 0 and employee %}
+                            <a onclick="exportSalary();" href="javascript:void(0)" id="order_exports" class="btn iconBox col-md-12 p-md-0 iconExports" style="width: 180px; margin-right: 150px; padding:0.1rem!important;"></a>
+                            {% endif %}
+                            </div>
+                            <div class="col-md-5 p-md-0 ml-2" id="buttons_div">
+                                {% if employee %}
+                                <a onclick="editSalary();" href="javascript:void(0)" id="order_exports" class="btn iconBox col-md-12 p-md-0 iconEditSalary" style="width: 180px; padding:0.1rem!important;"></a>
+                                {% endif %}
+                                
+                            </div>
+                            </div>
+                        </div>
+                        
+                    </div>
+                    <div class="row">
+                        <div class="col-md-10 text-right ml-5">
+                            <h6 id="salary_update_date">
+                                {% if first_employee %}
+                                {{first_employee}} 
+                                {% endif %}
+                            </h6>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row" id="tableBox">
+                <div class="col-md-12 primaryContainerBG h-100 p-10 commonTableBg" id="ajax-div">
+                    {% if employee %}
+                   <table id="addOrgTable" class="table table-bordered table-hover mt-0" style="width: 100%;">
+                     <thead>
+                        <tr id="topborder" style="text-align:center; background-color: #4d86bf; color: #ffffff;">
+                                <th>S.No.</th>
+                                <th>Employee Code</th>
+                                <th>Employee Name</th>
+
+                                <th>Father Name</th>
+                                <th>Email</th>
+                                <th>Date Of Birth</th>
+                                <th>Gender</th>
+                                <th>Date Of Joining</th>
+                                <th>PF No.</th>
+                                <th>UAN</th>
+                                <th>PAN No.</th>
+                                <th>Account No.</th>
+                                <th>IFSC Code</th> 
+                                <th>ESI No.</th> 
+                                <th>Name On Aadhar</th> 
+                                <th>Aadhar No.</th> 
+                                <th>Pay Date</th> 
+                                <th >Pay Days</th> 
+                                <th>Bank Name</th> 
+                                <th>Location Name</th> 
+                                <th>State Name</th> 
+                                <th>Department</th> 
+
+                                <th>Designation</th>  
+                                <th>Ern Basic</th>  
+                                <th>Ern HRA</th>  
+                                <th>Ern Suppall</th>  
+                                <th>Gross salary</th>  
+                                <th>Emp PF</th>  
+                                
+                                <th>Emp ESI</th>  
+                                <th>ITAX 1</th>  
+                                <th>Grossded</th>  
+                                <th>Net Pay</th>  
+                                <th>EMPR PF</th>
+                                <th>FPF</th>
+                                <th>EMPR ESI</th>
+                                <th>Total</th>  
+                            </tr>
+                       </thead> 
+                        <form id="saveForm" method="GET" enctype="multipart/form-data">
+                           
+                       <tbody id="salary_body">
+
+                           {% for emp in employee %}
+                            <tr>    
+                                <input type="hidden" name="basic_mt[]" id="basic_mt_{{emp.user_id}}" value="{{emp.employee_basic_mt}}" >
+                                <input type="hidden" name="hrapercent[]" id="hrapercent_{{emp.user_id}}" value="{{emp.employeehrap}}" >
+                                <input type="hidden" name="dateinmonth[]" id="dateinmonth_{{emp.user_id}}" value="{{emp.days_in_month}}" >
+                                <input type="hidden" name="user_id[]" value="{{emp.user_id}}">
+                                <input type="hidden" name="id[]" value="{{emp.id}}">
+                                <td>{{forloop.counter}}</td>
+                                <td>{{emp.employee_code}}</td>
+                                <td>{{emp.employee_name}}</td>
+                                <td>{% if emp.father_name %}{{emp.father_name }}{% else %}-{% endif %}</td>
+                                <td>{% if emp.emp_email %}{{emp.emp_email }}{% else %}-{% endif %}</td>
+                                <td>{% if emp.dob %}{{emp.dob }}{% else %}-{% endif %}</td>
+                                <td>{% if emp.gender %}{{emp.gender }}{% else %}-{% endif %}</td>
+                                <td>{% if emp.date_of_joining %}{{emp.date_of_joining }}{% else %}-{% endif %}</td>
+                                <td>{% if emp.pf_no %}{{emp.pf_no }}{% else %}-{% endif %}</td>
+                                <td>{% if emp.uan %}{{emp.uan }}{% else %}-{% endif %}</td>
+                                <td>{% if emp.pan_no %}{{emp.pan_no }}{% else %}-{% endif %}</td>
+                                <td>{% if emp.account_no %}{{emp.account_no }}{% else %}-{% endif %}</td>
+                                <td>{% if emp.ifsc_code %}{{emp.ifsc_code }}{% else %}-{% endif %}</td>
+                                <td>{% if emp.esi_no %}{{emp.esi_no }}{% else %}-{% endif %}</td>
+                                <td>{{emp.addhar_name}}</td> 
+                                <td>{% if emp.aadhar_no %}{{emp.aadhar_no }}{% else %}-{% endif %}</td>
+                                <td>{{emp.days_in_month}}</td> 
+                                <td >
+                                    <div class="pay_days">{{emp.pay_days}}</div>
+                                    <div class="input_pay_days numeric" style="display: none;" style="width:20%"> <input class="inputField" name="pay_days[]" onkeypress="return validateFloatKeyPress(this,event);" type="text" value="{{emp.pay_days}}" id="pay_days_{{emp.user_id}}" onkeyup="editSalaryCalculation('{{emp.user_id}}');"></div>
+                                </td>
+                                <td>{% if emp.bank_name %}{{emp.bank_name }}{% else %}-{% endif %}</td>
+                                <td>{% if emp.working_location %}{{emp.working_location }}{% else %}-{% endif %}</td>
+                                <td>{% if emp.working_state_name %}{{emp.working_state_name }}{% else %}-{% endif %}</td>
+                                <td>{{emp.department_name }}</td>
+                                <td>{{emp.role_name}}</td>
+                                {% comment %} <td >
+                                    <div class="ern_basic">{{emp.ern_basic}}</div>
+                                    <div class="input_ern_basic numeric" style="display: none;"> <input class="inputField" name="ern_basic[]" onkeypress="return validateFloatKeyPress(this,event);" type="text" value="{{emp.ern_basic}}" id="ern_basic_{{emp.user_id}}" onkeyup="editSalaryCalculation('{{emp.user_id}}');"></div>
+                                </td> {% endcomment %}
+                                <td id="ern_basic_{{emp.user_id}}">{{emp.ern_basic}}</td>
+                                    <input type="hidden" name="ern_basic[]" id="ern_basics_{{emp.user_id}}" value="{{emp.ern_basic}}">
+                                {% comment %} <td >
+                                    <div class="ern_hra">{{emp.ern_hra}}</div>
+                                    <div class="input_ern_hra numeric" style="display: none;"> <input class="inputField" name="ern_hra[]" onkeypress="return validateFloatKeyPress(this,event);" type="text" value="{{emp.ern_hra}}" id="ern_hra_{{emp.user_id}}" onkeyup="editSalaryCalculation('{{emp.user_id}}');"></div>
+                                </td> {% endcomment %}
+                                <td id="ern_hra_{{emp.user_id}}">{{emp.ern_hra}}</td>
+                                    <input type="hidden" name="ern_hra[]" id="ern_hras_{{emp.user_id}}" value="{{emp.ern_hra}}">
+                                
+                                <td >
+                                    <div class="ern_spl">{{emp.ern_spl}}</div>
+                                    <div class="input_ern_spl numeric" style="display: none;"> <input class="inputField" name="ern_spl[]" onkeypress="return validateFloatKeyPress(this,event);" type="text" value="{{emp.ern_spl}}" id="ern_spl_{{emp.user_id}}" onkeyup="editSalaryCalculation('{{emp.user_id}}');"></div>
+                                </td>
+                                {% comment %} <td >
+                                    <div class="grosssalary">{{emp.grosssalary}}</div>
+                                    <div class="input_grosssalary" style="display: none;"> <input class="inputField" name="grosssalary[]" onkeypress="return validateFloatKeyPress(this,event);" type="text" value="{{emp.grosssalary}}" id="grosssalary_{{emp.user_id}}" onkeyup="editSalaryCalculation('{{emp.user_id}}');"></div>
+                                </td> {% endcomment %}
+                                <td id="grosssalary_{{emp.user_id}}">{{emp.grosssalary}}</td>
+                                    <input type="hidden" name="grosssalary[]" id="grosssalarys_{{emp.user_id}}" value="{{emp.grosssalary}}">
+                                
+                                {% comment %} <td >
+                                    <div class="emp_pf">{{emp.emp_pf}}</div>
+                                    <div class="input_emp_pf" style="display: none;"> <input class="inputField" name="emp_pf[]" onkeypress="return validateFloatKeyPress(this,event);" type="text" value="{{emp.emp_pf}}" id="emp_pf_{{emp.user_id}}" onkeyup="editSalaryCalculation('{{emp.user_id}}');"></div>
+                                </td> {% endcomment %}
+                                <td id="emp_pf_{{emp.user_id}}">{{emp.emp_pf}}</td>
+                                    <input type="hidden" name="emp_pf[]" id="emp_pfs_{{emp.user_id}}" value="{{emp.emp_pf}}">
+                                <td >
+                                    <div class="emp_esi">{{emp.emp_esi}}</div>
+                                    <div class="input_emp_esi numeric" style="display: none;"> <input class="inputField" name="emp_esi[]" onkeypress="return validateFloatKeyPress(this,event);" type="text" value="{{emp.emp_esi}}" id="emp_esi_{{emp.user_id}}" onkeyup="editSalaryCalculation('{{emp.user_id}}');"></div>
+                                </td>
+                                <td >
+                                    <div class="itax">{{emp.itax}}</div>
+                                    <div class="input_itax numeric" style="display: none;"> <input class="inputField" name="itax[]" onkeypress="return validateFloatKeyPress(this,event);" type="text" value="{{emp.itax}}" id="itax_{{emp.user_id}}" onkeyup="editSalaryCalculation('{{emp.user_id}}');"></div>
+                                </td>
+                                {% comment %} <td >
+                                    <div class="grossded">{{emp.grossded}}</div>
+                                    <div class="input_grossded" style="display: none;"> <input class="inputField" name="grossded[]" onkeypress="return validateFloatKeyPress(this,event);" type="text" value="{{emp.grossded}}" id="grossded_{{emp.user_id}}" onkeyup="editSalaryCalculation('{{emp.user_id}}');"></div>
+                                </td> {% endcomment %}
+                                <td id="grossded_{{emp.user_id}}">{{emp.grossded}}</td>
+                                    <input type="hidden" name="grossded[]" id="grossdeds_{{emp.user_id}}" value="{{emp.grossded}}">
+                                {% comment %} <td >
+                                    <div class="net_pay">{{emp.net_pay}}</div>
+                                    <div class="input_net_pay" style="display: none;"> <input class="inputField" name="net_pay[]" onkeypress="return validateFloatKeyPress(this,event);" type="text" value="{{emp.net_pay}}" id="net_pay_{{emp.user_id}}" onkeyup="editSalaryCalculation('{{emp.user_id}}');"></div>
+                                </td> {% endcomment %}
+                                <td id="net_pay_{{emp.user_id}}">{{emp.net_pay}}</td>
+                                    <input type="hidden" name="net_pay[]" id="net_pays_{{emp.user_id}}" value="{{emp.net_pay}}">
+                                {% comment %} <td >
+                                    <div class="empr_pf">{{emp.empr_pf}}</div>
+                                    <div class="input_empr_pf" style="display: none;"> <input class="inputField" name="empr_pf[]" onkeypress="return validateFloatKeyPress(this,event);" type="text" value="{{emp.empr_pf}}" id="empr_pf_{{emp.user_id}}" onkeyup="editSalaryCalculation('{{emp.user_id}}');"></div>
+                                </td> {% endcomment %}
+                                <td id="empr_pf_{{emp.user_id}}">{{emp.empr_pf}}</td>
+                                    <input type="hidden" name="empr_pf[]" id="empr_pfs_{{emp.user_id}}" value="{{emp.empr_pf}}">
+                                {% comment %} <td >
+                                    <div class="fpf">{{emp.fpf}}</div>
+                                    <div class="input_fpf" style="display: none;"> <input class="inputField" name="fpf[]" onkeypress="return validateFloatKeyPress(this,event);" type="text" value="{{emp.fpf}}" id="fpf_{{emp.user_id}}" onkeyup="editSalaryCalculation('{{emp.user_id}}');"></div>
+                                </td> {% endcomment %}
+                                <td id="fpf_{{emp.user_id}}">{{emp.fpf}}</td>
+                                    <input type="hidden" name="fpf[]" id="fpfs_{{emp.user_id}}" value="{{emp.fpf}}">
+                                <td >
+                                    <div class="empr_esi">{{emp.empr_esi}}</div>
+                                    <div class="input_empr_esi numeric" style="display: none;"> <input class="inputField" name="empr_esi[]" onkeypress="return validateFloatKeyPress(this,event);" type="text" value="{{emp.empr_esi}}" id="empr_esi_{{emp.user_id}}" onkeyup="editSalaryCalculation('{{emp.user_id}}');"></div>
+                                </td>
+                                <td id="total_{{emp.user_id}}">{{emp.total}}</td>
+                                    <input type="hidden" name="total[]" id="totals_{{emp.user_id}}" value="{{emp.total}}">
+                                {% comment %} <td >
+                                    <div class="total">{{emp.total}}</div>
+                                    <div class="input_total" style="display: none;"> <input class="inputField" name="total[]" onkeypress="return validateFloatKeyPress(this,event);" type="text" value="{{emp.total}}" id="total_{{emp.user_id}}" onkeyup="editSalaryCalculation('{{emp.user_id}}');"></div>
+                                </td> {% endcomment %}
+                            </tr>
+                            
+                        {% endfor %}
+                       </tbody>
+                    </form>
+                    </table>
+                    {% else %}
+                    <p style="padding:1.65rem!important; text-align:center; box-shadow: 0 6px 10px -4px rgba(0, 0, 0, 0.15); font-size:20px; color: red; ">
+                        No Record Found...</p>
+                    
+                    {% endif %}
+
+                    
+                </div>
+            </div>
+        </div>
+    </div>
+    
+</div>
+
+
+{% endblock content %}
+{% block script %}
+<script src="{% static 'js/jquery-confirm.min.js' %}"></script>
+<script>
+    function getEmployeeSalarySheet(){
+        var salary_date      = $('#salary_datepicker').val();
+        var organization_id  = $('#organization_id').val();
+        
+        $('#ajax-div').html('<div style="text-align:center; margin 0px auto;"><i class="fa fa-spinner fa-spin" style="font-size:2rem"></div>');
+            $.ajax({
+                url: "{% url 'src:ajax-employee-salary-sheet' %}",
+                method: 'GET',
+                data: { salary_date: salary_date, organization_id: organization_id},
+                success: function (data) {
+                     $('#ajax-div').html(data);
+                    $('#salary_datepicker').css("margin-right","0"); 
+                    $('#addOrgTable').tablesorter({
+                        widgets: ["zebra", "filter", "resizable", "stickyHeaders"],
+                        widgetOptions: {
+                            resizable_addLastColumn: true,
+                            resizable: false,
+                            resizable_widths: ["20%", "20%", "20%", "20%", "20%"],
+                            stickyHeaders_attachTo: ".primaryContainerBG",
+                            filter_external: '.search',
+                            filter_columnFilters: false,
+                        }
+                    });
+                    
+                },
+                error: function (err) {
+                    // alert(err.message);
+                    // window.location.reload();
+                }
+            });
+        }
+
+        $(document).ready(function () {
+            $("#salary_datepicker").datepicker({  
+                changeMonth: true,
+                changeYear: true,  
+                yearRange: "-100:+0"
+                ,maxDate: 0,
+                dateFormat: 'mm/yy' 
+            });
+        });
+
+        $(document).ready(function () {
+            $('#addOrgTable').tablesorter({
+                widgets: ["zebra", "filter", "resizable", "stickyHeaders"],
+                widgetOptions: {
+                    resizable_addLastColumn: true,
+                    resizable: false,
+                    //resizable_widths: ["18.5%", "15.5%", "18.5%", "15.5%", "18%"],
+                    widths: ["20%", "20%", "20%", "20%", "20%", "5%"],
+                    stickyHeaders_attachTo: ".primaryContainerBG",
+                    filter_external: '.search',
+                    filter_columnFilters: false,
+                }
+            });
+        });
+
+        function generateSalary(status){
+            var salary_date = $('#salary_datepicker').val();
+            var organization_id = $('#organization_id').val();
+            showLoader();
+            $.ajax({
+                url: "{% url 'src:generate-salary-sheet' %}",
+                method: 'GET',
+                data: { salary_date: salary_date, organization_id: organization_id, status: status },
+                success: function (data) {
+                        if(data.flag == 1){
+                            openToaster('danger', data.message);
+                        }else{
+                            openToaster('success', data.message);
+                            getEmployeeSalarySheet()
+                        }
+                        hideLoader();
+                },
+                error: function (err) {
+                    // alert(err.message);
+                    // window.location.reload();
+                }
+            });
+        }
+
+        function exportSalary(){
+            var salary_date = $('#salary_datepicker').val();
+            var organization_id = $('#organization_id').val();
+            if( organization_id == ''){
+                organization_id = 0
+            }
+            salary_date = salary_date.split('/')
+            var months =  salary_date[0]
+            var year =  salary_date[1]
+            var url = "{% url 'src:export-employee-salary-sheet' 'organization_id' 'months' 'year' %}";
+            url = url.replace('organization_id', organization_id).replace('months', months).replace('year', year);
+            window.location.href = url;
+
+        }
+
+        function editSalary(){
+            debugger;
+            $('#buttons_div').html('');
+            var html = `<a onclick="savesSalary();" href="javascript:void(0)" id="order_exports" class="btn iconBox col-md-12 p-md-0 iconSave" style="width: 180px; padding:0.1rem!important;"></a>`
+            $('#buttons_div').html(html);
+            $('.pay_days').hide()
+            $('.input_pay_days').show()
+
+            //$('.ern_basic').hide()
+            //$('.input_ern_basic').show()
+            
+            //$('.ern_hra').hide()
+           // $('.input_ern_hra').show()
+
+            $('.ern_spl').hide()
+            $('.input_ern_spl').show()
+
+           // $('.grosssalary').hide()
+           // $('.input_grosssalary').show()
+
+            //$('.emp_pf').hide()
+           // $('.input_emp_pf').show()
+
+            $('.emp_esi').hide()
+            $('.input_emp_esi').show()
+
+            $('.itax').hide()
+            $('.input_itax').show()
+
+            //$('.grossded').hide()
+            //$('.input_grossded').show()
+
+            //$('.net_pay').hide()
+           // $('.input_net_pay').show()
+
+           // $('.empr_pf').hide()
+            //$('.input_empr_pf').show()
+            
+           // $('.fpf').hide()
+           // $('.input_fpf').show()
+
+            $('.empr_esi').hide()
+            $('.input_empr_esi').show()
+
+            //$('.total').hide()
+            //$('.input_total').show()
+        }
+
+        function editSalaryCalculation(user_id){
+                debugger;
+                var  payable_days           = $('#pay_days_'+ user_id).val();
+                var  monthlybasic           = $('#basic_mt_'+ user_id).val();
+                var  dayinmonth             = $('#dateinmonth_'+ user_id).val();
+                var  hraparcent             = $('#hrapercent_'+ user_id).val();
+                var  earnspcl               = $('#ern_spl_'+ user_id).val();
+                var  empesi                 = $('#emp_esi_'+ user_id).val();
+                var  itax1                  = $('#itax_'+ user_id).val();
+                var  employeresi            = $('#empr_esi_'+ user_id).val();
+                if(payable_days!="" && monthlybasic > 0){
+                    if (payable_days == '') {
+                        payable_days = 0
+                    }
+                    //if (parseInt(monthlybasic) < 1 ) {
+                    //    monthlybasic = 0
+                   // }
+                    if (earnspcl == '') {
+                        earnspcl = 0
+                    }
+                    if (empesi == '') {
+                        empesi = 0
+                    }   
+                    
+                    if (itax1 == '') {
+                        itax1 = 0
+                    }
+                    if(onedaysalry ==''){
+                        openToaster("danger", "Basic salary notdefine.");
+                    }
+                    var onedaysalry             =  Math.round(monthlybasic/parseInt(dayinmonth))
+                    
+                    var earn_salary             = Math.round(onedaysalry*payable_days)
+                    if(hraparcent > 0){
+                    var earn_hra             = Math.round((earn_salary*hraparcent)/100)
+                    }else{
+                        var earn_hra            = 0
+                    }
+                    var grosssalary             = parseInt(earn_salary)+parseInt(earn_hra)+parseInt(earnspcl) 
+                    var basic_spcl              = parseInt(earn_salary) +parseInt(earnspcl)
+                    if (earn_salary > 15000){
+                        var pfamount = Math.round(earn_salary*12/100)
+                    } else if((basic_spcl)> 15000){
+                    var pfamount = Math.round(15000*12/100)
+                    }else{
+                    var pfamount = Math.round(basic_spcl*12/100)
+                    }
+                    
+                    var grosssded       = parseInt(pfamount) + parseInt(empesi) + parseInt(itax1)
+                    var Netpay          = grosssalary - grosssded
+                    var fpf             = Math.round((basic_spcl*8.33)/100)
+                    var empr_pf         = pfamount-fpf
+                    
+                    if (employeresi == '') {
+                        employeresi = 0
+                    } 
+                    employeresi = parseInt(employeresi)
+                    var total           = parseInt(empr_pf+fpf+employeresi)
+
+                    $('#pay_days_' + user_id).val(payable_days);  
+                    //$('#ern_basic_' + user_id).val(earn_salary);
+                    $('#ern_basics_' + user_id).val(earn_salary);
+                    $('#ern_basic_' + user_id).text(earn_salary);  
+                    //$('#ern_hra_' + user_id).val(earn_hra); 
+                    $('#ern_hras_' + user_id).val(earn_hra);
+                    $('#ern_hra_' + user_id).text(earn_hra);
+
+                    $('#ern_spl_' + user_id).val(earnspcl);   
+                    //$('#grosssalary_' + user_id).val(grosssalary);  
+                    $('#emp_pfs_' + user_id).val(pfamount);
+                    $('#emp_pf_' + user_id).text(pfamount);
+                    // $('#emp_pf_' + user_id).val(pfamount);
+                    $('#grosssalarys_' + user_id).val(grosssalary);
+                    $('#grosssalary_' + user_id).text(grosssalary);  
+                    $('#emp_esi_' + user_id).val(empesi);  
+                    $('#itax_' + user_id).val(itax1);  
+                    //$('#grossded_' + user_id).val(grosssded);  
+                    $('#grossdeds_' + user_id).val(grosssded);
+                    $('#grossded_' + user_id).text(grosssded); 
+                    
+                    //$('#net_pay_' + user_id).val(Netpay); 
+                    $('#net_pays_' + user_id).val(Netpay);
+                    $('#net_pay_' + user_id).text(Netpay); 
+
+                // $('#empr_pf_' + user_id).val(empr_pf); 
+                    $('#empr_pfs_' + user_id).val(empr_pf);
+                    $('#empr_pf_' + user_id).text(empr_pf);  
+                    //$('#fpf_' + user_id).val(fpf); 
+                    $('#fpfs_' + user_id).val(fpf);
+                    $('#fpf_' + user_id).text(fpf); 
+                    $('#empr_esi_' + user_id).val(employeresi);  
+                    //$('#total_' + user_id).val(total);  
+                    $('#totals_' + user_id).val(total);
+                    $('#total_' + user_id).text(total);
+                    
+                }
+                
+                //-------------------------------------------------------
+
+            
+                     
+        }
+
+        function saveSalary(){
+            debugger;
+            var user_id                 = $("input[name='user_id[]']").map(function(){return $(this).val();}).get();
+            var id                      = $("input[name='id[]']").map(function(){return $(this).val();}).get();
+            //var basicmt                 = $("input[name='basic_mt[]']").map(function(){return $(this).val();}).get();
+            //var hrapercent              = $("input[name='hrapercent[]']").map(function(){return $(this).val();}).get();
+            //var dateinmonth             = $("input[name='dateinmonth[]']").map(function(){return $(this).val();}).get();
+            var paydays                 = $("input[name='pay_days[]']").map(function(){return $(this).val();}).get();
+            var ernbasic                = $("input[name='ern_basic[]']").map(function(){return $(this).val();}).get();
+            var ernhra                  = $("input[name='ern_hra[]']").map(function(){return $(this).val();}).get();
+            var ernspl                  = $("input[name='ern_spl[]']").map(function(){return $(this).val();}).get();
+            var grosssalary             = $("input[name='grosssalary[]']").map(function(){return $(this).val();}).get();
+            var emppf                   = $("input[name='emp_pf[]']").map(function(){return $(this).val();}).get();
+            var empesi                  = $("input[name='emp_esi[]']").map(function(){return $(this).val();}).get();
+            var itax                    = $("input[name='itax[]']").map(function(){return $(this).val();}).get();
+            var grossded                = $("input[name='grossded[]']").map(function(){return $(this).val();}).get();
+            var netpay                  = $("input[name='net_pay[]']").map(function(){return $(this).val();}).get();
+            var emprpf                  = $("input[name='empr_pf[]']").map(function(){return $(this).val();}).get();
+            var fpf                     = $("input[name='fpf[]']").map(function(){return $(this).val();}).get();
+            var empresi                 = $("input[name='empr_esi[]']").map(function(){return $(this).val();}).get();
+            var total                   = $("input[name='total[]']").map(function(){return $(this).val();}).get();
+            
+            showLoader();
+            $.ajax({
+                url: "{% url 'src:save-salary-sheet' %}",
+                method: 'POST',
+                data: {
+                    csrfmiddlewaretoken     : '{{ csrf_token }}',
+                    user_id                 : user_id,
+                    id                      : id,
+                    paydays                 : paydays,
+                    ernbasic                : ernbasic,
+                    ernhra                  : ernhra,
+                    ernspl                  : ernspl,
+                    grosssalary             : grosssalary,
+                    emppf                   : emppf,
+                    empesi                  : empesi,
+                    itax                    : itax,
+                    grossded                : grossded,
+                    netpay                  : netpay,
+                    emprpf                  : emprpf,
+                    fpf                     : fpf,
+                    empresi                 : empresi,
+                    total                   : total,
+                },
+                 
+                success: function (data) {
+                    openToaster('success', data.message);
+                    hideLoader();
+                    getEmployeeSalarySheet();
+                },
+                error: function (err) {
+                    // alert(err.message);
+                    // window.location.reload();
+                }
+            });
+        }
+            
+        function savesSalary(){
+            $.confirm({
+                title: 'Confirm!',
+                theme: 'material',
+                content: 'Do want to update ?',
+                buttons: {
+                    confirm: {
+                        btnClass: 'btn-blue',
+                        action: function () {
+                            saveSalary();
+                            
+                        }
+                    },
+                    cancel: {
+                        btnClass: 'btn-red',
+                        action: function () {
+
+                        }
+                    },
+
+
+                }
+            });
+        }
+        
+    </script>
+    {% endblock %}

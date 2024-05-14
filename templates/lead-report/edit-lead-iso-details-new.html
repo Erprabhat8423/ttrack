@@ -1,0 +1,882 @@
+{% load static %}
+<form name="addleadOtherDetailsForms" id="addleadOtherDetailsForms" autocomplete="off" method="POST" autocomplete="off" action="" enctype="multipart/form-data">
+    {% csrf_token %}
+    <input type="hidden" name="last_user_id" id="last_user_id" value="{{ last_user_id }}" >
+    <input type="hidden" name="created_by_id" id="created_by_id" value="{{ created_by_id }}" >
+    <div class="modal-AddUser centered">
+        <div class="modal-header" id="headerStep1">
+            <div class="col-12 p-0">
+                <div class="row">
+                    <div class="col-6" >
+                        <button class="iconCover" onclick="editLeadBasicDetail('{{ lead_id }}')" >
+                            <img src="{% static 'img/svg/backarrow.svg' %}" style="width: 1rem" onclick="editLeadBasicDetail('{{ lead_id }}')" />
+                        </button>
+                        <h5 class="mt-md-2" style="display: inline">
+                            &nbsp;&nbsp; Lead ISO Details
+                        </h5>
+                    </div>
+                    <div class="col-6">
+                        <button class="btn btn-save float-right" type="submit">
+                            Save & Proceed
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+                
+        <div class="modal-body" id="addUserModalBody" style="overflow: auto">
+            <div class="row">
+                <div class="col-md-12 p-0 h-100 w-100">
+                    <div class="row">
+                        <div class="col-md-2">
+                            <div class="col-md-12 p-0">
+                                <img src="{% static 'img/svg/iso.svg' %}" class="profileIconSize">&nbsp;&nbsp;
+                                <h6 class="mt-2 mb-0" style="display: inline-block;">
+                                    ISO Status
+                                </h6>
+                            </div>
+                            <div class="col-md-12 p-0 mt-2">
+                                <label class="switch">
+                                    <input type="checkbox" id="iso_status" name="iso_status" class="checkbox" onclick="hideUnhideCheck(this);updateIsoStatus(this)" value="{% if iso_status == 1 %}1{% else %}0{% endif %}"{% if iso_status == 1 %}checked{% endif %}>
+                                    <span class="slider round" title="Enable/Disable"></span>
+                                    
+                                    <label class="error_msg float-right"></label>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <hr></hr>
+                    <div  id="status_zero" {% if iso_status == 1 %}style="display:none;"{% endif %} >
+                            <div class="col-md-12" style="display:flex;">
+                                <div class="col-md-6">
+                                    <div class="row">
+                                        <div class="col-md-12 p-2">
+                                            <img src="{% static 'img/svg/core_bussiness.svg' %}" class="profileIconSize" />&nbsp;&nbsp;
+                                            <h6 class="mt-2 mb-0" style="display: inline-block;">
+                                                Select From Suggested ISO Certification*
+                                            </h6>
+                                        </div>
+                                        <div class="col-md-12 p-0 mt-2">
+                                            <select class="inputField selectField suggested_iso" style="width: 100%;height:20;" name="suggested_iso_zero" id="suggested_iso_zero" multiple>
+                                                {% for isos in isos_master %}
+                                                <option value="{{isos.id}}" {% if isos.id|stringformat:"i" in iso_list_deatils.iso_created_id %}selected{% endif %}>ISO {{isos.iso_id}}-{{isos.iso_name}}</option>
+                                                {% endfor %}
+                                                
+                                            </select>
+                                            <label class="error_msg float-right" id="suggested_iso_zero_error"></label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row  col-md-6">
+                                    <div class="row mt-2 wrapper">
+                                        <input type="hidden" id="contact_number_error" val="0">
+                                        <div class="col-md-12 p-0">
+                                            <img src="{% static 'img/svg/turn_over.svg' %}" class="profileIconSize" />&nbsp;&nbsp;
+                                            <h6 class="mt-2 mb-0" style="display: inline-block;">
+                                                Enter Suggested Cost*
+                                            </h6>
+                                        </div>
+                                        <div class="col-md-3 mt-3 p-0">
+                                            <select class="inputField selectField" style="width: 100% !important;" name="suggested_currancy_code">
+                                                {% for currancy in currancy_code %}
+                                                <option value="{{currancy.currency_code}}" {% if iso_list_deatils.currency_code %}{% if iso_list_deatils.currency_code == currancy.currency_code %} selected {% endif %}{% else %}{% if currancy.currency_code == 'QAR' %} selected{% endif %}{% endif %}>{{currancy.currency_code}}</option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                        <div class="col-md-9 mt-3">
+                                            <input class="inputField contact_no_class numeric" type="text" placeholder="Enter Suggested Cost*" name="enter_suggested_cost"
+                                        value="{{iso_list_deatils.iso_amount}}"  maxlength="7"	id="enter_suggested_cost" />
+                                            <label class="error_msg float-right contact_no_err_class" id="enter_suggested_cost_error"></label>
+                                        </div>
+                                        <div class="col-md-3 mt-3 pl-0">
+                                            
+                                            <label class="error_msg float-right contact_type_err_class" id="contact_type_0_error"></label>
+                                        </div>
+                            
+                                    </div>
+                                </div>
+							
+							</div>
+                        </div>
+                    
+                    <div class="p-0 " id="status_one" {% if iso_status == 0 %}style="display:none;"{% endif %} >
+                    {% for created_iso_detail in created_iso_details %}
+                          <input type="hidden" name="existing_iso_id[]" id="existing_iso_id" value="{{ created_iso_detail.id }}" >
+
+                                <div class="row col-md-12 p-0 mt-3" style="display:flex">
+                                   
+                                    <div class="col-md-6 p-0">
+                                     <div class="col-md-12 p-0 ml-1 lead_row">
+                                        <div class="row">
+                                            <div class="col-md-12 ">
+                                                <img src="{% static 'img/svg/core_bussiness.svg' %}" class="profileIconSize" />&nbsp;&nbsp;
+                                                <h6 class="mt-2 mb-0" style="display: inline-block;">
+                                                    ISO Certifications*
+                                                </h6>
+                                            </div>
+                                            <div class="col-md-12 mt-2">
+                                                <select class="inputField selectField" style="width: 100%;height:20;" name="suggested_iso[]" id="suggested_iso_{{ forloop.counter|add:'-1' }}" >
+                                                    <option value="">Select ISO Certifications</option>
+                                                    {% for isos in isos_master %}
+                                                    <option value="{{isos.id}}" {% if isos.id == created_iso_detail.iso_applicable_id %}selected{% endif %}>ISO {{isos.iso_id}}-{{isos.iso_name}}</option>
+                                                    {% endfor %}
+                                                    
+                                                </select>
+                                                <label class="error_msg float-right" id="suggested_iso_error{{ forloop.counter|add:'-1' }}"></label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    
+                                        <div class="col-md-12 p-0">
+                                            <div class="col-md-12">
+                                                <img src="{% static 'img/svg/agency.svg' %}" class="profileIconSize">&nbsp;&nbsp;
+                                                <h6 class="mt-2 mb-0" style="display: inline-block;">
+                                                    ISO Issued Agency*
+                                                </h6>
+                                            </div>
+                                            <div class="col-md-12  mt-2">
+                                                <input class="inputField " type="text"    value="{{created_iso_detail.iso_issued_agency}}"  placeholder="ISO Issued Agency*" name="iso_issued_agency[]" id="iso_issued_agency_{{ forloop.counter|add:'-1' }}" maxlength="50" >
+                                                <label class="error_msg float-right" id="iso_issued_agency_error{{ forloop.counter|add:'-1' }}"></label>
+                                            </div>
+                                        </div>
+                                    
+                                        <div class="col-md-12 p-0">
+                                            <div class="col-md-12 ">
+                                                <img src="{% static 'img/svg/consultation.svg' %}" class="profileIconSize">&nbsp;&nbsp;
+                                                <h6 class="mt-2 mb-0" style="display: inline-block;">
+                                                   ISO Issued Consultant*
+                                                </h6>
+                                            </div>
+                                            <div class="col-md-12 mt-2">
+                                                <input class="inputField " type="text" value="{{created_iso_detail.iso_issued_consultant}}" placeholder="ISO Issued Consultant*" name="iso_issued_consultant[]" id="iso_issued_consultant{{ forloop.counter|add:'-1' }}" maxlength="50" >
+                                                <label class="error_msg float-right" id="iso_issued_consultant_error{{ forloop.counter|add:'-1' }}"></label>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-12">
+                                        <div class="col-md-12 p-0 ">
+                                                <img src="{% static 'img/svg/copy.svg' %}" class="profileIconSize">&nbsp;&nbsp;
+                                                <h6 class="mt-2 p-0 mb-0" style="display: inline-block;">
+                                                   Copy Of ISO*
+                                                </h6>
+                                            </div>
+                                       
+                                        <label class="error_msg float-right" id="VisaLetter_image_error"></label>
+                                        <div class="row fileUploadContainer mt-2">
+                                           <div class="col-md-8 " style="padding: 0.6rem;">
+                                                <label class="custom-file-upload m-0 lightGrey">
+                                                    {% if created_iso_detail.copy_of_iso %}
+                                                        {% with parts=created_iso_detail.copy_of_iso|slice:'1:'|length %}
+                                                            {{ created_iso_detail.copy_of_iso|slice:'23:' }}
+                                                        {% endwith %}
+                                                    {% else %}
+                                                        Upload ISO
+                                                    {% endif %}
+                                                </label>
+                                                <input id="file-upload_visaletter{{ forloop.counter|add:'-1' }}" name="iso_doc[]" type="file" accept="image/*"  
+                                                    style="display:none;" onchange="fileUploaders(this.id, 'previewEmployeeVisaLetter{{ forloop.counter|add:'-1' }}', 'VisaLetter', '{{ forloop.counter|add:'-1' }}')" />
+                                                <input type="hidden" id="file_ids_{{ forloop.counter|add:'-1' }}" name="file_ids[]" >
+                                            </div>
+                                            <div class="col-md-4 upload" onclick="openImageSelector('file-upload_visaletter{{ forloop.counter|add:'-1' }}')">
+                                                Upload
+                                            </div>
+                                        </div>
+                                     </div>
+                                      
+								       
+							        
+                                    </div>
+                                     <div  class="col-md-6 p-0">
+                                      <div class="col-md-12" style="display:flex;">
+                                        <div class="col-md-6 pr-0">
+                                            <div class="col-md-12 p-0">
+                                                <img src="{% static 'img/svg/dob.svg' %}" class="profileIconSize">&nbsp;&nbsp;
+                                                <h6 class="mt-2 mb-0" style="display: inline-block;">
+                                                    Date Of Survilance-1*
+                                                </h6>
+                                            </div>
+                                            <div class="col-md-12 p-0 mt-2">
+                                                <input class="datepicker inputField"  
+                                                placeholder="Enter Date Of Survilance-1*" name="date_of_survilance1[]" id="date_of_survilance_one_{{ forloop.counter|add:'-1' }}" value="{% if created_iso_detail.date_of_survilance1 %}{{ created_iso_detail.date_of_survilance1  | date:'d/m/Y' }}{% endif %}" readonly>
+                                                <label class="error_msg float-right" id="date_of_survilance_one_error_{{ forloop.counter|add:'-1' }}"></label>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6 pr-0">
+                                            <div class="col-md-12 p-0">
+                                                <img src="{% static 'img/svg/dob.svg' %}" class="profileIconSize">&nbsp;&nbsp;
+                                                <h6 class="mt-2 mb-0" style="display: inline-block;">
+                                                    Date Of Survilance-2*
+                                                </h6>
+                                            </div>
+                                            <div class="col-md-11 p-0 mt-2">
+                                                <input class="datepicker inputField" 
+                                                placeholder="Enter Date Of Survilance-2*" name="date_of_survilance2[]" id="date_of_survilance_two_{{ forloop.counter|add:'-1' }}" value="{% if created_iso_detail.date_of_survilance2 %}{{ created_iso_detail.date_of_survilance2  | date:'d/m/Y' }}{% endif %}" readonly>
+                                                <label class="error_msg float-right" id="date_of_survilance_two_error_{{ forloop.counter|add:'-1' }}"></label>
+                                            </div>
+                                        </div>
+                                     </div>
+                                      <div class="col-md-12" style="display:flex;">
+                                        <div class="col-md-6 pr-0">
+                                            <div class="col-md-12 p-0">
+                                                <img src="{% static 'img/svg/dob.svg' %}" class="profileIconSize">&nbsp;&nbsp;
+                                                <h6 class="mt-2 mb-0" style="display: inline-block;">
+                                                    Date Of Issue*
+                                                </h6>
+                                            </div>
+                                            <div class="col-md-12 p-0 mt-2">
+                                                <input class="datepicker inputField" 
+                                                placeholder="Enter Date Of Issue*" name="date_of_issue[]" id="date_of_issue_{{ forloop.counter|add:'-1' }}" value="{% if created_iso_detail.date_of_issue %}{{ created_iso_detail.date_of_issue  | date:'d/m/Y' }}{% endif %}" readonly>
+                                                <label class="error_msg float-right" id="date_of_issue_error{{ forloop.counter|add:'-1' }}"></label>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6 pr-0">
+                                            <div class="col-md-12 p-0">
+                                                <img src="{% static 'img/svg/dob.svg' %}" class="profileIconSize">&nbsp;&nbsp;
+                                                <h6 class="mt-2 mb-0" style="display: inline-block;">
+                                                    Date Of Expiry*
+                                                </h6>
+                                            </div>
+                                            <div class="col-md-11 p-0 mt-2">
+                                                <input class="datepicker inputField"  
+                                                placeholder="Enter Date Of Expiry*" name="date_of_expiry[]" id="date_of_expiry_{{ forloop.counter|add:'-1' }}" value="{% if created_iso_detail.date_of_expiry %}{{ created_iso_detail.date_of_expiry  | date:'d/m/Y' }}{% endif %}" readonly>
+                                                <label class="error_msg float-right" id="date_of_expiry_error{{ forloop.counter|add:'-1' }}"></label>
+                                            </div>
+								        </div>
+                                    </div>
+                                     <div class="row">
+                                            <input type="hidden" id="contact_number_error" val="0">
+                                            <div class="col-md-12 ml-4 mt-1 ">
+                                                <img src="{% static 'img/svg/turn_over.svg' %}" class="profileIconSize" />&nbsp;&nbsp;
+                                                <h6 class="mt-1 mb-0" style="display: inline-block;">
+                                                    Price of Existing ISO*
+                                                </h6>
+                                            </div>
+                                            <div class="col-md-3 mt-2 ml-4 ">
+                                                <select class="inputField selectField" style="width: 100% !important;" name="currency_code[]">
+                                                    {% for currancy in currancy_code %}
+                                                    <option value="{{currancy.currency_code}}" {% if  created_iso_detail.currency_code %}{% if  created_iso_detail.currency_code == currancy.currency_code %} selected {% endif %}{% else %}{% if currancy.currency_code == 'QAR' %} selected{% endif %}{% endif %}>{{currancy.currency_code}}</option>
+                                                    {% endfor %}
+                                                </select>
+                                            </div>
+                                            <div class="col-md-8 mt-2">
+                                                <input class="inputField contact_no_class numeric" type="text" placeholder="Price of Existing ISO*" name="price_of_existing_iso[]"
+                                            value="{{created_iso_detail.price_of_existing_iso}}"  maxlength="7"	id="price_of_existing_iso{{ forloop.counter|add:'-1' }}" />
+                                                <label class="error_msg float-right contact_no_err_class"  id="price_of_existing_iso_error{{ forloop.counter|add:'-1' }}"></label>
+                                            </div>
+                                            <div class="col-md-3 mt-3 p-4 ">
+                                                
+                                                <label class="error_msg float-right contact_type_err_class" id="contact_type_0_error"></label>
+                                            </div>
+                                        </div>
+                                      
+                                    </div>
+                                    
+                                </div>
+
+                    <hr></hr>
+                     {% endfor %}
+                    <div id="status_one_one" {% if iso_status == 0 %}style="display:none;"{% endif %}>
+                    <div id="newRows">
+
+                    </div>
+                       <div class="row mt-3">
+                            <div class="col-md-12 text-right">
+                                <a href="javascript:;" class="btn btn-primary" onclick="addNewRow()"><i class="fa fa-plus" title="Add More Lead"></i></a>
+                            </div>
+                        </div> 
+                       <hr></hr>
+                    </div>
+                </div>
+                
+            </div>
+
+       
+        <nav class="navbar fixed-bottom" id="modalFooter">
+            <div class="dropdown-divider w-100"></div>
+            <div class="col-2 offset-9 p-0">
+                <ul id="stepFooter">
+                    <li id="li1" class="selectedstep">
+                        <button class="btn btn-step activeStep" id="stepBtn1">
+                            &#10004;
+                        </button>
+                    </li>
+                    <li id="li2" class="selectedstep">
+                        <button class="btn btn-step activeStep" id="stepBtn2">
+                            &#10004;
+                        </button>
+                    </li>
+                    <li id="li3">
+                        <button class="btn btn-step" id="stepBtn3">
+                            &#10004;
+                        </button>
+                    </li>
+                    
+                </ul>
+            </div>
+        </nav>
+    </div>
+</form>
+
+
+<script>
+function displayFileName(input) {
+    const filenameDisplay = document.getElementById("filename-display");
+    if (input.files && input.files.length > 0) {
+        const filename = input.files[0].name;
+        filenameDisplay.innerText = "File Name: " + filename;
+    } else {
+        filenameDisplay.innerText = "";
+    }
+}
+function fileUploaders(id, previewId, fileType, fileId) {
+    var hiddenInput = document.querySelector('input#file_ids_' + fileId);
+    hiddenInput.value = fileId;
+    var files = $("#" + id).get(0).files;
+    var error = false;
+    var errorMessage = '';
+
+    for (var i = 0; i < files.length; ++i) {
+        var file = files[i];
+        var fileName = file.name;
+        var ext = fileName.split('.').pop().toLowerCase();
+
+        if ($.inArray(ext, ['pdf', 'jpg', 'jpeg', 'png', 'gif']) === -1) {
+            error = true;
+            errorMessage = fileType + ' should be in pdf, jpg, jpeg, png, or gif format.';
+            break;
+        }
+    }
+
+    if (error) {
+        $("#" + previewId).attr("src", "static/img/svg/aadhaargrey.svg");
+        $("#" + id).val('');
+        document.getElementById('' + fileType + '_image_error').innerHTML = errorMessage;
+    } else {
+        document.getElementById('' + fileType + '_image_error').innerHTML = '';
+
+        if (files.length > 0) {
+            var fileName = files[0].name;
+            $('#' + id).prev("label").text(fileName);
+            readURL(files, fileId);
+          
+        }
+    }
+}
+
+
+    function hideUnhideCheck(element) {
+        if ($(element).is(':checked')) {
+            $('#status_one_one').show();
+            $('#status_one').show();
+            $('#status_zero').hide();// Show the div elements
+        } else {
+            $('#status_zero').show(); 
+            $('#status_one').hide();
+            $('#status_one_one').hide();
+            
+        }
+    }
+    $(document).ready(function () {
+        $("#date_of_joining").datepicker({
+            weekStart: 1,
+            changeMonth: true,
+            changeYear: true,  
+            yearRange: "-100:+0",
+            daysOfWeekHighlighted: "6,0",
+            autoclose: true,
+            todayHighlight: true,
+            dateFormat: 'dd/mm/yy',
+        });
+    });
+    window.onload = function() {
+        // Check if there's an existing file
+        var existingFileURL = ""; // Set this to the URL of the existing file
+        if(existingFileURL) {
+            // If there's an existing file, set the value of the input to the file URL
+            document.getElementById("file-upload").value = existingFileURL;
+        }
+    };
+    var lead_id = "{{lead_id}}";
+    $('#addleadOtherDetailsForms').submit(function(e){
+
+        var iso_status = $('#iso_status').val()
+       
+
+        showLoader();
+        if(validateForm()){
+            hideLoader();
+            return false;
+        }else{
+            showLoader();
+            e.preventDefault();
+            $form = $(this)
+            var formData = new FormData(this);
+            var url = "{% url 'src:edit-lead-iso-details' 1 2 %}";
+            url = url.replace(1,parseInt(lead_id)).replace(2,parseInt(iso_status));
+           
+            $.ajax({
+                url: url,
+                type: 'POST',
+                data: formData,
+                success: function (response) {
+                    if (response.error == true) {
+                        hideLoader();
+                        $(".text-danger").html('');
+                        var data = response.message;
+                        $.each(data, function (index, value) {
+                            console.log(index);
+                            console.log(value);
+                            $('#' + index).html(value);
+                        });
+                    } else {
+                        hideLoader();
+                        openToaster("success", response.message);
+                        editLeadOtherDetails(lead_id);
+                    }
+                },
+                cache: false,
+                contentType: false,
+                processData: false
+            });
+        }
+        
+        
+    });
+    
+    
+    function validateForm(){
+        count = $('.lead_row').length
+
+        error = 0;
+        $('.error_msg').text('');
+        var iso_status = $('#iso_status').val()
+
+        if(iso_status == 0){
+       
+        $('#suggested_iso_zero_error').css("border", "");
+        if ($('[name="suggested_iso_zero"]').val() == null || $('[name="suggested_iso_zero"]').val() == "") {
+            $('[name="suggested_iso_zero"]').parent().find('.error_msg').text("Please Select Sugguested ISO*");
+            $('[name="suggested_iso_zero"]').siblings(".select2-container").css("border-radius", "0.6rem").css("border", "1px solid #db8305");
+            error = error + 1;
+        }
+        $('#enter_suggested_cost_error').css("border", "");
+        if ($('[name="enter_suggested_cost"]').val() == null || $('[name="enter_suggested_cost"]').val() == "") {
+            $('[name="enter_suggested_cost"]').parent().find('.error_msg').text("Please Enter Suggested Cost of ISO*");
+            $('[name="enter_suggested_cost"]').css("border-radius", "0.6rem").css("border", "1px solid #db8305");
+            error = error + 1;
+        }
+        }else{
+        for (var i = 0; i < count; i++) {
+        $('#suggested_iso_error' + i).css("border", "");
+        if ($('#suggested_iso_' + i).val() == null || $('#suggested_iso_' + i).val() == "") {
+            $('#suggested_iso_' + i).parent().find('.error_msg').text("Please Select ISO Certificate");
+            $('#suggested_iso_' + i).siblings(".select2-container").css("border-radius", "0.6rem").css("border", "1px solid #db8305");
+            error = error + 1;
+        }
+        $('#date_of_survilance_one_error_' + i).css("border", "");
+        if ($('#date_of_survilance_one_' + i).val() == null || $('#date_of_survilance_one_' + i).val() == "") {
+            $('#date_of_survilance_one_' + i).parent().find('.error_msg').text("Please Select Date of Servilance");
+            $('#date_of_survilance_one_' + i).css("border-radius", "0.6rem").css("border", "1px solid #db8305");
+            error = error + 1;
+        }
+        $('#date_of_survilance_two_error_' + i).css("border", "");
+        if ($('#date_of_survilance_two_' + i).val() == null || $('#date_of_survilance_two_' + i).val() == "") {
+            $('#date_of_survilance_two_' + i).parent().find('.error_msg').text("Please Select Date of Servilance");
+            $('#date_of_survilance_two_' + i).css("border-radius", "0.6rem").css("border", "1px solid #db8305");
+            error = error + 1;
+        }
+        $('#date_of_issue_error' + i).css("border", "");
+        if ($('#date_of_issue_' + i).val() == null || $('#date_of_issue_' + i).val() == "") {
+            $('#date_of_issue_' + i).parent().find('.error_msg').text("Please Select ISO Issue Date");
+            $('#date_of_issue_' + i).css("border-radius", "0.6rem").css("border", "1px solid #db8305");
+            error = error + 1;
+        }
+        $('#date_of_expiry_error' + i).css("border", "");
+        if ($('#date_of_expiry_' + i).val() == null || $('#date_of_expiry_' + i).val() == "") {
+            $('#date_of_expiry_' + i).parent().find('.error_msg').text("Please select ISO Expairy Date");
+            $('#date_of_expiry_' + i).css("border-radius", "0.6rem").css("border", "1px solid #db8305");
+            error = error + 1;
+        }
+        $('#price_of_existing_iso_error' + i).css("border", "");
+        if ($('#price_of_existing_iso' + i).val() == null || $('#price_of_existing_iso' + i).val() == "") {
+            $('#price_of_existing_iso' + i).parent().find('.error_msg').text("Please Enter Price of Existing ISO");
+            $('#price_of_existing_iso' + i).css("border-radius", "0.6rem").css("border", "1px solid #db8305");
+            error = error + 1;
+        }
+        $('#iso_issued_agency_error' + i).css("border", "");
+        if ($('#iso_issued_agency_' + i).val() == null || $('#iso_issued_agency_' + i).val() == "") {
+            $('#iso_issued_agency_' + i).parent().find('.error_msg').text("Please Enter ISO Issued agency");
+            $('#iso_issued_agency_' + i).css("border-radius", "0.6rem").css("border", "1px solid #db8305");
+            error = error + 1;
+        }
+        $('#iso_issued_consultant_error' + i).css("border", "");
+        if ($('#iso_issued_consultant' + i).val() == null || $('#iso_issued_consultant' + i).val() == "") {
+            $('#iso_issued_consultant' + i).parent().find('.error_msg').text("Please Enter Issued Consultant");
+            $('#iso_issued_consultant' + i).css("border-radius", "0.6rem").css("border", "1px solid #db8305");
+            error = error + 1;
+        }
+       
+        }
+        }
+        
+
+        console.log(error)
+        if(error > 0){
+            return true;
+        }else{
+            return false;
+        }
+    }
+    
+    function handleEsic(element){
+        if($(element).is(':checked')){
+            $(element).next().next().val(1);
+        }else{
+            $(element).next().next().val(0);
+        }
+    }
+   
+    
+    function getOption(val, id, flag){
+        if(id == 'department_id'){
+            $('[name="'+id+'"]').html('<option value="" selected>Select Department</option>')
+            $('[name="role_id"]').html('<option value="" selected>Select Role</option>')
+        }else if(id == 'role_id'){
+            $('[name="'+id+'"]').html('<option value="" selected>Select Role</option>')
+        }else{
+            $('[name="'+id+'"]').html('<option value="" selected>Select Town</option>')
+        }
+        
+        if(id != ""){
+            $.ajax({
+                url: "{% url 'src:get-options-list' %}",
+                method: 'POST',
+                data:{id: id, val:val, flag:flag, csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val()},
+                success: function (data) {
+                    $('[name="'+id+'"]').html(data.options)
+                    $(".selectField").select2();
+                },
+                error: function (err) {
+                    console.log(err)
+                }
+            });
+        } 
+    }
+
+   
+      function addNewRow(){
+            count = $('.lead_row').length
+            new_count = count;
+            
+            newRow = `
+           
+                 <input type="hidden" name="existing_iso_id[]" id="existing_iso_id" value="0" >
+
+                                <div class="row col-md-12 p-0 mt-3 lead_row" style="display:flex">
+                                   
+                                    <div class="col-md-6 p-0">
+                                     <div class="col-md-12 p-0 ml-1 ">
+                                        <div class="row">
+                                            <div class="col-md-12 ">
+                                                <img src="{% static 'img/svg/core_bussiness.svg' %}" class="profileIconSize" />&nbsp;&nbsp;
+                                                <h6 class="mt-2 mb-0" style="display: inline-block;">
+                                                    ISO Certifications*
+                                                </h6>
+                                            </div>
+                                            <div class="col-md-12 mt-2">
+                                                <select class="inputField selectField" style="width: 100%;height:20;" name="suggested_iso[]" id="suggested_iso_`+new_count+`" >
+                                                    <option value="">Select ISO Certifications</option>
+                                                    {% for isos in isos_master %}
+                                                    <option value="{{isos.id}}" {% if isos.id == created_iso_detail.iso_applicable_id %}selected{% endif %}>ISO {{isos.iso_id}}-{{isos.iso_name}}</option>
+                                                    {% endfor %}
+                                                    
+                                                </select>
+                                                <label class="error_msg float-right" id="suggested_iso_error`+new_count+`"></label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    
+                                        <div class="col-md-12 p-0">
+                                            <div class="col-md-12">
+                                                <img src="{% static 'img/svg/agency.svg' %}" class="profileIconSize">&nbsp;&nbsp;
+                                                <h6 class="mt-2 mb-0" style="display: inline-block;">
+                                                    ISO Issued Agency*
+                                                </h6>
+                                            </div>
+                                            <div class="col-md-12  mt-2">
+                                                <input class="inputField " type="text"    value="{{created_iso_detail.iso_issued_agency}}"  placeholder="ISO Issued Agency*" name="iso_issued_agency[]" id="iso_issued_agency_`+new_count+`" maxlength="50" >
+                                                <label class="error_msg float-right" id="iso_issued_agency_error`+new_count+`"></label>
+                                            </div>
+                                        </div>
+                                    
+                                        <div class="col-md-12 p-0">
+                                            <div class="col-md-12 ">
+                                                <img src="{% static 'img/svg/consultation.svg' %}" class="profileIconSize">&nbsp;&nbsp;
+                                                <h6 class="mt-2 mb-0" style="display: inline-block;">
+                                                   ISO Issued Consultant*
+                                                </h6>
+                                            </div>
+                                            <div class="col-md-12 mt-2">
+                                                <input class="inputField " type="text" value="{{created_iso_detail.iso_issued_consultant}}" placeholder="ISO Issued Consultant*" name="iso_issued_consultant[]" id="iso_issued_consultant`+new_count+`" maxlength="50" >
+                                                <label class="error_msg float-right" id="iso_issued_consultant_error`+new_count+`"></label>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-12">
+                                        <div class="col-md-12 p-0 ">
+                                                <img src="{% static 'img/svg/copy.svg' %}" class="profileIconSize">&nbsp;&nbsp;
+                                                <h6 class="mt-2 p-0 mb-0" style="display: inline-block;">
+                                                   Copy Of ISO*
+                                                </h6>
+                                            </div>
+                                       
+                                        <label class="error_msg float-right" id="VisaLetter_image_error"></label>
+                                        <div class="row fileUploadContainer mt-2">
+                                            <div class="col-md-8 " style="padding: 0.6rem;">
+                                                <label class="custom-file-upload m-0 lightGrey">
+                                                    Upload ISO
+                                                </label>
+                                                <input id="file-upload_visaletter`+new_count+`" name="iso_doc[]" type="file" accept="image/jpeg, image/png, application/pdf"   multiple
+                                                style="display: none;" onchange="fileUploaders(this.id,'previewEmployeeVisaLetter`+new_count+`', 'VisaLetter','${new_count}')" />
+                                                <input type="hidden" id="file_ids_`+new_count+`" name="file_ids[]" >
+                                            </div>
+                                            <div class="col-md-4 upload" onclick="openImageSelector('file-upload_visaletter`+new_count+`')">
+                                                Upload
+                                            </div>
+                                        </div>
+                                     </div>
+                                      
+								       
+							        
+                                    </div>
+                                     <div  class="col-md-6 p-0">
+                                      <div class="col-md-12" style="display:flex;">
+                                        <div class="col-md-6 pr-0">
+                                            <div class="col-md-12 p-0">
+                                                <img src="{% static 'img/svg/dob.svg' %}" class="profileIconSize">&nbsp;&nbsp;
+                                                <h6 class="mt-2 mb-0" style="display: inline-block;">
+                                                    Date Of Survilance-1*
+                                                </h6>
+                                            </div>
+                                            <div class="col-md-12 p-0 mt-2">
+                                                <input class="datepicker inputField"  
+                                                placeholder="Enter Date Of Survilance-1*" name="date_of_survilance1[]" id="date_of_survilance_one_`+new_count+`" value="{% if created_iso_detail.date_of_survilance1 %}{{ created_iso_detail.date_of_survilance1  | date:'d/m/Y' }}{% endif %}" readonly>
+                                                <label class="error_msg float-right" id="date_of_survilance_one_error_`+new_count+`"></label>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6 pr-0">
+                                            <div class="col-md-12 p-0">
+                                                <img src="{% static 'img/svg/dob.svg' %}" class="profileIconSize">&nbsp;&nbsp;
+                                                <h6 class="mt-2 mb-0" style="display: inline-block;">
+                                                    Date Of Survilance-2*
+                                                </h6>
+                                            </div>
+                                            <div class="col-md-11 p-0 mt-2">
+                                                <input class="datepicker inputField" 
+                                                placeholder="Enter Date Of Survilance-2*" name="date_of_survilance2[]" id="date_of_survilance_two_`+new_count+`" value="{% if created_iso_detail.date_of_survilance2 %}{{ created_iso_detail.date_of_survilance2  | date:'d/m/Y' }}{% endif %}" readonly>
+                                                <label class="error_msg float-right" id="date_of_survilance_two_error_`+new_count+`"></label>
+                                            </div>
+                                        </div>
+                                     </div>
+                                      <div class="col-md-12" style="display:flex;">
+                                        <div class="col-md-6 pr-0">
+                                            <div class="col-md-12 p-0">
+                                                <img src="{% static 'img/svg/dob.svg' %}" class="profileIconSize">&nbsp;&nbsp;
+                                                <h6 class="mt-2 mb-0" style="display: inline-block;">
+                                                    Date Of Issue*
+                                                </h6>
+                                            </div>
+                                            <div class="col-md-12 p-0 mt-2">
+                                                <input class="datepicker inputField" 
+                                                placeholder="Enter Date Of Issue*" name="date_of_issue[]" id="date_of_issue_`+new_count+`" value="{% if created_iso_detail.date_of_issue %}{{ created_iso_detail.date_of_issue  | date:'d/m/Y' }}{% endif %}" readonly>
+                                                <label class="error_msg float-right" id="date_of_issue_error`+new_count+`"></label>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6 pr-0">
+                                            <div class="col-md-12 p-0">
+                                                <img src="{% static 'img/svg/dob.svg' %}" class="profileIconSize">&nbsp;&nbsp;
+                                                <h6 class="mt-2 mb-0" style="display: inline-block;">
+                                                    Date Of Expiry*
+                                                </h6>
+                                            </div>
+                                            <div class="col-md-11 p-0 mt-2">
+                                                <input class="datepicker inputField"  
+                                                placeholder="Enter Date Of Expiry*" name="date_of_expiry[]" id="date_of_expiry_`+new_count+`" value="{% if created_iso_detail.date_of_expiry %}{{ created_iso_detail.date_of_expiry  | date:'d/m/Y' }}{% endif %}" readonly>
+                                                <label class="error_msg float-right" id="date_of_expiry_error`+new_count+`"></label>
+                                            </div>
+								        </div>
+                                    </div>
+                                     <div class="row">
+                                            <input type="hidden" id="contact_number_error" val="0">
+                                            <div class="col-md-12 ml-4 mt-1 ">
+                                                <img src="{% static 'img/svg/turn_over.svg' %}" class="profileIconSize" />&nbsp;&nbsp;
+                                                <h6 class="mt-1 mb-0" style="display: inline-block;">
+                                                    Price of Existing ISO*
+                                                </h6>
+                                            </div>
+                                            <div class="col-md-3 mt-2 ml-4 ">
+                                                <select class="inputField selectField" style="width: 100% !important;" name="currency_code[]">
+                                                    {% for currancy in currancy_code %}
+                                                    <option value="{{currancy.currency_code}}" {% if  currancy.currency_code == 'QAR'  %} selected {% endif %}>{{currancy.currency_code}}</option>
+                                                    {% endfor %}
+                                                </select>
+                                            </div>
+                                            <div class="col-md-8 mt-2">
+                                                <input class="inputField contact_no_class numeric" type="text" placeholder="Price of Existing ISO*" name="price_of_existing_iso[]"
+                                            value="{{created_iso_detail.price_of_existing_iso}}"  maxlength="7"	id="price_of_existing_iso`+new_count+`" />
+                                                <label class="error_msg float-right contact_no_err_class"  id="price_of_existing_iso_error`+new_count+`"></label>
+                                            </div>
+                                            <div class="col-md-10 mt-3 p-4 ">
+                                                
+                                                <label class="error_msg float-right contact_type_err_class" id="contact_type_0_error"></label>
+                                            </div>
+                                            <div class="col-md-2" style="float:right;">
+                                                    <a href="javascript:;" class="btn btn-danger" style="margin-top: 37px;" onclick="removeRowlead(this)"><i class="fa fa-trash"></i></a>
+                                            </div>
+                                        </div>
+                                      
+                                    </div>
+                                    
+                                </div>
+
+                    <hr></hr>
+            `;
+            
+            $('#newRows').append(newRow);
+            
+            $(".selectField").select2();
+            $("[name='suggested_iso[]']").select2({placeholder:'Select'});
+               $("input[name='date_of_survilance1[]']").datepicker({
+            weekStart: 1,
+            changeMonth: true,
+            changeYear: true,  
+            yearRange: "-100:+0",
+            daysOfWeekHighlighted: "6,0",
+            autoclose: true,
+            todayHighlight: true,
+            dateFormat: 'dd/mm/yy',
+            minDate: 0
+        });
+        $("input[name='date_of_issue[]']").datepicker({
+            weekStart: 1,
+            changeMonth: true,
+            changeYear: true,  
+            yearRange: "-100:+0",
+            daysOfWeekHighlighted: "6,0",
+            autoclose: true,
+            todayHighlight: true,
+            dateFormat: 'dd/mm/yy',
+            minDate: 0
+        });
+        $("input[name='date_of_expiry[]']").datepicker({
+            weekStart: 1,
+            changeMonth: true,
+            changeYear: true,  
+            yearRange: "-100:+0",
+            daysOfWeekHighlighted: "6,0",
+            autoclose: true,
+            todayHighlight: true,
+            dateFormat: 'dd/mm/yy',
+            minDate: 0
+        });
+        $("input[name='date_of_survilance2[]']").datepicker({
+            weekStart: 1,
+            changeMonth: true,
+            changeYear: true,  
+            yearRange: "-100:+0",
+            daysOfWeekHighlighted: "6,0",
+            autoclose: true,
+            todayHighlight: true,
+            dateFormat: 'dd/mm/yy',
+            minDate: 1
+        });
+            
+        }
+        
+        function removeRowlead(element){
+            $(element).parents(':last .lead_row').remove();
+            refeshNames();
+        }
+                function refeshNames(){
+            i=0;
+            $('.lead_row').each(function(){
+                if(i>0){
+                    $(this).find('.suggested_iso').attr('name','suggested_iso_'+i+'[]');
+                   
+                   
+                    
+                }
+                i = i + 1;
+            })
+            
+        } 
+      
+           
+                
+        function openImageSelector(fileUploadID) {
+            $("#" + fileUploadID).click();
+        }
+
+    function updateIsoStatus(checkbox) {
+    var hiddenInput = document.querySelector('input[name="iso_status"]');
+    if (checkbox.checked) {
+        hiddenInput.value = 1; // Set value to 1 when checkbox is checked
+    } else {
+        hiddenInput.value =0; // Set value to 0 when checkbox is unchecked
+    }
+    if (checkbox.checked) {
+        checkbox.removeAttribute('checked');
+    }
+}
+    $(document).ready(function() {
+       
+        $("input[name='date_of_survilance1[]']").datepicker({
+            weekStart: 1,
+            changeMonth: true,
+            changeYear: true,  
+            yearRange: "-100:+0",
+            daysOfWeekHighlighted: "6,0",
+            autoclose: true,
+            todayHighlight: true,
+            dateFormat: 'dd/mm/yy',
+            minDate: 0
+        });
+        $("input[name='date_of_issue[]']").datepicker({
+            weekStart: 1,
+            changeMonth: true,
+            changeYear: true,  
+            yearRange: "-100:+0",
+            daysOfWeekHighlighted: "6,0",
+            autoclose: true,
+            todayHighlight: true,
+            dateFormat: 'dd/mm/yy',
+            maxDate: 0
+        });
+        $("input[name='date_of_expiry[]']").datepicker({
+            weekStart: 1,
+            changeMonth: true,
+            changeYear: true,  
+            yearRange: "-100:+0",
+            daysOfWeekHighlighted: "6,0",
+            autoclose: true,
+            todayHighlight: true,
+            dateFormat: 'dd/mm/yy',
+            minDate: 0
+        });
+        $("input[name='date_of_survilance2[]']").datepicker({
+            weekStart: 1,
+            changeMonth: true,
+            changeYear: true,  
+            yearRange: "-100:+0",
+            daysOfWeekHighlighted: "6,0",
+            autoclose: true,
+            todayHighlight: true,
+            dateFormat: 'dd/mm/yy',
+            minDate: 1
+        });
+        
+    });
+         
+</script>

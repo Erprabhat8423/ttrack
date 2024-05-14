@@ -1,0 +1,396 @@
+{% load static %}
+<form name="addLeadOtherDetailsForms" id="addLeadOtherDetailsForms" autocomplete="off" method="POST" autocomplete="off" action="" enctype="multipart/form-data">
+    {% csrf_token %}
+    <input type="hidden" name="last_user_id" id="last_user_id" value="{{ last_user_id }}" >
+
+    <div class="modal-AddUser centered">
+        <div class="modal-header" id="headerStep1">
+            <div class="col-12 p-0">
+                <div class="row">
+                    <div class="col-6" >
+                        <button class="iconCover" onclick="editLeadIsoDetails('{{ lead_id }}')" >
+                            <img src="{% static 'img/svg/backarrow.svg' %}" style="width: 1rem" onclick="editLeadIsoDetails('{{ lead_id }}')" />
+                        </button>
+                        <h5 class="mt-md-2" style="display: inline">
+                            &nbsp;&nbsp; Lead Other Details
+                        </h5>
+                    </div>
+                    <div class="col-6">
+                        <button class="btn btn-save float-right" type="submit">
+                            Submit
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+                
+        <div class="modal-body" id="addUserModalBody" style="overflow: auto">
+            <div class="row">
+                <div class="col-md-12 p-0 h-100 w-100">
+                    <div class="row">
+                         <div class="col-md-2 mt-1">
+                            <div class="col-md-12 p-0">
+                                <img src="{% static 'img/svg/itemProductPitch.svg' %}" class="profileIconSize">&nbsp;&nbsp;
+                                <h6 class="mt-2 mb-0" style="display: inline-block;">
+                                    Other Product Pitch
+                                </h6>
+                            </div>
+                            <div class="col-md-12 p-0 mt-2">
+                                <label class="switch">
+                                    <input type="checkbox" class="checkbox" name="other_product_pitch" onclick="hideUnhideCheck(this)"  {% if other_lead_deatils.other_production_pitch  == '1' %}checked{% endif %}>
+                                    <span class="slider round" title="Enable/Disable"></span>
+                                   
+                                    <label class="error_msg float-right"></label>
+                                </label>
+                            </div>
+                        </div>
+                        <div class="col-md-7" id="service"  {% if other_lead_deatils.other_production_pitch  == '0' %}style="display:none"{% endif %}{% if other_lead_deatils %} {%else%}style="display:none"{% endif %}>
+                            <div class="row">
+                                <div class="col-md-12 p-0">
+                                    <img src="{% static 'img/svg/core_bussiness.svg' %}" class="profileIconSize" />&nbsp;&nbsp;
+                                    <h6 class="mt-2 mb-0" style="display: inline-block;">
+                                        Select Services
+                                    </h6>
+                                </div>
+                                <div class="col-md-12 p-0 mt-1 ">
+                                    <select class="inputField selectField" style="width: 100%;height:20;" name="software_or_erp[]" id="software_or_erp" multiple>
+                                        {% for ser in service %}
+                                        <option value="{{ser.id}}" {% if ser.id|stringformat:"i" in other_lead_deatils.software_or_erp %}selected{% endif %}>{{ser.service_name}}</option>
+                                        {% endfor %}
+                                        
+                                    </select>
+                                    <label class="error_msg float-right" id=""></label>
+                                </div>
+                            </div>
+                        </div>
+                        
+                      
+                      
+                    </div>
+                    <hr></hr>
+                    
+                    <div class="p-0 "  >
+                  
+                       
+
+                                <div class="row col-md-12 p-0 mt-3" style="display:flex">
+                                
+
+                                    <div class="col-md-6 p-0">
+                                     <div class="col-md-12" style="display:flex;">
+                                     <div class="col-md-3 pr-0 ">
+                                     </div>
+                                        <div class="col-md-7 pr-0 ">
+
+                                        </div>
+                                        
+                                    </div>
+                                   
+                                       <div class="col-md-12" style="display:flex;">
+                                         <div class="col-md-6 p-0 ">
+                                            <div class="col-md-12 p-0">
+                                                <img src="{% static 'img/svg/dob.svg' %}" class="profileIconSize">&nbsp;&nbsp;
+                                                <h6 class="mt-2 mb-0" style="display: inline-block;">
+                                                    Any Follow up ?
+                                                </h6>
+                                            </div>
+                                            <div class="col-md-12 p-0 mt-2">
+                                                <input class="datepicker inputField"
+                                                placeholder="Follow up Date" name="any_follow_up" id="any_follow_up" value="{% if other_lead_deatils.visit_date %}{{ other_lead_deatils.visit_date  | date:'d/m/Y' }}{% endif %}" readonly>
+                                                <label class="error_msg float-right" id="dob_error"></label>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6 pr-0">
+                                            <div class="col-md-12 p-0">
+                                                <img src="{% static 'img/svg/dob.svg' %}" class="profileIconSize">&nbsp;&nbsp;
+                                                <h6 class="mt-2 mb-0" style="display: inline-block;">
+                                                    Reminder
+                                                </h6>
+                                            </div>
+                                            <div class="col-md-12 p-0 mt-2">
+                                                <input class="datepicker inputField"
+                                                placeholder="Reminder" name="reminder" id="reminder" value="{% if other_lead_deatils.reminder %}{{ other_lead_deatils.reminder  | date:'d/m/Y' }}{% endif %}" readonly>
+                                                <label class="error_msg float-right" id="dob_error"></label>
+                                            </div>
+                                        </div>
+                                        
+                                     </div>
+								    <div class="col-md-12 p-0">
+                                        <div class="col-md-12 p-0">
+                                            <div class="col-md-12 ">
+                                                <img src="{% static 'img/svg/otherResources.svg' %}" class="profileIconSize">&nbsp;&nbsp;
+                                                <h6 class="mt-2 mb-0" style="display: inline-block;">
+                                                   Remark*
+                                                </h6>
+                                            </div>
+                                            <div class="col-md-12 mt-2">
+                                                <textarea class="inputField " type="text" value="{{other_lead_deatils.remark}}" placeholder="Remark*" name="remark" maxlength="500"  style="height:160px;">{% if other_lead_deatils.remark %}{{other_lead_deatils.remark}}{% else %}{% endif %}</textarea>
+                                                <label class="error_msg float-right"></label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                 <div class="col-md-6" style="display:flex;">
+                                    <div class="col-md-12" style="display:flex;">
+                                       
+                                    
+                                        <div class="col-md-6 p-0">
+                                        
+                                            <div class="col-md-12  ">
+                                                <img src="{% static 'img/svg/otherResources.svg' %}" class="profileIconSize">&nbsp;&nbsp;
+                                                <h6 class="mt-2 mb-0" style="display: inline-block;">
+                                                   Other Resource Required ?
+                                                </h6>
+                                            </div>
+                                            <div class="col-md-12  mt-2">
+                                                <select class="inputField selectField"  name="other_resource_required" id="other_resource_required">
+                                                    {% for sales in sales_persons %}
+
+                                                    <option value="{{sales.id}}" {% if sales.id == other_resource %}selected{% endif %}>{{sales.first_name}} {{sales.last_name}}</option>
+                                                    {% endfor %}
+                                                    
+                                                </select>
+                                            </div>
+                                        </div>
+                                         <div class="col-md-6 p-0 ">
+                                            <div class="row">
+                                                <div class="col-md-12 p-0">
+                                                    <img src="{% static 'img/svg/singleUserImage.svg' %}" class="profileIconSize" />&nbsp;&nbsp;
+                                                    <h6 class="mt-2 mb-0" style="display: inline-block;">
+                                                        Created By
+                                                    </h6>
+                                                </div>
+                                                <div class="col-md-12 p-0 mt-2 ">
+                                                    <select class="inputField selectField" style="width: 100%;height:20;" name="created_by_id" id="created_by_id" >
+                                                        {% for user in sales_persons %}
+                                                        <option value="{{user.id}}" {% if user.id ==  other_lead_deatils.created_by_id %}selected{% endif %}>{{user.first_name}} {{user.last_name}}</option>
+                                                        {% endfor %}
+                                                        
+                                                    </select>
+                                                    <label class="error_msg float-right" id=""></label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                     </div>
+                                     <div class="col-md-1  ">
+                                     </div>
+                                </div>
+                   
+                    
+                  
+                     </div>
+                </div>
+                
+            </div>
+
+       
+        <nav class="navbar fixed-bottom" id="modalFooter">
+            <div class="dropdown-divider w-100"></div>
+            <div class="col-2 offset-9 p-0">
+                <ul id="stepFooter">
+                    <li id="li1" class="selectedstep">
+                        <button class="btn btn-step activeStep" id="stepBtn1">
+                            &#10004;
+                        </button>
+                    </li>
+                    <li id="li2" class="selectedstep">
+                        <button class="btn btn-step activeStep" id="stepBtn2">
+                            &#10004;
+                        </button>
+                    </li>
+                    <li id="li3">
+                        <button class="btn btn-step activeStep" id="stepBtn3">
+                            &#10004;
+                        </button>
+                    </li>
+                    
+                </ul>
+            </div>
+        </nav>
+    </div>
+</form>
+
+
+<script>
+ 
+    function hideUnhideCheck(element) {
+        if ($(element).is(':checked')) {
+            $('#service').show();
+        } else {
+            $('#service').hide(); 
+            // Hide the div elements
+        }
+    }
+    $(document).ready(function () {
+        $("#date_of_joining").datepicker({
+            weekStart: 1,
+            changeMonth: true,
+            changeYear: true,  
+            yearRange: "-100:+0",
+            daysOfWeekHighlighted: "6,0",
+            autoclose: true,
+            todayHighlight: true,
+            dateFormat: 'dd/mm/yy',
+        });
+    });
+    var lead_id = "{{lead_id}}";
+    $('#addLeadOtherDetailsForms').submit(function(e){
+        showLoader();
+        if(validateForm()){
+            hideLoader();
+            return false;
+        }else{
+            showLoader();
+            e.preventDefault();
+            $form = $(this)
+            var formData = new FormData(this);
+            url =  "{% url 'src:edit-lead-other-details' 1 %}";
+            url = url.replace(1,parseInt(lead_id));
+           
+            $.ajax({
+                url: url,
+                type: 'POST',
+                data: formData,
+                success: function (response) {
+                    if (response.error == true) {
+                        hideLoader();
+                        $(".text-danger").html('');
+                        var data = response.message;
+                        $.each(data, function (index, value) {
+                            console.log(index);
+                            console.log(value);
+                            $('#' + index).html(value);
+                        });
+                    } else {
+                        hideLoader();
+                        openToaster("success", response.message);
+                        closeUserNewModal();
+                        getOrderRecord('1');
+                        
+                    }
+                },
+                cache: false,
+                contentType: false,
+                processData: false
+            });
+        }
+        
+        
+    });
+    $(document).ready(function () {
+    var tomorrow = new Date();
+    tomorrow.setDate(tomorrow.getDate() + 1);
+
+    $("#reminder").datepicker({
+        weekStart: 1,
+        changeMonth: true,
+        changeYear: true,
+        yearRange: "-100:+0",
+        daysOfWeekHighlighted: "6,0",
+        autoclose: true,
+        todayHighlight: true,
+        dateFormat: 'dd/mm/yy',
+        minDate: tomorrow, // Set minimum date to tomorrow initially
+        maxDate: tomorrow,
+        onSelect: function(selectedDate) {
+            // When a date is selected in any_follow_up
+            var anyFollowUpDate = $("#any_follow_up").datepicker("getDate");
+            if (anyFollowUpDate != null && selectedDate !== '') {
+                // If any_follow_up date is selected, update minDate of reminder
+                $("#reminder").datepicker("option", "minDate", selectedDate);
+            }
+        }
+    });
+
+   $("#any_follow_up").datepicker({
+    weekStart: 1,
+    changeMonth: true,
+    changeYear: true,
+    yearRange: "-100:+0",
+    daysOfWeekHighlighted: "6,0",
+    autoclose: true,
+    todayHighlight: true,
+    dateFormat: 'dd/mm/yy',
+    minDate: 0,
+    onSelect: function(selectedDate) {
+        if (selectedDate !== '') {
+            // Parse the selectedDate to a Date object
+            var anyFollowUpDate = $(this).datepicker("getDate");
+            // If any_follow_up date is selected, update maxDate of reminder
+            $("#reminder").datepicker("option", "maxDate", anyFollowUpDate);
+        }
+    }
+});
+});
+    function validateForm(){
+        error = 0;
+        $('.error_msg').text('');
+        var other_product_pitch = $('[name="other_product_pitch"]').val()
+        if(other_product_pitch == 0){
+        $('#organization_id').css("border", "");
+        if ($('[name="reminder"]').val() == null || $('[name="reminder"]').val() == "") {
+            $('[name="reminder"]').parent().find('.error_msg').text("Please select Reminder Date*");
+            $('[name="reminder"]').siblings(".select2-container").css("border-radius", "0.6rem").css("border", "1px solid #db8305");
+            error = error + 1;
+        }
+         if ($('[name="any_follow_up"]').val() == null || $('[name="any_follow_up"]').val() == "") {
+            $('[name="any_follow_up"]').parent().find('.error_msg').text("Please select Any Followup Date*");
+            $('[name="any_follow_up"]').siblings(".select2-container").css("border-radius", "0.6rem").css("border", "1px solid #db8305");
+            error = error + 1;
+        }
+         if ($('[name="other_resource_required"]').val() == null || $('[name="other_resource_required"]').val() == "") {
+            $('[name="other_resource_required"]').parent().find('.error_msg').text("Please select other resource required*");
+            $('[name="other_resource_required"]').siblings(".select2-container").css("border-radius", "0.6rem").css("border", "1px solid #db8305");
+            error = error + 1;
+        }
+        $('#remark').css("border", "");
+        if ($('[name="remark"]').val() == null || $('[name="remark[]"]').val() == "") {
+            $('[name="remark"]').parent().find('.error_msg').text("Please Enter Remark*");
+            $('[name="remark"]').siblings(".select2-container").css("border-radius", "0.6rem").css("border", "1px solid #db8305");
+            error = error + 1;
+        }
+        }else{
+        if ($('[name="software_or_erp[]"]').val() == null || $('[name="software_or_erp[]"]').val() == "") {
+            $('[name="software_or_erp[]"]').parent().find('.error_msg').text("Please select service*");
+            $('[name="software_or_erp[]"]').siblings(".select2-container").css("border-radius", "0.6rem").css("border", "1px solid #db8305");
+            error = error + 1;
+        }
+        $('#remark').css("border", "");
+        if ($('[name="remark"]').val() == null || $('[name="remark"]').val() == "") {
+            $('[name="remark"]').parent().find('.error_msg').text("Please select remark*");
+            $('[name="remark"]').siblings(".select2-container").css("border-radius", "0.6rem").css("border", "1px solid #db8305");
+            error = error + 1;
+        }
+         if ($('[name="reminder"]').val() == null || $('[name="reminder"]').val() == "") {
+            $('[name="reminder"]').parent().find('.error_msg').text("Please select Reminder Date*");
+            $('[name="reminder"]').siblings(".select2-container").css("border-radius", "0.6rem").css("border", "1px solid #db8305");
+            error = error + 1;
+        }
+         if ($('[name="any_follow_up"]').val() == null || $('[name="any_follow_up"]').val() == "") {
+            $('[name="any_follow_up"]').parent().find('.error_msg').text("Please select Any Followup Date*");
+            $('[name="any_follow_up"]').siblings(".select2-container").css("border-radius", "0.6rem").css("border", "1px solid #db8305");
+            error = error + 1;
+        }
+         if ($('[name="other_resource_required"]').val() == null || $('[name="other_resource_required"]').val() == "") {
+            $('[name="other_resource_required"]').parent().find('.error_msg').text("Please select other resource required*");
+            $('[name="other_resource_required"]').siblings(".select2-container").css("border-radius", "0.6rem").css("border", "1px solid #db8305");
+            error = error + 1;
+        }
+        }
+        
+
+
+        if(error > 0){
+            return true;
+        }else{
+            return false;
+        }
+    }
+    
+ 
+   
+    
+  
+
+</script>

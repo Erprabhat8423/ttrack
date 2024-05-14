@@ -1,0 +1,82 @@
+{% load static %}
+
+{% if lead_lists %}
+    {% for lead_list in lead_lists %}
+        <tr class="odd {% if forloop.counter == 1 %}selected{% endif %}">
+             <td class="checked_class {{lead_list.leave_status}}  {{lead_list.level_id}}" >
+                
+                <input type="checkbox" class="checkbox" id="new_module_1 1" name="order_id[]" value="{{ lead_list.id }} {{lead_list.created_by_id}}" >
+                
+            </td>
+            <td class="order_id hover-underline" onclick="showActivity({{ lead_list.id }})" data-toggle="modal" data-target="#addOrganisationModal">TTRACK{{ lead_list.id }}</td>
+            <td class="distributor_name" onclick="getOrderDetails('{{ lead_list.id }}')" >{{lead_list.company_name |capfirst}}</td>
+            <td class="retailer_name" onclick="getOrderDetails('{{ lead_list.id }}')">{{lead_list.contact_person_name |capfirst}}</td>
+            <td class="created_by_name" onclick="getOrderDetails('{{ lead_list.id }}')" >{{ lead_list.created_by_name |capfirst }}</td>
+            <td class="request_date" onclick="getOrderDetails('{{ lead_list.id }}')" >{{ lead_list.created_at|date:'d/m/Y h:i A' }}</td>
+            <td class="status_name" onclick="getOrderDetails('{{ lead_list.id }}')">{% if lead_list.formatted_last_follow_up_date %}{{lead_list.formatted_last_follow_up_date|date:'d/m/Y h:i A'}}{% else %}-{% endif %}</td>
+            <td>
+                <div class="row" style="display:flex; ">
+                    <img src="{% static 'img/svg/editcopy.svg' %}" class="tableRowIcon"  onclick="editLeadBasicDetail('{{lead_list.id}}')"/>  
+                </div>
+            </td>
+        </tr>
+    {% endfor %}
+        <tr id="loading" style="display: none;">
+            <td class="text-center" colspan="6"><i class="fa fa-spinner fa-spin" style="font-size:2rem"></i>
+            </td>
+        </tr>
+    {% else %}
+        <tr>
+            <td colspan="8" style="color:gray;text-align: center;">No record found...</td>
+        </tr>
+    {% endif %}
+<script>
+ $('.checked_all').prop('checked',false);
+$('.assigenClass').hide();
+    getOrderDetails('{{lead_id}}');
+     $('#total_pages').val('{{total_pages}}');
+    html = `{{lead_count}}`;
+    $('#order_count').html(html);
+ $(".checked_all_checkbox").attr("checked", false);
+    $('.checked_all').on('change', function() {     
+        $('.checkbox').prop('checked', $(this).prop("checked")); 
+        checked_all();           
+    });
+    function checked_all(){
+        
+
+        $('.assigenClass').hide();
+   
+
+        if($('.checkbox:checked').prop('checked') == true){
+            $('.checked_all').prop('checked',true);
+        }else{
+            $('.checked_all').prop('checked',false);
+        }
+        if($('.checkbox:checked').length > 0){
+
+            $('.assigenClass').show();
+        }else{
+         
+            $('.assigenClass').hide();
+            
+        }
+    }
+    
+    $('.checkbox').change(function(){ 
+        checked_all();
+    });
+    
+     function uncheckCheckbox() {
+            // Get the checkbox element
+            var checkbox = document.querySelector('.checked_all');
+
+            // Uncheck the checkbox
+            checkbox.checked = false;
+        }
+    {% if lead_lists %}
+    $(".checked_all").attr("disabled", false);
+    {% else %}    
+    $(".checked_all").attr("disabled", true);
+    {% endif %}
+</script>

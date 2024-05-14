@@ -1,0 +1,284 @@
+{% load static %}
+<style>
+    small{
+        font-size: 11px;
+    }
+</style>
+<div class="row" style="height: 85%;">
+    <div class="col-md-12 p-0">
+        <div class="row">  
+            <div class="col-12 p-0 mt-4 col-md-12 p-md-0 mt-md-3">
+                <div class="row">
+                    <div class="col-4 p-0 col-md-4 p-md-0">
+                        <div class="row">
+                            <div class="col-2 p-0 col-md-2 p-md-0">
+                                <img src="{% static 'img/svg/order/order_No.svg' %}" class="profileIconSize" />
+                            </div>
+                            <div class="col-10 p-1 col-md-10">
+                                <h6 class="smallText" style="font-weight:bold;color:black;font-size:15px;">Employee IDs</h6>
+                                <h6 class="largeText"> {{ emp_sap_id }} </h6>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-4 p-0 col-md-4 p-md-0">
+                        <div class="row">
+                            <div class="col-2 p-0 col-md-2 p-md-0">
+                                <img src="{% static 'img/svg/order/route.svg' %}" class="profileIconSize" />
+                            </div>
+                            <div class="col-10 p-1 col-md-10">
+                                <h6 class="smallText" style="font-weight:bold;color:black;font-size:15px;">Visit Place</h6>
+                                <h6 class="largeText"> {{assets_details.visit_place}}</h6>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-4 p-0 col-md-4 p-md-0">
+                        <div class="row">
+                            <div class="col-2 p-0 col-md-2 p-md-0">
+                                <img src="{% static 'img/svg/order/status.svg' %}" class="profileIconSize" />
+                            </div>
+                            <div class="col-10 p-1 col-md-10">
+                                <h6 class="smallText" style="font-weight:bold;color:black;font-size:15px;">Status</h6>
+                                
+                                <h6>{% if assets_details.status == 0 %} Pending {% elif assets_details.status == 1 %} Approved   {% else %} {% endif %}</h6>
+                            </div>
+                        </div>
+                    </div>
+                    
+                </div>
+            </div>
+            <div class="col-12 p-0 mt-4 col-md-12 p-md-0 mt-md-2">
+                <div class="row">
+                    <div class="col-4 p-0 col-md-4 p-md-0">
+                        <div class="row">
+                            <div class="col-2 p-0 col-md-2 p-md-0">
+                                <img src="{% static 'img/svg/order/modifiedDate_time.svg' %}" class="profileIconSize" />
+                            </div>
+                            <div class="col-10 p-1 col-md-10">
+                                <h6 class="smallText" style="font-weight:bold;color:black;font-size:14px;">Visit Date(From-To)</h6>
+                                <h6 class="largeText"> {{ assets_details.visit_from_date}} - {{ assets_details.visit_to_date}}</h6>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-4 p-0 col-md-4 p-md-0">
+                        <div class="row">
+                            <div class="col-2 p-0 col-md-2 p-md-0">
+                                <img src="{% static 'img/svg/user.svg' %}" class="profileIconSize" />
+                            </div>
+                            <div class="col-10 p-1 col-md-10">
+                                <h6 class="smallText" style="font-weight:bold;color:black;font-size:15px;">Employee Name</h6>
+                                <h6 class="largeText">{{ assets_details.user_name}}</h6>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-4 p-0 col-md-4 p-md-0">
+                        <div class="row">
+                            <div class="col-2 p-0 col-md-2 p-md-0">
+                                <img src="{% static  'img/svg/user.svg' %}" class="profileIconSize" />
+                            </div>
+                            <div class="col-10 p-1 col-md-10">
+                                <h6 class="smallText" style="font-weight:bold;color:black;font-size:15px;">Total Expenses</h6>
+                                <h6 class="largeText"> {{assets_details.total_expenses |capfirst}} </h6>
+                            </div>
+                        </div>
+                    </div>
+                    
+                </div>
+            </div>
+
+            {% comment %} ------------------------------created date------------------------------- {% endcomment %}
+            <div class="col-12 p-0 mt-4 col-md-12 p-md-0 mt-md-2">
+                <div class="row">
+                    <div class="col-4 p-0 col-md-4 p-md-0">
+                        <div class="row">
+                            <div class="col-2 p-0 col-md-2 p-md-0">
+                                <img src="{% static 'img/svg/order/modifiedDate_time.svg' %}" class="profileIconSize" />
+                            </div>
+                            <div class="col-10 p-1 col-md-10">
+                                <h6 class="smallText" style="font-weight:bold;color:black;font-size:15px;">Created at</h6>
+                                <h6 class="largeText"> {{ assets_details.created_at|date:"d/m/Y h:i A"}}</h6>
+                            </div>
+                        </div>
+                    </div>
+                    
+                   
+                  
+                    
+                </div>
+            </div>
+            {% comment %} -----------------------------created date end------------------------------ {% endcomment %}
+            {% if assets_details.stay_items %}
+            <div class="col-12 p-0 mt-4 col-md-12 p-md-0 mt-md-2">
+                <h4 style="font-size:15px;font-weight:bold;color:black;">Stay Details</h4>
+                <table class="table table-bordered">
+                    <thead >
+                        <tr style="background-color:#007bff;color:white;font-size:12px;">
+                           
+                            <th class="header1" style="width:50%;">Hotal Name</th>
+                            <th class="header1">Amount</th>
+                            <th class="header1">Bill Image</th>
+                            
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% if assets_details %}
+                        {% for order_item in assets_details.stay_items %}
+                        <tr>
+                            <td> {% if order_item.hotel_name  %} {{order_item.hotel_name}} {% elif order_item.hotel_name == '' %} -   {% else %} {% endif %}</td>
+                            <td>{{ order_item.amount }}</td>
+                            <td>{% if order_item.bill_image is not None and order_item.bill_image != "" %}
+                                <a href="{{order_item.bill_image}}" download="filename.jpg"><i class="fa fa-download"></i></a>
+                                {% else %}
+                                --
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                        
+                        {% else %}
+                        <tr>
+                            <td colspan="4" style="text-align: center;">No Record Found...</td>
+                        </tr>
+                        {% endif %}
+                        
+                        
+                    </tbody>
+                </table>
+                
+            </div>
+            {% endif %}
+            {% comment %} ---------------------------- {% endcomment %}
+            {% if assets_details.travelling_history %}
+            <div class="col-12 p-0 mt-4 col-md-12 p-md-0 mt-md-2">
+                <h4  style="font-size:15px;font-weight:bold;color:black;">Travelling Details</h4>
+                <table class="table table-bordered" >
+                    <thead>
+                        <tr style="background-color:#007bff;color:white;font-size:12px;">
+                            
+                            <th class="header1" style="width:10%;">Date</th>
+                            <th class="header1">Amount</th>
+                            <th class="header1">Payment Type</th>
+                            <th class="header1">Remark</th>
+                            <th class="header1">Bill Image</th>
+                            
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% if assets_details %}
+                        {% for order_item in assets_details.travelling_history %}
+                        <tr>
+                           
+                            <td> {% if order_item.ta_date  %} {{order_item.ta_date|date:"d/m/Y"}} {% elif order_item.ta_date == '' %} -   {% else %} {% endif %}</td>
+                            <td>{{ order_item.amount }}</td>
+                            <td>{{ order_item.payment_type }}</td>
+                            <td>{{ order_item.remark }}</td>
+                            <td>{% if order_item.bill_image is not None and order_item.bill_image != "" %}
+                                <a href="{{order_item.bill_image}}" download><i class="fa fa-download"></i></a>
+                                {% else %}
+                                --
+                                {% endif %}</td>
+                        </tr>
+                        {% endfor %}
+                        
+                        {% else %}
+                        <tr>
+                            <td colspan="4" style="text-align: center;">No Record Found...</td>
+                        </tr>
+                        {% endif %}
+                        
+                        
+                    </tbody>
+                </table>
+                
+            </div>
+            {% endif %}
+            {% comment %} ---------------------------- {% endcomment %}
+            
+            {% if assets_details.food_history %}
+            <div class="col-12 p-0 mt-4 col-md-12 p-md-0 mt-md-2">
+                <h4  style="font-size:15px;font-weight:bold;color:black;">Food Details</h4>
+                <table class="table table-bordered" >
+                    <thead>
+                        <tr style="background-color:#007bff;color:white;font-size:12px;">
+                            
+                            <th class="header1" style="width:20%;">Date</th>
+                            <th class="header1">Amount</th>
+                            <th class="header1">Remark</th>
+                            <th class="header1">Bill Image</th>
+                            
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% if assets_details %}
+                        {% for order_item in assets_details.food_history %}
+                        <tr>
+                           
+                            <td> {% if order_item.ta_date  %} {{order_item.ta_date|date:"d/m/Y"}} {% elif order_item.ta_date == '' %} -   {% else %} {% endif %}</td>
+                            <td>{{ order_item.amount }}</td>
+                            <td>{{ order_item.remark }}</td>
+                            <td>{% if order_item.bill_image is not None and order_item.bill_image != "" %}
+                                <a href="{{order_item.bill_image}}" download><i class="fa fa-download"></i></a>
+                                {% else %}
+                                --
+                                {% endif %}</td>
+                        </tr>
+                        {% endfor %}
+                        
+                        {% else %}
+                        <tr>
+                            <td colspan="4" style="text-align: center;">No Record Found...</td>
+                        </tr>
+                        {% endif %}
+                        
+                        
+                    </tbody>
+                </table>
+                
+            </div>
+            {% endif %}
+            {% comment %} ---------------------------- {% endcomment %}
+            {% if assets_details.misc_history %}
+            <div class="col-12 p-0 mt-4 col-md-12 p-md-0 mt-md-2">
+                <h4 style="font-size:15px;font-weight:bold;color:black;">Miscellaneous Details</h4>
+                <table class="table table-bordered" >
+                    <thead>
+                        <tr style="background-color:#007bff;color:white;font-size:12px;">
+                            
+                            <th class="header1" style="width:20%;">Amount</th>
+                           
+                            <th class="header1">Remark</th>
+                            <th class="header1">Bill Image</th>
+                            
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% if assets_details %}
+                        {% for order_item in assets_details.misc_history %}
+                        <tr>
+                            
+                            <td>{{ order_item.amount }}</td>
+                            <td>{{ order_item.remark }}</td>
+                            <td>{% if order_item.bill_image is not None and order_item.bill_image != "" %}
+                                <a href="{{order_item.bill_image}}" download><i class="fa fa-download"></i></a>
+                                {% else %}
+                                --
+                                {% endif %}</td>
+                        </tr>
+                        {% endfor %}
+                        
+                        {% else %}
+                        <tr>
+                            <td colspan="4" style="text-align: center;">No Record Found...</td>
+                        </tr>
+                        {% endif %}
+                        
+                        
+                    </tbody>
+                </table>
+                
+            </div>
+            {% endif %}
+        </div>
+    </div>

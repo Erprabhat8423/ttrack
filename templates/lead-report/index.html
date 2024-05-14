@@ -1,0 +1,715 @@
+{% extends 'layout/layout.html' %}
+
+{% load helper_tags %}
+
+{% block content %}
+
+{% load static %}
+
+{% block style %} 
+<link rel="stylesheet" href="{% static 'css/jquery-confirm.min.css' %}">
+<style>
+    .table td, .table th{
+        padding:0.65rem!important;
+    }
+    .ui-widget.ui-widget-content{
+        z-index: 999999999!important;
+    }
+    .ui-datepicker-prev span,
+    .ui-datepicker-next span {
+        background-image: none !important;
+    }
+    
+    .ui-datepicker-prev:before,
+    .ui-datepicker-next:before {
+        font-family: FontAwesome;
+        position: absolute;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        display: flex;
+        font-weight: normal;
+        align-items: center;
+        justify-content: center;
+        z-index: 999999999!important;
+    }
+    
+    .ui-datepicker-prev:before {
+        content: "\f100";
+    }
+    
+    .ui-datepicker-next:before {
+        content: "\f101";
+    }
+    .header{
+        background-color: #007bff;
+        color: #ffffff;
+        font-size:smaller;
+    }
+    
+    #user_wise_order {
+        width: 100%;
+        height: 200px;
+        border-top:1px solid rgb(223, 223, 223);
+        border-left:1px solid rgb(223, 223, 223);
+        border-bottom:1px solid rgb(223, 223, 223);
+        box-shadow: 0px 0px 18px 0px rgba(135, 169, 224, 0.3);
+    }
+    
+    #product_wise_order {
+        width: 100%;
+        height: 200px;
+        border:1px solid rgb(223, 223, 223);
+        box-shadow: 0px 0px 18px 0px rgba(135, 169, 224, 0.3);
+    }
+    #weekly {
+        width: 100%;
+        height: 280px;
+        border:1px solid rgb(223, 223, 223);
+        box-shadow: 0px 0px 18px 0px rgba(135, 169, 224, 0.3);
+    }
+    .select2-container--default .select2-selection--single .select2-selection__rendered{
+        text-align:left!important;
+    }
+    .hover-underline {
+    text-decoration: underline; /* Add underline on hover */
+}
+</style>
+<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
+
+{% endblock %}
+
+<div class="row" id="containerHeight">
+    <div class="col-md-8 pr-md-0 h-100">
+        <div class="primaryContainer h-100" id="mainbox">
+            <div class="row mb-2" id="topRow">
+                <div class="col-md-10">
+                    <h6><b>{{page_title}}(<span id="order_count">{{lead_count}}</span>)</b><span class="fa fa-star add_to_fav {% checkedFavorite page_title request.get_full_path %}" onclick="updateFavorite(this,'{{page_title}}','{{ request.get_full_path }}')"></span></h6>
+                    
+                </div>
+                <div class="col-md-2 " style="display: flex; justify-content: flex-end;">
+                    <a onclick="assignLeads()" href="javascript:void(0)" class="text-right"><img class="assigenClass" src="{% static 'img/bulkassign.svg' %}" style="display: none;width: 100%; height:2.0rem;padding: 2px;margin-right:5px;"> </a>
+                    <!--<button type="button" class="btn btn-primary btn-sm"  style="width: 40%; height:2.2rem;padding: 0;" href="javascript:void(0)"><img src="{% static 'img/svg/export_lead.svg' %}" style="height: 25px;"> </button>-->
+                    <a onclick="exports('excel')" href="javascript:void(0)" class="text-right"><img class="iconBox" src="{% static 'img/svg/export_lead.svg' %}" style="width: 100%; height:2.0rem;padding: 2px;margin-right:5px;"> </a>
+                    <a onclick="locateUsersOnMap()" href="javascript:void(0)" class="text-right"><img class="iconBox" src="{% static 'img/svg/locateUser.svg' %}" style="width: 100%; height:2.0rem;padding:2px;margin-left:5px;"> </a>
+                </div>
+            </div>
+                
+                <div class="row">
+                <div class="col-md-12" style="padding:0;">
+                    <div class="row">
+                        <div class="col-md-3" style="float:left;">
+                            <input class="searchTable zone_search" placeholder="Search" type="search" data-column="all" id ="searchvalue" style="width: 100%; height:2.4rem;background-color:white;" value="{{lead_ids}}">
+                        </div>
+                        <div class="col-md-3 " style="float: left;">
+                            <select class="inputField selectField" style="width: 100% !important; padding: 0.3rem;" name="customer_id" id="customer_id" onchange="getOrderRecord(1)">
+                                <option value="">Select Employee</option>
+                                {% for users_list in user_lists %}
+                                <option value="{{ users_list.id }}">{{ users_list.first_name }}{{ users_list.last_name }}({{users_list.emp_sap_id}})</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-md-3 " style="float: left;">
+                            <select class="inputField selectField" style="width: 100% !important; margin-right: 5px; padding: 0.3rem; text-align: left;" name="order_status" id="order_status" onchange="getOrderRecord(1)">
+                                <option value="">All Status</option>
+                                <option value="1" {% if lead_status == 1 %}selected{% endif %} >Initiated</option>
+                                <option value="2" {% if lead_status == 2 %}selected{% endif %} >In Progress</option>
+                                <option value="3" {% if lead_status == 3 %}selected{% endif %}>Closed(Win)</option>
+                                <option value="4" {% if lead_status == 4 %}selected{% endif %}>Closed(Lost)</option>
+                            </select>
+                        </div>
+                        
+                        <div class="col-md-3">
+                            <input class="inputField" placeholder="Date Range" id="order_datepicker" name="datefilter" value="" style="width:100% !important; height:2.4rem; padding: 0.3rem;font-size:0.8rem;" readonly/>
+                            <img src="{% static 'img/svg/claender-grey.svg' %}" class=" calender-icon-input" style="position: absolute;top: 6px;right: 22px;width: 20px;" />
+                        </div>
+                        
+                        
+                    </div>
+                    <div class="row mb-2 mt-2" id="secondRow"></div>
+                </div>
+        </div>
+        
+        <div class="row" id="tableBox">
+            <div class="col-md-12 primaryContainerBG h-100 p-0 commonTableBg" id="ajax-div">
+                <input type="hidden" name="page" id="page" value="2" />
+                <input type="hidden" name="page_status" id="page_status" value="0" />
+                <input type="hidden" name="total_pages" id="total_pages" value="{{ total_pages }}" />
+                <table id="addOrgTable" class="table table-borderless table-striped table-hover mt-0" style="width: 100%;" onload="uncheckCheckbox()">
+                    <thead>
+                        <tr>
+                            <th class="sorter-false all_checkbox_class" style="border-right:none!important; width:32px!important; min-width: 32px!important;"><input type="checkbox" class="checked_all" id="new_module_1"  > </th> 
+                            <th class="order_id" id="order_id">Lead ID
+                                <i class="fa fa-fw fa-sort float-right"></i>
+                                
+                            </th>
+                            <th class="distributor_ss" id="distributor_ss">Company Name
+                                <i class="fa fa-fw fa-sort float-right"></i>
+                                
+                            </th>
+                            
+                            <th class="route" id="route">Contact Person
+                                <i class="fa fa-fw fa-sort float-right"></i>
+                                
+                            </th>
+                            <th class="created_by_name" id="created_by_name">Created By
+                                <i class="fa fa-fw fa-sort float-right"></i>
+                                
+                            </th>
+                            <th class="status_name" id="status_name">Created at
+                                <i class="fa fa-fw fa-sort float-right"></i>
+                                
+                            </th>
+                            <th class="request_date" id="request_date">Last Follow Up
+                                <i class="fa fa-fw fa-sort float-right"></i>
+                            
+                            </th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tablebody">
+                        {% if lead_lists %}
+                        {% for lead_list in lead_lists %}
+                            <tr class="odd {% if forloop.counter == 1 %}selected{% endif %}">
+                                <td class="sorter-false checked_class {{lead_list.id}}  " >
+                                    <input type="checkbox" class="checkbox" id="new_module_1 1" name="order_id[]" value="{{ lead_list.id }} {{lead_list.created_by_id}}"> 
+                                </td>
+                                <td class="order_id hover-underline" onclick="showActivity({{ lead_list.id }})" data-toggle="modal" data-target="#addOrganisationModal">TTRACK{{ lead_list.id }}</td>
+                                <td class="distributor_name" onclick="getOrderDetails('{{ lead_list.id }}')" >{{lead_list.company_name |capfirst}}</td>
+                                <td class="retailer_name" onclick="getOrderDetails('{{ lead_list.id }}')">{{lead_list.contact_person_name |capfirst}}</td>
+                                <td class="created_by_name" onclick="getOrderDetails('{{ lead_list.id }}')" >{{ lead_list.created_by_name |capfirst }}</td>
+                                <td class="request_date" onclick="getOrderDetails('{{ lead_list.id }}')" >{{ lead_list.created_at|date:'d/m/Y h:i A' }}</td>
+                                <td class="status_name" onclick="getOrderDetails('{{ lead_list.id }}')">{%if lead_list.formatted_last_follow_up_date %}{{lead_list.formatted_last_follow_up_date|date:'d/m/Y h:i A'}}{% else %}-{% endif %}</td>
+                                <td>
+                                    <div class="row" style="display:flex; ">
+                                        <img src="{% static 'img/svg/editcopy.svg' %}" class="tableRowIcon"  onclick="editLeadBasicDetail('{{lead_list.id}}')" />  
+                                    </div>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                            <tr id="loading" style="display: none;">
+                                <td class="text-center" colspan="6"><i class="fa fa-spinner fa-spin" style="font-size:2rem"></i>
+                                </td>
+                            </tr>
+                        {% else %}
+                            <tr>
+                               <td colspan="8" style="color:gray;text-align: center;">No record found...</td>
+                            </tr>
+                        {% endif %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="col-md-4 h-100">
+    <div class="primaryContainerBG h-100" id="detailsBox">
+    
+        </div>
+    </div>
+</div>
+</div>
+<!-- *************************************Modal********************************** -->
+<div class="overlayModal" id="addUserModal" data-keyboard="false" data-backdrop="static">
+</div>
+<div class="overlayModal" style="display:none" id="addUserModalss" data-keyboard="false" data-backdrop="static">
+</div>
+<div class="overlayModal" id="addOrganisationModal" data-keyboard="false" data-backdrop="static">
+</div>
+<div class="overlayModal" id="viewEmployeeModal" data-keyboard="false" data-backdrop="static">
+</div>
+
+<div class="overlayModal" id="addProductModalee" data-keyboard="false" data-backdrop="static" style="display: none;">
+
+</div>
+<!-- *************************************Modal********************************** -->
+{% endblock content %}
+{% block script %}
+
+<script src="{% static 'js/jquery-confirm.min.js' %}"></script>
+
+<script>
+    
+function assignLeads(){
+        var leadID = [];
+        var createdByID = [];
+
+        $('.checkbox').each(function (index, obj) {
+            if (this.checked === true) {
+                var values = $(this).val().split(" ");
+                var leadId = parseInt(values[0]);
+                var createdById = parseInt(values[1]);
+                leadID.push(leadId);
+                createdByID.push(createdById);
+            }
+        });
+        leadID = leadID.filter(Number.isFinite);
+        createdByID = createdByID.filter(Number.isFinite);
+         if(leadID.length > 0){
+            showLoader();
+            $('#addProductModalee').html('');
+            $.ajax({
+                url: "{% url 'src:assigend-bulk-lead' %}",
+                method: 'POST',                
+                data: { lead_id: leadID, created_by_id: createdByID, csrfmiddlewaretoken: '{{ csrf_token }}'},
+                success: function (data) {
+                    hideLoader();
+                    $("#addProductModalee").show();
+                    $('#addProductModalee').html(data);
+                    $('.selectFieldList').select2();
+                },
+                error: function (err) {
+                    console.log(err)
+                }
+            });
+        }
+    }
+
+    
+    function showActivity(lead_id) {
+        $('#addOrganisationModal').html('');
+        showLoader();
+        $.ajax({
+            url: "{% url 'src:show-activity-log' %}",
+            method: 'GET',
+            data: {'lead_id':lead_id},
+            success: function (data) {
+                hideLoader();
+                $("#addOrganisationModal").show();
+                $('#addOrganisationModal').html(data);
+            },
+            error: function (err) {
+                console.log(err)
+            }
+        });
+    }
+    
+    function showHideColumns(inputid, colNo) {
+        var checkbox_val = [];
+        var checkbox = document.getElementById(inputid);
+        if (checkbox.checked == true) {
+            $('.'+inputid).hide();
+        }else{
+            $('.'+inputid).show();
+        }
+        $("input:checkbox[class=colCheck]").each(function () {
+            if(!$(this).is(':checked')){
+                checkbox_val.push($(this).attr("id"))
+            }
+        });
+        checkbox_str = checkbox_val.join(',');
+        $('#show_columns').val(checkbox_str);
+    }
+    
+    $(document).ready(function () {
+        setHeightWidth();
+        
+        /* $('#addOrgTable').tablesorter({
+            widgets: ["zebra","filter", "resizable", "stickyHeaders"],
+            widgetOptions: {
+                resizable_addLastColumn: false,
+                resizable: false,
+               // resizable_widths: ["14.5%","14.5%", "13.5%", "14.5%", "14.5%", "14.5%", "14.5%"],
+                stickyHeaders_attachTo: ".primaryContainerBG",
+                filter_columnFilters: false,
+                filter_external: '.zone_search',
+            }
+        }); */
+        
+        $("#addOrgTable tbody tr").click(function () {
+            $(this).addClass("selected").siblings().removeClass("selected");
+        });
+        $(".deptRow").click(function () {
+            $(this).addClass("deptSelected").siblings().removeClass("deptSelected");
+        });
+        
+        
+        $(".primaryContainerBG").scroll(function () {
+            var divTable = $(".primaryContainerBG");
+            $(".frezedCell").css("left", 0 + divTable.scrollLeft());
+        });
+        
+        
+        // $("#order_datepicker").datepicker({  
+        //     changeMonth: true,
+        //     changeYear: true,  
+        //     yearRange: "-100:+0"
+        //     ,maxDate: 0,
+        //     dateFormat: 'dd/mm/yy' 
+        // });
+        
+        {% if role_id == 0 %}
+        $(".all_checkbox_class").css("display", "none");
+        $(".checked_class").css("display", "none");
+        {% endif %}
+        
+    });
+ 
+    document.addEventListener('DOMContentLoaded', function() {
+        // Get the search input element
+        var searchInput = document.getElementById('searchvalue');
+
+        // Add event listener for input change
+        searchInput.addEventListener('input', function(event) {
+            // Check if the input value is empty
+            if (event.target.value === '') {
+                getOrderRecord(1);
+            }
+        });
+    });
+
+    $(document).ready(function () {
+        getOrderDetails('{{lead_id}}');
+   
+
+        
+        var checkbox_val = ["order_id","distributor_ss","route","amount","status","order_date"];
+        checkbox_str = checkbox_val.join(',');
+        $('#show_columns').val(checkbox_str);
+        
+        $(".colCheck").change(function () {
+            if ($(".colCheck:not(:checked)").length == $(".colCheck").length) {
+                //do something
+                $(".iconHide").css("background-image", "url(/static/img/png/hide.png)");
+            } else {
+                $(".iconHide").css("background-image", "url(/static/img/svg/hideblue.svg)");
+            }
+        });
+        
+        $(".colFreezeCheck").change(function () {
+            if ($(".colFreezeCheck:not(:checked)").length == $(".colFreezeCheck").length) {
+                //do something
+                $(".iconUnfreeze").css("background-image", "url(/static/img/svg/unfreeze.svg)");
+            } else {
+                $(".iconUnfreeze").css("background-image", "url(/static/img/svg/freeze.svg)");
+            }
+        });
+        
+        $('.checked_all').on('change', function() {     
+            $('.checkbox').prop('checked', $(this).prop("checked")); 
+            if($('.checkbox:checked').length > 0){
+                $('#forward').show();
+            }else{
+                $('#forward').hide();
+            }             
+        });
+        
+        $('.checkbox').change(function(){ 
+            if($('.checkbox:checked').length == $('.checkbox').length){
+                $('.checked_all').prop('checked',true);
+            }else{
+                $('.checked_all').prop('checked',false);
+            }
+            if($('.checkbox:checked').length > 0){
+                $('#forward').show();
+            }else{
+                $('#forward').hide();
+            }
+        });
+    });
+    
+    $(window).resize(function () {
+        setHeightWidth();
+    });
+    
+    
+    function getOrderDetails(id) {
+        $('#detailsBox').html('<div style="margin-top:40px; text-align:center"><i class="fa fa-spinner fa-spin" style="font-size:2rem"></div>');
+        if(id == '0'){
+            $('#detailsBox').html('<td style="margin-top:40px; color:gray;text-align: center;">No record found...</td>');
+        } else {
+            //showLoader();
+            $.ajax({
+                url: "{% url 'src:get-lead-details' %}",
+                method: 'GET',
+                data: { id: id },
+                success: function (data) {
+                    //hideLoader();
+                    $('#detailsBox').html(data);
+                },
+                error: function (err) {
+                    console.log(err)
+                }
+            });   
+        }
+    }
+    function locateUsersOnMap(){
+		$('#addUserModal').html('');
+		showLoader();
+		$.ajax({
+			url: "{% url 'src:locate-lead-on-map' %}",
+			method: 'GET',
+			data: {},
+			success: function (data) {
+				hideLoader();
+				$("#addUserModal").show();
+				$('#addUserModal').html(data);
+			},
+			error: function (err) {
+				console.log(err)
+			}
+		});
+	}
+	
+	document.addEventListener("DOMContentLoaded", function() {
+        $('#order_datepicker').on('apply.daterangepicker', function(ev, picker) {
+            getOrderRecord(1);
+        });
+        $('#order_datepicker').on('cancel.daterangepicker', function(ev, picker) {
+            getOrderRecord(1);
+        });
+    });
+        
+    function getOrderRecord(page){
+        var customer_id         = $('#customer_id').val();
+        var order_status        = $('#order_status').val();
+        var order_date          = $('#order_datepicker').val();
+        $('#tablebody').html('<tr><td colspan="7"><div style="text-align:center"><i class="fa fa-spinner fa-spin" style="font-size:2rem"></div></td></tr>');
+            $.ajax({
+                url: "{% url 'src:ajax-lead-list' %}",
+                method: 'GET',
+                data: { page:page,customer_id:customer_id,order_status:order_status,order_date:order_date},
+                success: function (data) {
+                    if(typeof data.flag !== "undefined" && !data.flag){
+                        hideLoader();
+                        openToaster("danger", data.message);
+                    }else{
+                        $('#tablebody').html(data);
+                        $('#page').val(parseInt(page)+1);
+                        $('#page_status').val('0');
+                        $('#addOrgTable').trigger('update');
+                        
+                        $('#addOrgTable').tablesorter({
+                            widgets: ["zebra","filter" ,"resizable", "stickyHeaders"],
+                            widgetOptions: {
+                                resizable_addLastColumn: false,
+                                resizable: false,
+                                stickyHeaders_attachTo: ".primaryContainerBG",
+                                filter_columnFilters: false,
+                                filter_external: '.zone_search',
+                            }
+                        });
+                    
+                       
+                        $("#addOrgTable tbody tr").click(function () {
+                            $(this).addClass("selected").siblings().removeClass("selected");
+                        });
+                        
+                        $(".deptRow").click(function () {
+                            $(this).addClass("deptSelected").siblings().removeClass("deptSelected");
+                        });
+                        $(".employeeprimaryContainerBG").scroll(function () {
+                            var divTable = $(".employeeprimaryContainerBG");
+                            $(".frezedCell").css("left", 0 + divTable.scrollLeft());
+                        });
+                    }
+                },
+                error: function (err) {
+                    alert(err.message);
+                    
+                }
+            });
+    }
+
+    function exports(type){
+        var customer_id         = $('#customer_id').val();
+        var order_status        = $('#order_status').val();
+        var order_date          = $('#order_datepicker').val();
+        if(order_date){ 
+            order_dates = order_date.split(" - ");
+            start_date = order_dates[0].split('/');
+            start_date = start_date[2]+'-'+start_date[1]+'-'+start_date[0]
+            end_date = order_dates[1].split('/');
+            end_date = end_date[2]+'-'+end_date[1]+'-'+end_date[0]
+        }else{ 
+            start_date = '0' 
+            end_date = '0' 
+        }
+        if(customer_id){ customer_id = customer_id; }else{ customer_id = '0' }
+        if(order_status){ order_status = order_status; }else{ order_status = '0' }
+        
+        if(type == 'excel'){
+            var url = "{% url 'src:export-lead-to-xlsx' 'customer_id' 'order_status' 'start_date' 'end_date' %}";
+            url = url.replace('customer_id',customer_id).replace('order_status',order_status).replace('start_date',start_date).replace('end_date',end_date);
+            console.log(url);
+            window.location.href = url;
+        }
+    
+        
+    }
+    
+    function closeUserModal() {
+		$("#addUserModal").hide();
+	}
+
+	function closeModal() {
+		$("#addUserModal").hide();
+	}
+	function closeUserNewModal() {
+		$("#addUserModalss").hide();
+	}
+	function closeUserleadModal() {
+		$("#addProductModalee").hide();
+	}
+	
+	$(document).ready(function () {
+        var prevTop = 0;
+        $('.commonTableBg').on('scroll', function () {
+            var page          = parseInt($('#page').val());
+            var totalPages    = parseInt($('#total_pages').val());
+            var customer_id   = $('#customer_id').val();
+            var order_status  = $('#order_status').val();
+            var order_date    = $('#order_datepicker').val();
+
+            var currentTop = $(this).scrollTop();
+            if (prevTop !== currentTop) {
+                prevTop = currentTop;
+                if ($(this).scrollTop() + $(this).innerHeight() >= $(this)[0].scrollHeight) {
+                    page_status = parseInt($('#page_status').val());
+                    if(page_status == 0 && page  <= totalPages){
+                        $('#operational_loading').show(); 
+                        $('#page_status').val('1');
+                        $.ajax({
+                            url: "{% url 'src:ajax-lead-list' %}",
+                            method: 'GET',
+                            data: { page:page,page_loading_type:'2',customer_id:customer_id,order_status:order_status,order_date:order_date},
+                            success: function (data) {
+                                setTimeout(() => {
+                                    $('#tablebody').find('tr:last').prev().after(data);
+                                    $('#page').val(parseInt(page)+1);
+                                    $('#operational_loading').hide();
+                                    $('#page_status').val('0');
+                                    $('#addOrgTable').trigger('update');
+                                }, 2000);
+                            },
+                            error: function (err) {
+                                alert(err.message);
+                                window.location.reload();
+                            }
+                        });
+                    }
+                }
+            }
+        });
+	});
+
+ function editLeadBasicDetail(lead_id){
+        $('#addUserModalss').html('');
+        showLoader();
+        url =  "{% url 'src:edit-lead-basic-details' '1' %}";
+        url = url.replace('1',lead_id)
+        $.ajax({
+            url: url,
+            method: 'GET',
+            data: {},
+            success: function (data) {
+                hideLoader();
+                $("#addUserModalss").show();
+                $('#addUserModalss').html(data);
+                var mch = $(".modal-AddUser").height() - (($(".modal-header").outerHeight()) + ($("#modalFooter").outerHeight()));
+                $("#addUserModalBody").height(mch);
+                $(".selectField").select2();                      
+            },
+            error: function (err) {
+                console.log(err)
+            }
+        });
+        
+    }
+     function editLeadIsoDetails(lead_id){
+                $('#addUserModalss').html('');
+                var iso_status = 1
+                showLoader();
+                url =  "{% url 'src:edit-lead-iso-details' '1' '2' %}";
+                url = url.replace('1',lead_id).replace('2',iso_status)
+                $.ajax({
+                    url: url,
+                    method: 'GET',
+                    data: {},
+                    success: function (data) {
+                        hideLoader();
+                        $("#addUserModalss").show();
+                        $('#addUserModalss').html(data);
+                        var mch = $(".modal-AddUser").height() - (($(".modal-header").outerHeight()) + ($("#modalFooter").outerHeight()));
+                        $("#addUserModalBody").height(mch);
+                        $(".selectField").select2();
+                        
+                        $("#date_of_birth").datepicker({  
+                            changeMonth: true,
+                            changeYear: true,  
+                            yearRange: "-100:+0"
+                            ,maxDate: 0,
+                            dateFormat: 'dd/mm/yy' 
+                        });
+                        
+                    },
+                    error: function (err) {
+                        console.log(err)
+                    }
+                });
+                
+            }
+    function editLeadOtherDetails(lead_id){
+                $('#addUserModalss').html('');
+                showLoader();
+                url =  "{% url 'src:edit-lead-other-details' '1' %}";
+                url = url.replace('1',lead_id)
+                $.ajax({
+                    url: url,
+                    method: 'GET',
+                    data: {},
+                    success: function (data) {
+                        hideLoader();
+                        $("#addUserModalss").show();
+                        $('#addUserModalss').html(data);
+                        var mch = $(".modal-AddUser").height() - (($(".modal-header").outerHeight()) + ($("#modalFooter").outerHeight()));
+                        $("#addUserModalBody").height(mch);
+                        $(".selectField").select2();
+                        
+                        $("#date_of_birth").datepicker({  
+                            changeMonth: true,
+                            changeYear: true,  
+                            yearRange: "-100:+0"
+                            ,maxDate: 0,
+                            dateFormat: 'dd/mm/yy' 
+                        });
+                        
+                    },
+                    error: function (err) {
+                        console.log(err)
+                    }
+                });
+                
+            }
+    
+
+</script>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
+
+<script type="text/javascript">
+    $(function() {
+    
+      $('input[name="datefilter"]').daterangepicker({
+          autoUpdateInput: false,
+          locale: {
+              cancelLabel: 'Clear'
+          }
+      });
+    
+      $('input[name="datefilter"]').on('apply.daterangepicker', function(ev, picker) {
+          $(this).val(picker.startDate.format('DD/MM/YYYY') + ' - ' + picker.endDate.format('DD/MM/YYYY'));
+      });
+    
+      $('input[name="datefilter"]').on('cancel.daterangepicker', function(ev, picker) {
+          $(this).val('');
+      });
+    
+    });
+</script>
+        
+{% endblock %}        
+        
+        

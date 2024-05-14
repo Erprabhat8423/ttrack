@@ -1,0 +1,181 @@
+{% load static %}
+
+  <div class="row" style="height: 85%;">
+            
+            <div class="col-md-12 p-0">
+                
+                <div class="row">
+                     
+                    <div class="col-md-2 p-md-0">
+                                {% if employee.profile_image is not None %}
+                        <img src="{{ employee.profile_image }}" style="height: 100px;
+                        max-height: 130px;
+                        width: 214px;
+                        transform: scale(1) !important;
+                        border-radius: 5%;">
+                        {% else %}
+                        
+                        <img src="{% static 'img/png/dashboardLogo.gif' %}" style="width: 100%;">
+                        {% endif %}
+                    </div>
+                    <div class="col-md-10 p-md-0">
+                        <div class="row">
+                            <div class="col-md-8">
+                                <h6 style="font-size:15px;"><b>{{employee.first_name}} {{employee.middle_name}} {{employee.last_name}} </b></h6>
+                                <h6 class="smallText" style="font-size:15px;"><span style="color: #0052a0;">{{employee.role_name | capfirst}}</h6>
+                            </div>
+                            <div class="col-md-4 p-md-0 text-right">
+                                <h5 style="font-size:15px;">{% if employee.attendence_mode == 1 %}App <img src="{% static 'img/svg/contactNo.svg' %}">{% endif %}{% if employee.attendence_mode == 0 %}WEB <img src="{% static 'img/svg/web.svg' %}">{% endif %} 
+                                {% if employee.attendence_mode == 2 %}Both <img src="{% static 'img/png/both.png' %}" style="max-width: 38px;">{% endif %}&nbsp;&nbsp;</h5>
+                            </div>
+
+                        </div>
+                        <br clear="all">
+                    </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6 p-md-0">
+                                <div class="d-flex" style="align-items: flex-start;">                                
+                                    <img src="/static/img/svg/contactNo.svg" class="profileIconSize">
+                                    <div>
+                                        <h6 class="smallText" >Contact No.</h6><h6 class="largeText">  {% if employee.primary_contact_number is not None %}
+                                            {{employee.primary_contact_number}}
+                                            {% else %}
+                                            --
+                                            {%endif%}
+                                        </h6>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6 p-md-0">
+                                <div class="d-flex" style="align-items: flex-start;">                                
+                                    <img src="{% static 'img/svg/@.svg' %}" class="profileIconSize" />
+                                    <div>
+                                    <h6 class="smallText" style=">Email ID</h6><h6 class="largeText" > {% if employee.official_email %}
+                                    {{ employee.official_email }}
+                                    {% else %}--{% endif %}</h6>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6 p-md-0">
+                                <div class="d-flex" style="align-items: flex-start;">                                
+                                    <img src="{% static 'img/svg/contactPersonName.svg' %}" class="profileIconSize" />
+                                    <div>
+                                    <h6 class="smallText" >Employee Code</h6><h6 class="largeText" >    
+                                    {% if employee.emp_sap_id is not None %}
+                                        {{employee.emp_sap_id}}
+                                            {% else %}
+                                            --
+                                        {%endif%}
+                                    </h6>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6 p-md-0">
+                                <div class="d-flex" style="align-items: flex-start;">                                
+                                        <img src="{% static 'img/svg/dob.svg' %}" class="profileIconSize" />
+                                    <div>
+                                    <h6 class="smallText">Date Of Birth</h6><h6 class="largeText">    
+                                    {% if employee.date_of_birth %}
+                                    {{employee.date_of_birth }}
+                                    {% else %}--{% endif %}
+                                    </h6>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="dropdown-divider w-100"></div>
+                        
+                        </div>
+                        <div class="row align-items-center mb-8">
+                        <div class="col-8">
+                            <span><strong>Performance</strong></span>
+                        </div>
+                        <div class="col-4">
+                            <img src="/static/img/svg/add_target-01.png" style="cursor:pointer" title="Add Target" class="img_w_100" onclick="add_target('{{ employee_id}}')">
+                        </div>
+                        </div>
+                   
+    
+
+                    <table class="table ">
+                        <thead>
+                            <tr>
+                                <th scope="col"style="width:25%;">FY</th>
+                                <th scope="col"style="width:20%;">Leads</th>
+                                <th scope="col"style="width:35%;">Revenue</th>
+                                <th scope="col" style="width:20%;">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% if datas %}
+                                {% for data in datas %}
+                                <tr>
+                                    <td scope="row" class="font_size_11">{{data.start_year}}- {{data.end_year}}</td>
+                                    <td class="font_size_11">{{data.target_leads}}/{{data.acheive_lead_target}}</td>
+                                    <td class="font_size_11">{{data.revenue_target}}/ {{data.acheive_revenue_target}}</td>
+                                    <td style="padding:10px 0 0 0;">
+
+                                        <img src="/static/img/svg/Eidt_target-01.png" style="cursor:pointer" title="edit Target" class="img_w_50" onclick="edit_target('{{ employee_id }}','{{data.id}}')">
+
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            {% else %}
+                            <th colspan="4" class="text-center">No Record Found</th>
+
+                            {% endif  %}
+
+                        </tbody>
+                    </table>
+                    
+                    </div>
+                </div>
+            </div>
+             </div>
+      
+        <div class="row mt-3">
+            <!--<div class="dropdown-divider w-100"></div>-->
+            <div class="col-sm-12 text-center p-0  more_info_btn" >
+                <h6 class="m-0" onclick="getEmpShortDetails('{{employee.id }}')" style="cursor: pointer;">
+                    <u>Employee Info</u></h6>
+                </div>
+            </div>
+
+<script>
+    function edit_target(employee_id,year_id){
+        $('#addUserModal').html('');
+        showLoader();
+        var url = "{% url 'src:edit-employee-target' %}";
+
+
+        $.ajax({
+            url: url,
+            method: 'GET',
+            data: {'employee_id':employee_id,'year_id':year_id},
+            success: function (data) {
+                hideLoader();
+                $("#addUserModal").show();
+                $('#addUserModal').html(data);
+                var mch = $(".modal-AddUser").height() - (($(".modal-header").outerHeight()) + ($("#modalFooter").outerHeight()));
+                $("#addUserModalBody").height(mch);
+                $(".selectField").select2();
+                
+                $("#date_of_birth").datepicker({  
+                    changeMonth: true,
+                    changeYear: true,  
+                    yearRange: "-100:+0"
+                    ,maxDate: 0,
+                    dateFormat: 'dd/mm/yy' 
+                });
+                
+            },
+            error: function (err) {
+                console.log(err)
+            }
+        });
+        
+    }
+</script>
+
+
+        

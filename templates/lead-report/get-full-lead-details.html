@@ -1,0 +1,615 @@
+{% load static %}
+<style type="text/css">
+  #ajax_maps {
+    width: 100%;
+    height: 400px;
+  }
+.mb-4,
+.my-4 {
+    margin-bottom: 1.5rem !important
+}
+
+.tl-item {
+    border-radius: 3px;
+    position: relative;
+    display: -ms-flexbox;
+    display: flex
+}
+
+.tl-item>* {
+    padding: 10px
+}
+
+.tl-item .avatar {
+    z-index: 2
+}
+
+.tl-item:last-child .tl-dot:after {
+    display: none
+}
+
+.tl-item.active .tl-dot:before {
+    border-color: #448bff;
+    box-shadow: 0 0 0 4px rgba(68, 139, 255, .2)
+}
+
+.tl-item:last-child .tl-dot:after {
+    display: none
+}
+
+.tl-item.active .tl-dot:before {
+    border-color: #448bff;
+    box-shadow: 0 0 0 4px rgba(68, 139, 255, .2)
+}
+
+.tl-dot {
+    position: relative;
+    border-color: rgba(160, 175, 185, .15)
+}
+
+.tl-dot:after,
+.tl-dot:before {
+    content: '';
+    position: absolute;
+    border-color: inherit;
+    border-width: 5px;
+    border-style: solid;
+    border-radius: 50%;
+    width: 10px;
+    height: 10px;
+    top: 15px;
+    left: 50%;
+    transform: translateX(-50%)
+}
+
+.tl-dot:after {
+    width: 0;
+    height: auto;
+    top: 25px;
+    bottom: -15px;
+    border-right-width: 0;
+    border-top-width: 0;
+    border-bottom-width: 0;
+    border-radius: 0
+}
+
+tl-item.active .tl-dot:before {
+    border-color: #448bff;
+    box-shadow: 0 0 0 4px rgba(68, 139, 255, .2)
+}
+
+.tl-dot {
+    position: relative;
+    border-color: rgba(160, 175, 185, .15)
+}
+
+.tl-dot:after,
+.tl-dot:before {
+    content: '';
+    position: absolute;
+    border-color: inherit;
+    border-width: 2px;
+    border-style: solid;
+    border-radius: 50%;
+    width: 10px;
+    height: 10px;
+    top: 15px;
+    left: 50%;
+    transform: translateX(-50%)
+}
+
+.tl-dot:after {
+    width: 0;
+    height: auto;
+    top: 25px;
+    bottom: -15px;
+    border-right-width: 0;
+    border-top-width: 0;
+    border-bottom-width: 0;
+    border-radius: 0
+}
+
+.tl-content p:last-child {
+    margin-bottom: 0
+}
+
+.tl-date {
+    font-size: .85em;
+    margin-top: 2px;
+    min-width: 100px;
+    max-width: 100px
+}
+
+.avatar {
+    position: relative;
+    line-height: 1;
+    border-radius: 500px;
+    white-space: nowrap;
+    font-weight: 700;
+    border-radius: 100%;
+    display: -ms-flexbox;
+    display: flex;
+    -ms-flex-pack: center;
+    justify-content: center;
+    -ms-flex-align: center;
+    align-items: center;
+    -ms-flex-negative: 0;
+    flex-shrink: 0;
+    border-radius: 500px;
+    box-shadow: 0 5px 10px 0 rgba(50, 50, 50, .15)
+}
+
+.b-init {
+    border-color: #309AB2!important;
+}
+
+.b-progress {
+    border-color: #D4B712!important;
+}
+
+.b-win {
+    border-color: #4EA557!important;
+}
+.b-lost {
+    border-color: #E24542!important;
+}
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+</style>
+<div class="modal-ViewEmployee centered">
+  <div class="modal-header pb-0" id="headerViewEmployee">
+    <div class="col-12 p-0">
+      <div class="row">
+        <div class="col-6">
+          <h5 class="mt-md-2" style="color: #0052a0;">TTRACK{{lead_lists.id }} </h5>
+          {% comment %} <input type="hidden" name="employeerole" id="employeerole" value="{% if employee.role_id  %}{{ employee.role_id  }}{% endif %}" >  {% endcomment %}
+        </div>
+        <div class="col-6">
+          <button class="btn btn-close float-right mt-3" type="button"
+          onclick="manipulateModal('viewEmployeeModal','close')">
+          Close
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="modal-body pt-0" id="viewEmpModalBody" style="overflow: auto">
+  <div class="row mb-3" id="infoPills">
+    <div class="col-sm-12 p-0">
+      <ul class="nav nav-tabs">
+        <li class="infoTabs activeInfoTabs" id="basicTab" onclick="changeInfoTab('basic',this)">Basic Details
+        </li>
+        <li class="infoTabs" id="isoTab" onclick="changeInfoTab('iso',this)">ISO
+          Details
+        </li>
+        <li class="infoTabs" id="otherTab" onclick="changeInfoTab('other',this)">Other Details
+        </li>
+        <li class="infoTabs" id="FollowUpTab" onclick="changeInfoTab('FollowUp',this)">FollowUp Details
+        </li>
+      </ul>
+    </div>
+  </div>
+  <div class="row">
+       <div class="col-md-12 p-0 h-100 w-100" id="basic">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="row">
+                    <div class="col-md-4 ">
+                        <div class="d-flex mt-3" style="align-items: flex-start;">                                
+                                <img src="{% static 'img/svg/company.svg' %}" class="profileIconSize" />
+                            <div>
+                                <h6 class="smallText ml-2" style="font-size:13px;">Company Name</h6><h6 class="largeText" style="font-size:13px;">    
+                                    <p class="ml-2">{{lead_lists.company_name}}</p>
+                            </h6>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="d-flex mt-3" style="align-items: flex-start;">                                
+                                <img src="{% static 'img/svg/contact_person.svg' %}" class="profileIconSize" />
+                            <div>
+                                <h6 class="smallText ml-2" style="font-size:13px;">Contact Person</h6><h6 class="largeText" style="font-size:13px;">    
+                                    <p class="ml-2">{{lead_lists.contact_person_name}}</p>
+                            </h6>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="d-flex mt-3" style="align-items: flex-start;">                                
+                                <img src="{% static 'img/svg/turn_over.svg' %}" class="profileIconSize" />
+                            <div>
+                                <h6 class="smallText ml-2" style="font-size:13px;"> Turnover</h6><h6 class="largeText" style="font-size:13px;">    
+                                    <p class="ml-2">{% if lead_lists.currency_code %}{{lead_lists.currency_code}}{% else %}{% endif %} {{lead_lists.turnover}}</p>
+                            </h6>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row mt-3">
+                    <div class="col-md-4">
+                        <div class="d-flex mt-3" style="align-items: flex-start;">                                
+                                <img src="{% static 'img/svg/phone_no.svg' %}" class="profileIconSize" />
+                            <div>
+                                <h6 class="smallText ml-2" style="font-size:13px;"> Phone Number</h6><h6 class="largeText" style="font-size:13px;">    
+                                    <p class="ml-2">{{lead_lists.phone_code}}-{{lead_lists.mobile_no}}</p>
+                            </h6>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="d-flex mt-3" style="align-items: flex-start;">                                
+                                <img src="{% static 'img/svg/email.svg' %}" class="profileIconSize" />
+                            <div>
+                                <h6 class="smallText ml-2" style="font-size:13px;">Email</h6><h6 class="largeText" style="font-size:13px;">    
+                                    <p class="ml-2">{% if lead_lists.email %}{{lead_lists.email}}{% else %}-{% endif %}</p>
+                            </h6>
+                            </div>
+                        </div>
+                    </div>
+                </div>   
+                <div class="row mt-3">
+                     <div class="col-md-4">
+                        <div class="d-flex mt-3" style="align-items: flex-start;">                                
+                                <img src="{% static 'img/svg/desknoemobicicon.svg' %}" class="profileIconSize" />
+                            <div>
+                                <h6 class="smallText ml-2" style="font-size:13px;">Desk No.</h6><h6 class="largeText" style="font-size:13px;">    
+                                    <p class="ml-2">{{lead_lists.desk_no }}</p>
+                            </h6>
+                            </div>
+                        </div>
+                    </div>
+                     <div class="col-md-4">
+                        <div class="d-flex mt-3" style="align-items: flex-start;">                                
+                                <img src="{% static 'img/svg/total_employee.svg' %}" class="profileIconSize" />
+                            <div>
+                                <h6 class="smallText ml-2" style="font-size:13px;"> Total No. of Employees</h6><h6 class="largeText" style="font-size:13px;">    
+                                    <p class="ml-2">{{lead_lists.total_no_of_employee }}</p>
+                            </h6>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="d-flex mt-3" style="align-items: flex-start;">                                
+                                <img src="{% static 'img/svg/status.svg' %}" class="profileIconSize" />
+                            <div>
+                                <h6 class="smallText ml-2" style="font-size:13px;">Current Status</h6><h6 class="largeText" style="font-size:13px;">    
+                                    {% if lead_lists.status == 1 %}
+                                    <p class="ml-2">Initiated</p>
+                                    {% elif lead_lists.status == 2 %}
+                                    <p class="ml-2">Progress</p>
+                                    {% elif lead_lists.status == 3 %}
+                                    <p class="ml-2">Close(Lost)</p>
+                                    {% else %}
+                                    <p class="ml-2">Close(Lost)</p>
+                                    {% endif %}
+                                </h6>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="row mt-3"> 
+                    <div class="col-md-4">
+                        <div class="d-flex mt-3" style="align-items: flex-start;">                                
+                                <img src="{% static 'img/svg/core_bussiness.svg' %}" class="profileIconSize" />
+                            <div>
+                                <h6 class="smallText ml-2" style="font-size:13px;">Core Business</h6><h6 class="largeText" style="font-size:13px;">    
+                                        {% for i in lead_lists.core_business_area_list %}
+                                            <p class="viewText ml-2" style="white-space: break-word;word-break: break-all;font-size:13px;">{{forloop.counter}}. {{i}}</p>
+                                        {% endfor %}
+                            </h6>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="d-flex mt-3" style="align-items: flex-start;">                                
+                                <img src="{% static 'img/svg/address.svg' %}" class="profileIconSize" />
+                            <div>
+                                <h6 class="smallText ml-2" style="font-size:13px;"> Total No. of Employees</h6><h6 class="largeText" style="font-size:13px;">    
+                                        <p class="ml-2">{{lead_lists.address}}</p>
+                            </h6>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="d-flex mt-3" style="align-items: flex-start;">                                
+                                <img src="{% static 'img/svg/calander.svg' %}" class="profileIconSize" />
+                            <div>
+                                <h6 class="smallText ml-2" style="font-size:13px;"> Created At</h6><h6 class="largeText" style="font-size:13px;">    
+                                        <p class="ml-2">{{lead_lists.created_at|date:'d/m/Y h:i A' }}</p>
+                            </h6>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+ 
+            </div>
+        
+        </div>
+    </div>
+   
+
+    <div class="col-md-12 p-0  p-0 h-100 w-100" id="FollowUp" >
+     
+           
+                    
+        <div class="col-sm-12" style="overflow:scroll; height:450px;">
+            <!------------------------------------------------------------------------>
+            <div class="page-content " id="page-content">
+                <div class="row">
+                    <div class="timeline  mb-4">
+                        {% for lead_folloup in lead_folloups %}
+                        {% if lead_folloup.lead_status == 1 %}
+                            <div class="tl-item active">
+                                <div class="tl-date text-muted mt-1">{{lead_folloup.created_at|date:"j F Y g:i A"}}</div>
+                                <div class="tl-dot b-init"></div>
+                                <div class="tl-content">
+                                    <div style="font-weight:bolder;">A Lead ({{lead_folloup.lead_code}}) has been created successfully.</div>
+                                    <div class="col-sm-12" style="display: flex; justify-content: space-between;padding:0;">
+                                        <span class="text-muted mt-1 font-italic" style="font-size: .85em" ><b>Remark:</b> {{lead_folloup.remark}}</span> &nbsp;&nbsp;&nbsp;
+                                            
+                                    </div>
+                                    <span class="text-muted mt-1 font-italic" style="font-size: .85em"><b>Added By:</b> {{lead_folloup.employee_name}}
+                                            </span>
+                                </div>
+                            </div>
+                        {% elif lead_folloup.lead_status == 2 %}
+                            <div class="tl-item active">
+                                <div class="tl-date text-muted mt-1">{{lead_folloup.created_at|date:"j F Y g:i A"}}</div>
+                                <div class="tl-dot b-progress"></div>
+                                <div class="tl-content">
+                                    <div style="font-weight:bolder;">New follow Up has been added for lead ({{lead_folloup.lead_code}}).</div>
+                                    <div class="col-sm-12" style="display: flex; justify-content: space-between; padding:0;">
+                                        <span class="text-muted mt-1 font-italic" style="font-size: .85em" ><b>Remark:</b> {{lead_folloup.remark}}</span>&nbsp;&nbsp;&nbsp;
+                                            
+                                    </div>
+                                    <span class="text-muted mt-1 font-italic" style="font-size: .85em"><b>Added By:</b> {{lead_folloup.employee_name}}
+                                            </span>
+                                </div>
+                            </div>
+                        {% elif lead_folloup.lead_status == 3 %}
+                            <div class="tl-item active">
+                                <div class="tl-date text-muted mt-1">{{lead_folloup.created_at|date:"j F Y g:i A"}}</div>
+                                <div class="tl-dot b-win"></div>
+                                <div class="tl-content">
+                                    <div style="font-weight:bolder;">Congratulations! Lead ({{lead_folloup.lead_code}}) has been closed(Win) successfully.</div>
+                                    <div class="col-sm-12" style="display: flex; justify-content: space-between; padding:0;">
+                                        <span class="text-muted mt-1 font-italic" style="font-size: .85em" ><b>Remark:</b> {{lead_folloup.remark}}</span>&nbsp;&nbsp;&nbsp;
+                                        
+                                    </div>
+                                    <span class="text-muted mt-1 font-italic" style="font-size: .85em"><b>Added By:</b> {{lead_folloup.employee_name}}</span>
+                                    <div class="col-sm-12" style="display: flex; justify-content: space-between;padding:0;">
+                                        <span class="text-muted mt-1 font-italic" style="font-size: .85em"><b>Deal Amount:</b>{% if lead_folloup.currency_code %}{{lead_folloup.currency_code}}{% else %}{% endif %} {{lead_folloup.deal_amount}}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        {% elif lead_folloup.lead_status == 4 %}
+                            <div class="tl-item active">
+                                <div class="tl-date text-muted mt-1">{{lead_folloup.created_at|date:"j F Y g:i A"}}</div>
+                                <div class="tl-dot b-lost"></div>
+                                <div class="tl-content">
+                                    <div style="font-weight:bolder;">Alas! Lead ({{lead_folloup.lead_code}}) has been lost due to {{lead_folloup.reson_name}}.</div>
+                                    <div class="col-sm-12" style="display: flex; justify-content: space-between; padding:0;">
+                                        <span class="text-muted mt-1 font-italic" style="font-size: .85em" ><b>Remark:</b> {{lead_folloup.remark}}</span>&nbsp;&nbsp;&nbsp;
+                                       
+                                    </div>
+                                     <span class="text-muted mt-1 font-italic" style="font-size: .85em"><b>Added By:</b> {{lead_folloup.employee_name}}</span>
+                                </div>
+                            </div>
+                        {% endif %}
+                        
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+            
+        </div>
+     </div>  
+
+
+  <!------------------------------------------------------------------------>
+
+    <div class="col-md-12 p-0 h-100 w-100" id="iso" >
+      <div class="col-12 p-0 mt-4 col-md-12 p-md-0 mt-md-2">
+               {% if lead_iso %}
+               <h6 style="font-weight:bolder;">Existing ISO</h6>
+                <table class="table table-borderless table-striped table-hover mt-0" style="overflow:scroll;background-color:#7f878f;">
+                    <thead>
+                        <tr>
+                            <th class="header" style="background-color:#7f878f;">Issue Date</th>
+                            <th class="header" style="background-color:#7f878f;">Date of Survilance 1</th>
+                            <th class="header" style="background-color:#7f878f;">Date of Survilance 2</th>
+                            <th class="header" style="background-color:#7f878f;">Expiry Date</th>
+                            <th class="header" style="background-color:#7f878f;">Agency</th>
+                            <th class="header" style="background-color:#7f878f;">Amount</th>
+                            <th class="header" style="background-color:#7f878f;">Consultant Name</th>
+                            <th class="header" style="background-color:#7f878f;">ISO Certificate</th>
+                            <th class="header" style="background-color:#7f878f;">Link</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% if lead_iso %}
+                        {% for order_item in lead_iso %}
+                         <tr> 
+                            <td>{{ order_item.date_of_issue| date:"d/m/Y" }}</td>
+                            {% if order_item.date_of_survilance1 %}
+                            <td>{{ order_item.date_of_survilance1| date:"d/m/Y" }}</td>
+                             {% else %}
+                             <td>-</td>
+                            {% endif %}  
+                            {% if order_item.date_of_survilance1 %}
+                            <td>{{ order_item.date_of_survilance2| date:"d/m/Y" }}</td>
+                            {% else %}
+                             <td>-</td>
+                            {% endif %} 
+                            <td>{{ order_item.date_of_expiry| date:"d/m/Y" }}</td>
+                            <td>{{ order_item.iso_issued_agency }}</td>
+                            <td>{% if order_item.currency_code %}{{order_item.currency_code}} {% else %}{% endif %}{{ order_item.price_of_existing_iso }}</td>
+                            <td>{{ order_item.iso_issued_consultant }}</td>
+                            <td>ISO {{order_item.master_iso_id}} - {{ order_item.master_iso_name }}</td>
+                            <td><a href ="{{ order_item.copy_of_iso}}" download><img src="{% static 'img/svg/downloademobicicon.svg' %}" class="profileIconSize" style="height:15px"/></a></td>
+                         </tr> 
+                        {% endfor %}
+                        
+                        {% else %}
+                        <tr>
+                            <td colspan="4" style="text-align: center;">No Record Found...</td>
+                        </tr>
+                        {% endif %}  
+                    </tbody>
+                </table>  
+                {% endif %}  
+                 {% if sp_lead_iso_saves %}
+                  <h6 style="font-weight:bolder;">Suggested ISO</h6>
+                <table class="table table-bordered" style="overflow:scroll;">
+                    <thead style="background-color:#7f878f;">
+                        <tr>
+                            <th class="header" style="background-color:#7f878f;">ISO Name</th>
+                            <th class="header" style="background-color:#7f878f;">Amount</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% if sp_lead_iso_saves %}
+                        {% for sp_lead_iso in sp_lead_iso_saves %}
+                         <tr> 
+                            <td>{% for item_list in result_list %}{{ item_list }}<br>{% endfor %}</td>
+                            <td>{% if sp_lead_iso.currency_code %}{{sp_lead_iso.currency_code}} {% else %}{% endif %}{{ sp_lead_iso.iso_amount }}</td>
+                            
+                         </tr> 
+                        {% endfor %}
+                        
+                        {% endif %}  
+                    </tbody>
+
+                </table>
+                {% endif %}  
+            </div>
+      </div>
+        <!------------------------------------------------------------------------>
+   <div class="col-md-12 p-0 fullWidth fulHeight" id="other" style="display:none;" >
+        {% if leade_others %}
+            {% for order_item in leade_others %}
+                <div class="row">
+                 {% if intrested_result_list %}
+                    <!--<div class="col-md-4 ">-->
+                    <!--    <div class="d-flex mt-3" style="align-items: flex-start;">                                -->
+                    <!--            <img src="{% static 'img/svg/company.svg' %}" class="profileIconSize" />-->
+                    <!--        <div>-->
+                    <!--            <h6 class="smallText ml-2" style="font-size:13px;"> Product Pitch</h6><h6 class="largeText" style="font-size:13px;">    -->
+                    <!--                <p class="ml-2">{{order_item.product_pitch}}</p>-->
+                    <!--        </h6>-->
+                    <!--        </div>-->
+                    <!--    </div>-->
+                    <!--</div>-->
+                    <div class="col-md-4">
+                        <div class="d-flex mt-3" style="align-items: flex-start;">                                
+                                <img src="{% static 'img/svg/itemProductPitch.svg' %}" class="profileIconSize" />
+                            <div>
+                                <h6 class="smallText ml-2" style="font-size:13px;">Interesting in other Products</h6><h6 class="largeText" style="font-size:13px;">    
+                                    <p class="ml-2">{% for intrested_result in intrested_result_list %}{{intrested_result}}<br> {% endfor %}</p>
+                            </h6>
+                            </div>
+                        </div>
+                    </div>
+                    {% endif %}
+                    <div class="col-md-4">
+                        <div class="d-flex mt-3" style="align-items: flex-start;">                                
+                                <img src="{% static 'img/svg/singleUserImage.svg' %}" class="profileIconSize" />
+                            <div>
+                                <h6 class="smallText ml-2" style="font-size:13px;">Created By</h6><h6 class="largeText" style="font-size:13px;">    
+                                    <p class="ml-2">{{order_item.sales_person}}</p>
+                            </h6>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row mt-3">
+                    <div class="col-md-4 ">
+                        <div class="d-flex mt-3" style="align-items: flex-start;">                                
+                                    <img src="{% static 'img/svg/calander.svg' %}" class="profileIconSize" />
+                                <div>
+                                    <h6 class="smallText ml-2" style="font-size:13px;">Visit Date</h6><h6 class="largeText" style="font-size:13px;">    
+                                        <p class="ml-2">{{order_item.visit_date| date:"d/m/Y"}}</p>
+                                </h6>
+                                </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="d-flex mt-3" style="align-items: flex-start;">                                
+                                <img src="{% static 'img/svg/otherResources.svg' %}" class="profileIconSize" />
+                            <div>
+                                <h6 class="smallText ml-2" style="font-size:13px;">Other Resource</h6><h6 class="largeText" style="font-size:13px;">    
+                                    <p class="ml-2">{% if order_item.other_resource %}{{order_item.other_resource}}{% else %}-{% endif %}</p>
+                            </h6>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row mt-3">
+                    <div class="col-md-4 ">
+                        <div class="d-flex mt-3" style="align-items: flex-start;">                                
+                                    <img src="{% static 'img/svg/calander.svg' %}" class="profileIconSize" />
+                                <div>
+                                    <h6 class="smallText ml-2" style="font-size:13px;">Reminder Date</h6><h6 class="largeText" style="font-size:13px;">    
+                                        <p class="ml-2">{% if order_item.reminder %}{{ order_item.reminder|date:"d/m/Y" }}{% else %} - {% endif %}</p>
+                                </h6>
+                                </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="d-flex mt-3" style="align-items: flex-start;">                                
+                                <img src="{% static 'img/svg/otherResources.svg' %}" class="profileIconSize" />
+                            <div>
+                                <h6 class="smallText ml-2" style="font-size:13px;">Remark</h6><h6 class="largeText" style="font-size:13px;">    
+                                    <p class="ml-2">{{order_item.remark }}</p>
+                            </h6>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+         
+      
+        
+        
+      {% endfor %}
+                        
+{% endif %}
+            
+      </div>
+    
+    
+      
+    </div>
+  </div>
+</div>
+<div class="overlayModal" id="addOrganisationModal" data-keyboard="false" data-backdrop="static">
+                                
+</div>
+<script>
+function changeInfoTab(type,tab) {
+    $('.infoTabs').removeClass('activeInfoTabs');
+    
+    // Add activeInfoTabs class to the clicked tab
+    $(tab).addClass('activeInfoTabs');
+    console.log(type)
+    if (type === 'iso') {
+        $('#iso').show(); 
+    } else {
+        $('#iso').hide(); 
+    }
+    if (type === 'basic') {
+        $('#basicTab').addClass('activeInfoTabs');
+        $('#basic').show(); 
+    } else {
+        $('#basic').hide(); 
+    }
+    if (type === 'FollowUp') {
+        $('#FollowUp').show(); 
+    } else {
+        $('#FollowUp').hide(); 
+    }if (type === 'other') {
+        $('#other').show(); 
+    } else {
+        $('#other').hide(); 
+    }
+}
+  </script>

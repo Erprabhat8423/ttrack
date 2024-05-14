@@ -1,0 +1,277 @@
+{% extends 'layout/layout.html' %}
+
+{% load helper_tags %}
+
+{% block content %}
+
+{% load static %}
+
+{% block style %}
+
+<style>
+table thead th {
+    border: 1px solid #e7e7e7 !important;
+    background: #02529c; /* Add background color to the table header */
+    color: white; /* Set text color to white for better visibility */
+    position: sticky;
+    top: 0;
+    z-index: 2; /* Ensure the header stays above the content */
+}
+
+#addOrgTable tbody tr {
+    /* Add some padding to the top of the table body content to accommodate the sticky header */
+    padding-top: 40px; /* Adjust this value as needed */
+}
+
+
+</style>
+<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
+
+{% endblock %}
+
+<div class="row" id="containerHeight">
+    <div class="col-md-12 pr-md-0 h-100">
+        <div class="primaryContainer h-100" id="mainbox">
+            <div class="row mb-2" id="topRow">
+                <div class="col-md-5 p-md-0">
+                    <h6><b>{{page_title}}(<span id="order_count">{{record_count}}</span>)</b><span class="fa fa-star add_to_fav {% checkedFavorite page_title request.get_full_path %}" onclick="updateFavorite(this,'{{page_title}}','{{ request.get_full_path }}')"></span></h6>
+                </div>
+                <div class="col-md-7 p-md-0" style="display: flex; justify-content: flex-end;">
+                    <div class="col-md-3" >
+                        <select class="inputField selectField" style="width: 100% !important; padding: 0.3rem; font-size:11px;" name="customer_id" id="customer_id" onchange="getOrderRecord()">
+                            <option value="">Select Employee</option>
+                            {% for users_list in user_lists %}
+                            <option value="{{ users_list.id }}">{{ users_list.first_name }}{{ users_list.last_name }}({{users_list.emp_sap_id}})</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-3" >
+                        <select class="inputField selectField" style="width: 100% !important; padding: 0.3rem;font-size:11px;" name="filter_by" id="filter_by" onchange="getOrderRecord()">
+                            <option value="1">Date Survilance1</option>
+                            <option value="2">Date Survilance2</option>
+                            <option value="3">Expiry Date</option>
+                            
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <input class="inputField" placeholder="Date Range" id="order_datepicker" name="datefilter" value="" style="width:100% !important; height:2.4rem; padding: 0.3rem;font-size:0.8rem;" readonly/>
+                        <img src="{% static 'img/svg/claender-grey.svg' %}" class=" calender-icon-input" style="position: absolute;top: 6px;right: 22px;width: 20px;" />
+                    </div>
+                    <div class="col-md-1">
+                        <a onclick="exports('excel')" href="javascript:void(0)" class="text-right"><img class="iconBox" src="{% static 'img/svg/export_lead.svg' %}" style="width: 100%; height:2.4rem;padding: 2px;margin-right:5px;"> </a>
+                      
+                    </div>
+                    <div class="col-md-2">
+                    </div>
+                </div>
+            </div>
+            <div class="row" id="tableBox">
+                <div class="col-md-12 primaryContainerBG h-100 p-10 commonTableBg" id="ajax-div" style="padding:0;">
+                    
+                    {% if sp_lead_list %}
+                    <table id="addOrgTable" class="table table-bordered table-hover mt-0" style="width: 100%;">
+                        <thead style="z-index:1 !important;">
+                            <tr style ="background:#02529c !important;color:white;">
+                                <th>Lead ID</th>
+                                <th>Company Name</th>
+                                <th>Turnover</th>
+                                <th>Contact Person</th>
+                                <th>Desk No.</th>
+                                <th>Mobile No.</th>
+                                <th>Email ID</th>
+                                <th>Created Date</th>
+                                <th>Created By</th>
+                                <th>Lead Status</th>
+                            </tr>
+                        </thead>
+                        <tbody style="font-size:11px;z-index:-1 !important;">
+                            {% if sp_lead_list %}
+                            {% for user in sp_lead_list %}
+                            <tr>
+                                <td id="main_row_id_{{user.id}}" style="font-weight: bolder;color:#02529c !important;"><a href="javascript:void(0)" onclick="showHide('{{user.id}}', '{{ user.lead_code }}', '1')">&plus;{{ user.lead_code }}</a></td>
+                                <td>{{user.company_name}}</td>
+                                <td>{{user.currency_code}} {{user.turnover}}</td>
+                                <td>{{user.contact_person_name}}</td>
+                                <td>{{user.desk_no}}</td>
+                                <td>{{user.country_code}} {{user.mobile_no}}</td>
+                                <td>{{user.email}}</td>
+                                <td>{{user.created_at|date:'d/m/Y'}}</td>
+                                <td>{{user.created_by_name}}</td>
+                                <td>{{user.lead_status}}</td>
+                            </tr>
+                            <tr class="row_id_{{user.id}}" style="text-align: center;display: none; background:#55b3c0 !important;color:white;">
+                                <th></th>
+                                <th></th>
+                                <th style="text-align:left;">ISO Name</th>
+                                <th style="text-align:left;">Issue Date</th>
+                                <th style="text-align:left;">Expiry Date</th>
+                                <th style="text-align:left;">Survilance1</th>
+                                <th style="text-align:left;">Survilance2</th>
+                                <th style="text-align:left;">Agency</th>
+                                <th style="text-align:left;">Consultant</th>
+                                <th style="text-align:left;">Amount</th>
+                            </tr>
+                                {% for distributor in user.lead_iso_list %}
+                                    <tr class="row_id_{{user.id}}" style="text-align: center;display: none;">
+                                        <td></td>
+                                        <td></td>
+                                        <td style="text-align:left;">ISO {{distributor.master_iso_id}} - {{distributor.master_iso_name}}</td>
+                                        <td style="text-align:left;">{{distributor.date_of_issue|date:'d/m/Y'}}</td>
+                                        <td style="text-align:left;">{{distributor.date_of_expiry|date:'d/m/Y'}}</td>
+                                        <td style="text-align:left;">{{distributor.date_of_survilance1|date:'d/m/Y'}}</td>
+                                        <td style="text-align:left;">{{distributor.date_of_survilance2|date:'d/m/Y'}}</td>
+                                        <td style="text-align:left;">{{distributor.iso_issued_agency}}</td>
+                                        <td style="text-align:left;">{{distributor.iso_issued_consultant}}</td>
+                                        <td style="text-align:left;">{{distributor.currency_code}} {{distributor.price_of_existing_iso}}</td>  
+                                    </tr>
+                                {% endfor %}
+                                    
+                            {% endfor %}
+                                    
+                            {% endif %}
+                        </tbody>
+                    </table>
+                    {% else %}
+                    <p style="padding:1.65rem!important; text-align:center; box-shadow: 0 6px 10px -4px rgba(0, 0, 0, 0.15); font-size:20px; color: gray; ">No Record Found...</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+        
+        
+{% endblock content %}
+{% block script %}
+<script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
+
+<script type="text/javascript">
+    
+    $(function() {
+        var today = moment();
+        var endOfMonth = moment().endOf('month');
+    
+        $('input[name="datefilter"]').daterangepicker({
+            autoUpdateInput: false,
+            locale: {
+                cancelLabel: 'Clear'
+            },
+            startDate: today,
+            endDate: endOfMonth
+        });
+    
+        // To set the initial value in the input field
+        $('input[name="datefilter"]').val(today.format('DD/MM/YYYY') + ' - ' + endOfMonth.format('DD/MM/YYYY'));
+    
+        $('input[name="datefilter"]').on('apply.daterangepicker', function(ev, picker) {
+            $(this).val(picker.startDate.format('DD/MM/YYYY') + ' - ' + picker.endDate.format('DD/MM/YYYY'));
+        });
+    
+        $('input[name="datefilter"]').on('cancel.daterangepicker', function(ev, picker) {
+            $(this).val('');
+        });
+    });
+
+</script>
+
+<script>
+    $(document).ready(function () {
+        $('.row_id_').hide(); 
+    });
+
+    function showHide(id,emp_id, type){
+       
+        emp_ids = "'"+emp_id+"'";
+        $('.sub_row_id_'+id).hide();
+        if(type == '1'){
+            type = 0
+            $('#main_row_id_'+id).html('<a href="javascript:void(0)" onclick="showHide('+id+', '+emp_ids+', '+type+')">&minus;'+emp_id+'</a>');  
+            $('.row_id_'+id).show();
+        }else{
+            type = 1
+            $('#main_row_id_'+id).html('<a href="javascript:void(0)" onclick="showHide('+id+', '+emp_ids+', '+type+')">&plus;'+emp_id+'</a>');  
+            $('.row_id_'+id).hide();
+        }
+        
+    }
+    document.addEventListener("DOMContentLoaded", function() {
+        $('#order_datepicker').on('apply.daterangepicker', function(ev, picker) {
+            getOrderRecord();
+        });
+        $('#order_datepicker').on('cancel.daterangepicker', function(ev, picker) {
+            getOrderRecord();
+        });
+    });
+        
+    function getOrderRecord(){
+        
+        var customer_id         = $('#customer_id').val();
+        var filter_by           = $('#filter_by').val();
+        var order_date          = $('#order_datepicker').val();
+        $('#ajax-div').html('<div style="text-align:center; margin 0px auto;"><i class="fa fa-spinner fa-spin" style="font-size:2rem"></div>');
+        $.ajax({
+            url: "{% url 'src:ajax-lead-report' %}",
+            method: 'GET',
+            data: { customer_id:customer_id,filter_by:filter_by,order_date:order_date},
+            success: function (data) {
+                if(typeof data.flag !== "undefined" && !data.flag){
+                    hideLoader();
+                    openToaster("danger", data.message);
+                }else{
+                    $('#ajax-div').html(data);
+                    // $('#page').val(parseInt(page)+1);
+                    // $('#page_status').val('0');
+                    $('#addOrgTable').trigger('update');
+                    
+                    
+                    $("#addOrgTable tbody tr").click(function () {
+                        $(this).addClass("selected").siblings().removeClass("selected");
+                    });
+                    
+                    $(".deptRow").click(function () {
+                        $(this).addClass("deptSelected").siblings().removeClass("deptSelected");
+                    });
+                    $(".employeeprimaryContainerBG").scroll(function () {
+                        var divTable = $(".employeeprimaryContainerBG");
+                        $(".frezedCell").css("left", 0 + divTable.scrollLeft());
+                    });
+                }
+            },
+            error: function (err) {
+                // alert(err.message) 
+            }
+        });
+    }
+
+    function exports(type){
+        var customer_id         = $('#customer_id').val();
+        var filter_by           = $('#filter_by').val();
+        var order_date          = $('#order_datepicker').val();
+        if(order_date){ 
+            order_dates = order_date.split(" - ");
+            start_date = order_dates[0].split('/');
+            start_date = start_date[2]+'-'+start_date[1]+'-'+start_date[0]
+            end_date = order_dates[1].split('/');
+            end_date = end_date[2]+'-'+end_date[1]+'-'+end_date[0]
+        }else{ 
+            start_date = '0' 
+            end_date = '0' 
+        }
+        if(customer_id){ customer_id = customer_id; }else{ customer_id = '0' }
+        if(filter_by){ filter_by = filter_by; }else{ filter_by = '0' }
+        
+        if(type == 'excel'){
+            var url = "{% url 'src:export-lead-report-to-xlsx' 'customer_id' 'filter_by' 'start_date' 'end_date' %}";
+            url = url.replace('customer_id',customer_id).replace('filter_by',filter_by).replace('start_date',start_date).replace('end_date',end_date);
+            console.log(url);
+            window.location.href = url;
+        }
+    
+        
+    }
+
+</script>
+
+
+{% endblock %}

@@ -1,0 +1,158 @@
+{% load static %}
+<style type="text/css">
+    #ajax_map {
+      width: 100%;
+      height: 500px;
+    }
+  </style>
+  <div class="modal-AddUser centered">
+    <div class="modal-header" id="headerStep1">
+        <div class="col-12 p-0">
+            <div class="row">
+                <div class="col-9" style="display:flex;">
+                    <div class="col-md-4">
+                    <h5 class="mt-md-2"><img src="/static/img/svg/address.svg" class="profileIconSize"> Geo Tagged Lead &nbsp;&nbsp;</h5> 
+                    </div>
+                    <div class="mt-1 col-md-8 ml-5">
+                  
+                     <img src="{% static 'img/svg/locateBlue.svg' %}" class="profileIconSize" />&nbsp; Initiated &nbsp;&nbsp; 
+                     <img src="{% static 'img/svg/locateYellow.svg' %}" class="profileIconSize" />&nbsp; In Progress &nbsp;&nbsp; 
+                     <img src="{% static 'img/svg/locateGreen.svg' %}" class="profileIconSize" />&nbsp; Closed(Win) &nbsp;&nbsp; 
+                     <img src="{% static 'img/svg/locateRed.svg' %}" class="profileIconSize" />&nbsp; Closed(Lost) &nbsp;&nbsp; 
+                    </div>
+                </div>
+                <div class="col-3">
+                  <button class="btn btn-close float-right" type="button" onclick="manipulateModal('addUserModal','close')">
+                    Close
+                </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="modal-body" id="addUserModalBody" style="overflow: auto">
+  <div id="ajax_map" style="height: 500px;"></div>
+  </div>
+</div>
+
+<script>
+    $(document).ready(function () {
+      // Asynchronously Load the map API 
+      var script = document.createElement('script');
+      script.src = "//maps.googleapis.com/maps/api/js?libraries=places&key=AIzaSyD5Pmv2She9T2jPiTwiNfcRrrP7Jcf2lCg&callback=initMap";
+      script.async = true; // Set async attribute to true for asynchronous loading
+      document.body.appendChild(script);
+    });
+    function initMap() {
+    var map;
+    var bounds = new google.maps.LatLngBounds();
+    var mapOptions = {
+      mapTypeId: 'roadmap'
+    };
+    
+    // Display a map on the web page
+    map = new google.maps.Map(document.getElementById("ajax_map"), mapOptions);
+    map.setTilt(50);
+    
+    // Multiple markers location, latitude, and longitude
+    var markers = [
+     {% if users %}
+     {% for user in users %}
+    
+    ["{{user.latitude}}", "{{user.longitude}}","{{user.status}}","{{user.id}}"],
+    {% endfor %}
+     {% endif %}
+    ];
+    // AIzaSyCJ0F6hcIXBQIJ84HRMUjCcooIz9pTq23I
+    // Info window content
+    //   ["{{user.latitude}}", "{{user.longitude}}", "{{user.first_name}} {{user.middle_name}} {{user.last_name}}"],
+    var infoWindowContent = [
+    {% if users %}
+    {% for user in users %}
+    
+    ['<div class="info_content" style="padding:8px;line-height: 23px;background:white;color:black; border-radius:10px;width:350px;">' +
+      '<h3 style="border-bottom:1px solid #ddd; margin:0 1px 7px 0;font-size:18px;"> TTRACK{{user.id}}</h3>' +
+      '<p><b>Company Name:</b> {{user.company_name}} </p>' +
+      '<p><b>Contact Person:</b> {{user.contact_person_name}}</p>' +
+      '<p><b>Phone No.:</b> {{user.phone_code}}-{{user.mobile_no}} </p>' +
+      '<p><b>Address:</b> {{user.address}} </p>' +
+      '<p><b>Created By:</b> {{user.created_by_name}} </p>' +
+      '<p><b>Last Followup:</b> {{user.last_follow_up_date}} </p>' +
+      '<p><b>Created:</b> {{user.created_at_date}} </p>' +
+      '</div>'],
+      {% endfor %}
+      {% endif %}
+      ];
+      
+      // Add multiple markers to map
+      var infoWindow = new google.maps.InfoWindow(), marker, i;
+      var markerSize = new google.maps.Size(40, 40);
+      // Place each marker on the map  
+      for( i = 0; i < markers.length; i++ ) {
+        var position = new google.maps.LatLng(markers[i][0], markers[i][1]);
+        bounds.extend(position);
+        if (markers[i][2] == '1'){
+            marker = new google.maps.Marker({
+               position: position,
+               map: map,
+              
+               icon: {
+                    url:'{{baseurl}}static/img/svg/locateBlue.svg',
+                    scaledSize: markerSize 
+                     }
+            });
+        }else if (markers[i][2] == '2'){
+            marker = new google.maps.Marker({
+                position: position,
+                map: map,
+               
+                icon: {
+                    url: '{{baseurl}}static/img/svg/locateYellow.svg',
+                    scaledSize: markerSize 
+                     }
+                });
+        }else if (markers[i][2] == '3'){
+            marker = new google.maps.Marker({
+                position: position,
+                map: map,
+               
+                icon: {
+                  url:'{{baseurl}}static/img/svg/locateGreen.svg',
+                  scaledSize: markerSize 
+                      }
+                });
+        }else{
+            marker = new google.maps.Marker({
+                position: position,
+                map: map,
+               
+                icon: {
+                    url:'{{baseurl}}static/img/svg/locateRed.svg',
+                    scaledSize: markerSize 
+                  }
+                });
+        }
+        // Add info window to marker    
+        google.maps.event.addListener(marker, 'click', (function(marker, i) {
+          return function() {
+            infoWindow.setContent(infoWindowContent[i][0]);
+            infoWindow.open(map, marker);
+          }
+        })(marker, i));
+        
+       
+        map.fitBounds(bounds);
+      }
+      
+
+     var boundsListener = google.maps.event.addListener(map, 'bounds_changed', function(event) {
+    if (this.getZoom() > 10) {
+      this.setZoom(10);
+    }
+    google.maps.event.removeListener(boundsListener);
+  });
+      
+    }
+      // Load initialize function
+      
+    </script>

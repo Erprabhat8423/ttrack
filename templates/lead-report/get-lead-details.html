@@ -1,0 +1,403 @@
+{% load static %}
+<style>
+    small{
+        font-size: 11px;
+    }
+        .more_info_btn {
+    position: absolute;
+    left: 20px;
+    right: 0;
+    bottom: 0px;
+  box-shadow: 0px -2px 2px 1px rgb(0 0 0 / 10%);
+    padding: 10px;
+    background: #fff;
+ 
+    width: 90%;
+}
+    
+</style>
+<input type="hidden" name="lead_id" id="lead_id" value="{{lead_lists.id}}" />
+<div class="row" style="height: 100%;" >
+    <div class="col-md-12 p-0">
+        <div class="row">  
+            <div class="col-12 p-0 mt-4 col-md-12 p-md-0 mt-md-3 ">
+                <div class="row">
+                    <div class="col-md-12  p-0 " style="display:flex;">
+                        
+                        <div class="col-6 p-0 col-md-6 p-md-0">
+                            <div class="row">
+                                <div class="col-2 p-0 col-md-1 p-md-0">
+                                    <img src="{% static 'img/svg/lead_id.svg' %}"  />
+                                </div>
+                                <div class="col-10 p-1 col-md-10">
+                                    <h6 class="smallText">Lead ID</h6>
+                                    <h6 class="largeText"> TTRACK{{ lead_lists.id }} </h6>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-6 p-0 col-md-6 p-md-0">
+                            <div class="row justify-content-end">
+                                <a onclick="locateSingleUserOnMap()" href="javascript:void(0)" class="text-right" style="
+    position: absolute;
+    right: 10px;
+"><img class="iconBox" src="{{baseurl}}{% static 'img/svg/locateUser.svg' %}" style="width: 100%; height:2.0rem;padding:2px;margin-left:5px;"> </a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-12 p-0" style="display:flex;">
+                        <div class="col-4 p-0 col-md-7 p-md-0">
+                            <div class="row">
+                                <div class="col-2 p-0 col-md-1 p-md-0">
+                                    <img src="{% static 'img/svg/company.svg' %}"  />
+                                </div>
+                                <div class="col-10 p-1 col-md-10">
+                                    <h6 class="smallText">Company Name</h6>
+                                    <h6 class="largeText">{{lead_lists.company_name}}</h6>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-4 p-0 col-md-5 p-md-0">
+                            <div class="row">
+                                <div class="col-2 p-0 col-md-1 p-md-0">
+                                    <img src="{% static 'img/svg/turn_over.svg' %}"  />
+                                </div>
+                                <div class="col-10 p-1 col-md-10">
+                                    <h6 class="smallText">Turnover</h6>
+                                    <h6 class="largeText">{% if lead_lists.currency_code %}{{lead_lists.currency_code}}{% else %}{% endif %} {{lead_lists.turnover}}</h6>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-12 p-0" style="display:flex;">
+                        <div class="col-4 p-0 col-md-7 p-md-0">
+                            <div class="row">
+                                <div class="col-2 p-0 col-md-1 p-md-0">
+                                    <img src="{% static 'img/svg/contact_person.svg' %}"  />
+                                </div>
+                                <div class="col-10 p-1 col-md-10">
+                                    <h6 class="smallText">Contact Person</h6>
+                                    <h6 class="largeText">{{lead_lists.contact_person_name}}</h6>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-4 p-0 col-md-5 p-md-0">
+                            <div class="row">
+                                <div class="col-2 p-0 col-md-1 p-md-0">
+                                    <img src="{% static 'img/svg/phone_no.svg' %}"  />
+                                </div>
+                                <div class="col-10 p-1 col-md-10">
+                                    <h6 class="smallText">Phone Number</h6>
+                                    <h6 class="largeText">{{lead_lists.phone_code}}-{{lead_lists.mobile_no}}</h6>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-12 p-0 " style="display:flex;">
+                        <div class="col-4 p-0 col-md-7 p-md-0">
+                            <div class="row">
+                                <div class="col-2 p-0 col-md-1 p-md-0">
+                                    <img src="{% static 'img/svg/email.svg' %}"  />
+                                </div>
+                                <div class="col-10 p-1 col-md-10">
+                                    <h6 class="smallText">Email</h6>
+                                    <h6 class="largeText">{{lead_lists.email}}</h6>
+                                </div>
+                            </div>
+                        </div>
+                  
+                        <div class="col-4 p-0 col-md-5 p-md-0">
+                            <div class="row">
+                                <div class="col-2 p-0 col-md-1 p-md-0">
+                                    <img src="{% static 'img/svg/total_employee.svg' %}"  />
+                                </div>
+                                <div class="col-10 p-1 col-md-10">
+                                    <h6 class="smallText">Total Employee</h6>
+                                    <h6 class="largeText">{{lead_lists.total_no_of_employee}}</h6>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-12 p-0 " style="display:flex;">
+                        <div class="col-12 p-0 col-md-7 p-md-0">
+                            <div class="row">
+                                <div class="col-2 p-0 col-md-1 p-md-0">
+                                    <img src="{% static 'img/svg/status.svg' %}"  />
+                                </div>
+                                <div class="col-10 p-1 col-md-10">
+                                    <h6 class="smallText">Status</h6>
+                                    <h6 class="largeText">{{lead_lists.status_name}}</h6>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-12 p-0 col-md-5 p-md-0">
+                            <div class="row">
+                                <div class="col-2 p-0 col-md-1 p-md-0">
+                                    <img src="{% static 'img/svg/singleUserImage.svg' %}"  />
+                                </div>
+                                <div class="col-10 p-1 col-md-10">
+                                    <h6 class="smallText">Created By</h6>
+                                    <h6 class="largeText">{{lead_lists.created_by_name}}</h6>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-12 p-0 " style="display:flex;">
+                        <div class="col-4 p-0 col-md-7 p-md-0">
+                            <div class="row">
+                                <div class="col-2 p-0 col-md-1 p-md-0">
+                                    <img src="{% static 'img/svg/calander.svg' %}"  />
+                                </div>
+                                <div class="col-10 p-1 col-md-10">
+                                    <h6 class="smallText">Created At</h6>
+                                    <h6 class="largeText">{{lead_lists.created_at|date:'d/m/Y h:i A'}}</h6>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-4 p-0 col-md-5 p-md-0">
+                            <div class="row">
+                                <div class="col-2 p-0 col-md-1 p-md-0">
+                                    <img src="{% static 'img/svg/calander.svg' %}"  />
+                                </div>
+                                <div class="col-10 p-1 col-md-10">
+                                    <h6 class="smallText">Follow-up Date</h6>
+                                    <h6 class="largeText">{{lead_lists.formatted_last_follow_up_date|date:'d/m/Y h:i A'}}</h6>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    
+                    
+                </div>
+            </div>
+            <div class="col-12 p-0 col-md-12 p-md-0">
+                <div class="row">
+                    
+            
+                    <div class="col-5 p-0 mt-1 col-md-5 p-md-0 " >
+                        <div class="row">
+                            <div class="col-2 p-0 col-md-1 p-md-0">
+                                <img src="{% static 'img/svg/address.svg' %}"  />
+                            </div>
+                            <div class="col-10 p-1 col-md-11">
+                                <h6 class="smallText">Address</h6>
+                                <h6 class="largeText">{{lead_lists.address}}</h6>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                 <div class="row">
+                    <div class="col-7 p-0 mt-1 col-md-7 p-md-0 ">
+                        <div class="row">
+                            <div class="col-1 p-0 col-md-1 p-md-0">
+                                <img src="{% static 'img/svg/core_bussiness.svg' %}"  />
+                            </div>
+                            <div class="col-11 p-1 col-md-11">
+                                <h6 class="smallText">Core Business</h6>
+                                {% for i in lead_lists.core_business_area_list %}
+                                    <h6 class="largeText">{{forloop.counter}}. {{i}}</h6>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                 </div>
+                </div>
+            </div>
+            
+
+            {% comment %} -----------------------------created date end------------------------------ {% endcomment %}
+            <!--<div class="row" style="overflow:scroll;height:300px;padding:0px;">-->
+            <!--    <div class="col-12 p-0 col-md-12 p-md-0 mt-md-2">-->
+            <!--        <h6 style="font-weight:bolder;">ISO Details</h6>-->
+            <!--        <table class="table table-bordered" style="overflow:scroll;">-->
+            <!--            <thead>-->
+            <!--                <tr>-->
+            <!--                    <th class="header">Issue Date</th>-->
+            <!--                    <th class="header">Expiry Date</th>-->
+            <!--                    <th class="header">Agency</th>-->
+            <!--                    <th class="header">Amount</th>-->
+            <!--                    <th class="header">Consultant Name</th>-->
+            <!--                    <th class="header">ISO Name</th>-->
+            <!--                    <th class="header">Link</th>-->
+            <!--                </tr>-->
+            <!--            </thead>-->
+            <!--            <tbody>-->
+            <!--                {% if lead_iso %}-->
+            <!--                {% for order_item in lead_iso %}-->
+            <!--                 <tr> -->
+            <!--                    <td style="font-size:smaller;">{{ order_item.date_of_issue| date:"d/m/Y" }}</td>-->
+            <!--                    <td style="font-size:smaller;">{{ order_item.date_of_expiry| date:"d/m/Y" }}</td>-->
+            <!--                    <td style="font-size:smaller;">{{ order_item.iso_issued_agency }}</td>-->
+            <!--                    <td style="font-size:smaller;">{{ order_item.price_of_existing_iso }}</td>-->
+            <!--                    <td style="font-size:smaller;">{{ order_item.iso_issued_consultant }}</td>-->
+            <!--                    <td style="font-size:smaller;">{{ order_item.master_iso_name }}</td>-->
+            <!--                    <td style="font-size:smaller;"><a href ="{{ order_item.copy_of_iso}}" download>Click</a></td>-->
+            <!--                 </tr> -->
+            <!--                {% endfor %}-->
+                            
+            <!--                {% else %}-->
+            <!--                <tr>-->
+            <!--                   <td colspan="7" style="color:gray;text-align: center;">No record found...</td>-->
+            <!--                </tr>-->
+            <!--                {% endif %}  -->
+            <!--            </tbody>-->
+            <!--        </table>  -->
+            <!--        <table class="table table-bordered" style="overflow:scroll;">-->
+            <!--            <thead>-->
+            <!--                <tr>-->
+            <!--                    <th class="header">ISO Name</th>-->
+            <!--                    <th class="header">Amount</th>-->
+            <!--                </tr>-->
+            <!--            </thead>-->
+            <!--            <tbody>-->
+            <!--                {% if sp_lead_iso_saves %}-->
+            <!--                {% for sp_lead_iso in sp_lead_iso_saves %}-->
+            <!--                 <tr> -->
+            <!--                    <td style="font-size:smaller;">{{ sp_lead_iso.item_list }}</td>-->
+            <!--                    <td style="font-size:smaller;">{{ sp_lead_iso.iso_amount }}</td>-->
+                                
+            <!--                 </tr> -->
+            <!--                {% endfor %}-->
+                            
+            <!--                {% endif %}  -->
+            <!--            </tbody>-->
+            <!--        </table>-->
+            <!--    </div>-->
+            <!--    {% comment %} -------------------------------- {% endcomment %}-->
+            <!--    <div class="col-12 p-0 mt-4 col-md-12 p-md-0 mt-md-2">-->
+            <!--        <h6 style="font-weight:bolder;">Other Details</h6>-->
+            <!--        <table class="table table-bordered" style="overflow:scroll;">-->
+            <!--            <thead>-->
+            <!--                <tr>-->
+            <!--                    <th class="header">Product Pitch</th>-->
+            <!--                    <th class="header">Poducts</th>-->
+            <!--                    <th class="header">Sales Person</th>-->
+            <!--                    <th class="header">Visit Date</th>-->
+            <!--                    <th class="header">Other Resource</th>-->
+            <!--                    <th class="header">Reminder Date</th>-->
+            <!--                    <th class="header">Remark</th>-->
+            <!--                </tr>-->
+            <!--            </thead>-->
+            <!--            <tbody>-->
+            <!--                {% if leade_others %}-->
+            <!--                {% for order_item in leade_others %}-->
+            <!--                 <tr> -->
+            <!--                    <td style="font-size:smaller;">{{ order_item.product_pitch }}</td>-->
+            <!--                    <td style="font-size:smaller;">{{ order_item.item_list }}</td>-->
+            <!--                    <td style="font-size:smaller;">{{ order_item.sales_person }}</td>-->
+            <!--                    <td style="font-size:smaller;">{{ order_item.visit_date| date:"d/m/Y" }}</td>-->
+            <!--                    <td style="font-size:smaller;">{{ order_item.other_resource }}</td>-->
+            <!--                    <td style="font-size:smaller;">{% if order_item.reminder %}{{ order_item.reminder|date:"d/m/Y" }}{% else %} - {% endif %}</td>-->
+            <!--                    <td style="font-size:smaller;">{{ order_item.remark }}</td>-->
+            <!--                 </tr> -->
+            <!--                {% endfor %}-->
+                            
+            <!--                {% else %}-->
+            <!--                <tr>-->
+            <!--                   <td colspan="7" style="color:gray;text-align: center;">No record found...</td>-->
+            <!--                </tr>-->
+            <!--                {% endif %}  -->
+            <!--            </tbody>-->
+            <!--        </table>  -->
+                    
+            <!--    </div>-->
+            <!--</div>-->
+            
+            
+        </div>
+        <div class="row mt-4">
+            <!--<div class="dropdown-divider w-100"></div>-->
+            <div class="col-sm-12 text-center  more_info_btn" style="    position: absolute;
+    left: 16px;
+    right: 0;
+    width: 93%;
+    bottom: 0;
+    border-radius: 0 0 15px 15px;" >
+                  <h6 class="m-0" onclick="viewLeadDetails('{{lead_lists.id }}')" style="cursor: pointer;">
+                    <u>More Info</u></h6>
+                </div>
+            </div>
+    </div>
+    <!--<div class="overlayModal" id="viewEmployeeModal">-->
+    <script>
+    function locateSingleUserOnMap(){
+		$('#addUserModal').html('');
+		var lead_id         = $('#lead_id').val();
+		showLoader();
+		$.ajax({
+			url: "{% url 'src:locate-single-lead-on-map' %}",
+			method: 'GET',
+			data: { lead_id:lead_id},
+			
+			success: function (data) {
+				hideLoader();
+				$("#addUserModal").show();
+				$('#addUserModal').html(data);
+			},
+			error: function (err) {
+				console.log(err)
+			}
+		});
+    }
+       function viewLeadDetails(lead_id){
+                $('#viewEmployeeModal').html('');
+                showLoader();
+                var url = "{% url 'src:full-lead-details' 1 %}";
+                url = url.replace(1,lead_id);
+                $.ajax({
+                    url: url,
+                    method: 'GET',
+                    success: function (data) {
+                        hideLoader();
+                        $('#viewEmployeeModal').html(data);
+                        $('#viewEmployeeModal').show();
+                        
+                        var mch = $(".modal-ViewEmployee").height() - $("#headerViewEmployee").outerHeight();
+                        $("#viewEmpModalBody").height(mch);
+                        changeInfoTab('basic')
+                        
+                        
+                    },
+                    error: function (err) {
+                        hideLoader();
+                        console.log(err)
+                    }
+                });
+            }
+                $(".checked_all_checkbox").attr("checked", false);
+    $('.checked_all').on('change', function() {     
+        $('.checkbox').prop('checked', $(this).prop("checked")); 
+        checked_all();           
+    });
+    function checked_all(){
+        
+
+        $('.assigenClass').hide();
+   
+
+        if($('.checkbox:checked').prop('checked') == true){
+            $('.checked_all').prop('checked',true);
+        }else{
+            $('.checked_all').prop('checked',false);
+        }
+        if($('.checkbox:checked').length > 0){
+
+            $('.assigenClass').show();
+        }else{
+         
+            $('.assigenClass').hide();
+            
+        }
+    }
+    
+    $('.checkbox').change(function(){ 
+        checked_all();
+    });
+        
+    {% if lead_lists %}
+    $(".checked_all").attr("disabled", false);
+    {% else %}    
+    $(".checked_all").attr("disabled", true);
+    {% endif %}
+	</script>

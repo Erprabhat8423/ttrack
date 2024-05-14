@@ -1,0 +1,71 @@
+{% if sp_lead_list %}
+    <table id="addOrgTable" class="table table-bordered table-hover mt-0" style="width: 100%;">
+        <thead>
+            <tr style = "background:#02529c;color:white;">
+                <th>Lead ID</th>
+                <th>Company Name</th>
+                <th>Turnover</th>
+                <th>Contact Person</th>
+                <th>Desk No.</th>
+                <th>Mobile No.</th>
+                <th>Email ID</th>
+                <th>Created Date</th>
+                <th>Created By</th>
+                <th>Lead Status</th>
+            </tr>
+        </thead>
+        <tbody style="font-size:11px;">
+            {% if sp_lead_list %}
+            {% for user in sp_lead_list %}
+            <tr>
+                <td id="main_row_id_{{user.id}}" style="font-weight: bolder;color:#02529c !important;"><a href="javascript:void(0)" onclick="showHide('{{user.id}}', '{{ user.lead_code }}', '1')">&plus;{{ user.lead_code }}</a></td>
+                <td>{{user.company_name}}</td>
+                <td>{{user.currency_code}} {{user.turnover}}</td>
+                <td>{{user.contact_person_name}}</td>
+                <td>{{user.desk_no}}</td>
+                <td>{{user.country_code}} {{user.mobile_no}}</td>
+                <td>{{user.email}}</td>
+                <td>{{user.created_at|date:'d/m/Y'}}</td>
+                <td>{{user.created_by_name}}</td>
+                <td>{{user.lead_status}}</td>
+            </tr>
+            <tr class="row_id_{{user.id}}" style="text-align: center;display: none; background:#55b3c0 !important;color:white;">
+                <th></th>
+                <th></th>
+                <th style="text-align:left;">ISO Name</th>
+                <th style="text-align:left;">Issue Date</th>
+                <th style="text-align:left;">Expiry Date</th>
+                <th style="text-align:left;">Survilance1</th>
+                <th style="text-align:left;">Survilance2</th>
+                <th style="text-align:left;">Agency</th>
+                <th style="text-align:left;">Consultant</th>
+                <th style="text-align:left;">Amount</th>
+            </tr>
+                {% for distributor in user.lead_iso_list %}
+                    <tr class="row_id_{{user.id}}" style="text-align: center;display: none;">
+                        <td></td>
+                        <td></td>
+                        <td style="text-align:left;">ISO {{distributor.master_iso_id}} - {{distributor.master_iso_name}}</td>
+                        <td style="text-align:left;">{{distributor.date_of_issue|date:'d/m/Y'}}</td>
+                        <td style="text-align:left;">{{distributor.date_of_expiry|date:'d/m/Y'}}</td>
+                        <td style="text-align:left;">{{distributor.date_of_survilance1|date:'d/m/Y'}}</td>
+                        <td style="text-align:left;">{{distributor.date_of_survilance2|date:'d/m/Y'}}</td>
+                        <td style="text-align:left;">{{distributor.iso_issued_agency}}</td>
+                        <td style="text-align:left;">{{distributor.iso_issued_consultant}}</td>
+                        <td style="text-align:left;">{{distributor.currency_code}} {{distributor.price_of_existing_iso}}</td>  
+                    </tr>
+                {% endfor %}
+                    
+            {% endfor %}
+                    
+            {% endif %}
+        </tbody>
+    </table>
+    {% else %}
+    <p style="padding:1.65rem!important; text-align:center; box-shadow: 0 6px 10px -4px rgba(0, 0, 0, 0.15); font-size:20px; color: gray; ">No Record Found...</p>
+    {% endif %}
+    
+<script>
+    html = `{{record_count}}`;
+    $('#order_count').html(html);
+</script>

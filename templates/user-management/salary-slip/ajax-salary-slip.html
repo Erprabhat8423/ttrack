@@ -1,0 +1,26 @@
+{% load static %}
+  
+        {% if months %}
+        {% for month_number, month_name,month_generated_status,invoice_path in months %}
+        <tr   class="odd " >
+            
+            
+            <td class="user_name" >{{ month_name  }}</td>
+            {% if month_generated_status == 0 %}
+             <td class="regularization_type" style="color:#000080" > <a  onclick="getsalaryslip({{ month_number }});">Generate</a></td>
+            {% else %}
+            <td class="regularization_type" style="color:blue" > <a  href="{{invoice_path}}" onclick="printSalarySlip({{ month_number }});">Download</a></td>
+            {% endif %}
+          
+            
+          
+            
+        </tr>
+        {% endfor %}
+                        
+        {% else %}
+        <tr>
+            <td colspan="2" style="text-align: center;">No Record Found...</td>
+        </tr>
+        {% endif %}
+

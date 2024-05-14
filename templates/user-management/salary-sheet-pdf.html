@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+   <html>  
+    {% load static %}
+
+      <head>  
+      <link rel="stylesheet" href="{% static 'plugins/font-awesome-4.7.0/css/font-awesome.min.css' %}" />
+      <style>
+
+      td {
+        margin:0;
+        padding: 0.5;
+        
+        
+
+        }
+
+    .header-title h2,
+    .header-title h3 {
+        display: inline-block;
+    }
+
+    h3 {
+        font-size: 18px;
+        text-align: center;
+        padding: 0px 0px 0px 0px;
+        margin: 0px;
+    }
+
+    
+
+    table {
+        width: 750px;
+        border: 1px;
+        margin: 0px;
+    }
+
+    
+
+    /* Zebra striping */
+
+    tr:nth-of-type(odd) {
+        background: #eee;
+
+    }
+
+    
+
+    th {
+        background: #3498db;
+        color: #000000;
+        font-weight: bold;
+        border: 1px solid black;
+    }
+
+    
+
+    th {
+        padding: 0px;
+        padding-top:0px ;
+        font-size: 9px;
+        
+    }
+    tr{
+        border: 1px solid black;
+        
+    }
+
+
+    @page{
+      size: letter portrait;
+      margin: 1cm 1cm 1cm 1cm;
+    
+    @frame applied_content {           /* Another static Frame */
+        -pdf-frame-content: applied_content;
+        left: 28pt;right: 20pt; width: 555pt; top: 350pt; height: 70pt;
+          
+      } 
+
+
+    @frame signatory_frame {           /* Another static Frame */
+          -pdf-frame-content: signatory_content;
+          left: 28pt;right: 20pt; width: 555pt; top: 600pt; height: 70pt;
+            
+        }
+
+    @frame footer_frame {           /* Another static Frame */
+            -pdf-frame-content: footer_content;
+            left: 28pt;right: 20pt; width: 555pt; top: 700pt; height: 70pt;
+            background-color:#E9E9E9;
+            
+        }
+
+      
+    }
+      </style>
+
+      </head>
+
+
+
+<div  id="container" background="grey" style="width: 100%; height: 100% !important; display:block;">
+
+  <body style="background-image: url('img_girl.jpg');">
+
+    <div id="headerRow" background="white" style="width: 100%; max-height:20%;">
+
+      <table >
+          <tr style= " padding:0; margin-right:0; width:100%;">
+          
+            <td colspan="3" style="vertical-align: top; padding: 1; text-align:center; margin-right: 1rem;">
+             
+                        
+                  <img src="https://emobic.salesport.in/static/img/png/dashboardLogo.gif" style="height: 50px; width:150px;" alt="Dashboard Logo" />
+                     
+              </td>        
+             <td colspan="3" style=" padding: 3; text-align:center; margin-right: 1rem;">         <!-- Right column: Organization information -->
+                  <div style="width: 50%;">
+                     
+                      <span style="font-size: 25px;">
+                          Emobic Certification pvt ltd
+                      </span>
+                  </div>
+              </td>
+              
+             
+          </tr>
+
+          <tr >
+          <td colspan=6 style="font-size:14px; font-weight: bold;font-family: 'roboto'; text-align:center; color:black; text-decoration:  margin: 20px; width: 50%;"> {{address.address_line_1}} {% if address.address_line_2 %} ,{{address.address_line_2}}{% else %}{% endif %},{{address.state_name}},{{address.city_name}},{{address.country_name}} -{{address.pincode}} </td>
+          </tr>
+          <tr>
+          <td colspan=6 style="font-size:14px;font-weight: bold; font-family: 'roboto'; text-align:center; color:black; text-decoration:  margin: 20px; width: 50%;"> ( PAYSLIP FOR THE MONTH OF  {{nameMonth}} {{year}}) </td>
+          </tr>
+          <tr>
+            <td style="font-weight: bold;font-size:12px;" > Employee Code </td>
+            <td colspan = 2 style="font-size:12px;"> {{user_basic.emp_sap_id}} </td>
+
+           
+            <td  style="font-weight: bold; font-size:12px;"> Total Days </td>
+            <td colspan = 2 style="font-size:12px;" > {{total_days}} </td>
+            
+          </tr>
+          <tr>
+            <td  style="font-weight: bold; font-size:12px;"> Employee Name </td>
+            <td colspan = 2 style="font-size:12px;"> {{user_basic.first_name}} {% if user_basic.middle_name %}{{user_basic.middle_name}}{% else %}{% endif %} {{user_basic.last_name}}</td>
+
+           
+            <td  style="font-weight: bold; font-size:12px;"> Paid Days </td>
+            <td  colspan = 2 style="font-size:12px;" > {{paid_days}} </td>
+           
+          </tr>
+          <tr>
+            <td  style="font-weight: bold;font-size:12px;"> Date of Joining </td>
+            <td colspan = 2 style="font-size:12px;"> {{other_details.date_of_joining}} </td>
+
+          
+            <td  style="font-weight: bold;font-size:12px;"> LWP </td>
+            <td colspan = 2 style="font-size:12px;"> {{lwp}} </td>
+           
+          </tr>
+          <tr>
+            <td  style="font-weight: bold;font-size:12px;"> Department </td>
+            <td colspan = 2 style="font-size:12px;">{{other_details.department_name}} </td>
+
+            
+            <td  style="font-weight: bold;font-size:12px;"> A/C No. </td>
+            <td  colspan = 2 style="font-size:12px;"> {{bank_details.bank_account_no}} </td>
+          
+          </tr>
+          <tr>
+            <td  style="font-weight: bold;font-size:12px;"> Designation </td>
+            <td  colspan = 2 style="font-size:12px;"> {{other_details.role_name}} </td>
+
+            
+            <td  style="font-weight: bold;font-size:12px;"> IFSC Code </td>
+            <td colspan = 2 style="font-size:12px;"> {{bank_details.ifsc_code}} </td>
+           
+          </tr>
+          <tr>
+            <td  style="font-weight: bold;font-size:12px;"> Location </td>
+            <td colspan = 2 style="font-size:12px;"> {{address.city_name}} </td>
+
+            
+            <td  style="font-weight: bold;font-size:12px;"> Bank Name </td>
+            <td colspan = 2  style="font-size:12px;"> {{bank_details.bank_name}} </td>
+           
+          </tr>
+           <tr>
+          <td colspan=3 style="font-size:14px; font-family: 'roboto'; text-align:center; color:black; text-decoration:  margin: 10px; width: 40%;"> Fixed Pay </td>
+          <td colspan=3 style="font-size:14px; font-family: 'roboto'; text-align:center; color:black; text-decoration:  margin: 10px; width: 40%;"> Additional Pay </td>
+          </tr>
+           <tr>
+            <td  style="font-weight: bold;">  </td>
+            <td  style="font-weight: bold;font-size:12px;">Fixed({{net_pay_amount_currency}})</td>
+            <td  style="font-weight: bold;font-size:12px;"> For This Month ({{net_pay_amount_currency}}) </td>
+
+            
+            <td  style="font-weight: bold;font-size:12px;"> </td>
+            <td colspan = 2  style="font-weight: bold;font-size:12px;"> For This Month ({{net_pay_amount_currency}}) </td>
+           
+          </tr>
+     {% for item1, item2 in combined_list %}
+    <tr>
+        <!-- For item1 (from fixed_salary_list) -->
+                {% if item1 is not None %}
+                    <td style="font-weight: bold;font-size:12px;">{{ item1.type }}</td>
+                    <td style="font-weight: bold;font-size:12px;">{{ item1.fixed_total_pay }} {{item1.currancy_type}}</td>
+                    <td style="font-weight: bold;font-size:12px;">{{ item1.total_pay_for_month }} {{item1.currancy_type}}</td>
+                {% else %}
+                    <td> </td>
+                    <td> </td>
+                    <td> </td>
+                {% endif %}
+                
+                <!-- For item2 (from additional_salary_list) -->
+                {% if item2 is not None %}
+                    <td style="font-weight: bold;font-size:12px;">{{ item2.type }}</td>
+                    <td  colspan="2" style="font-weight: bold;font-size:12px;"> </td> 
+                   
+                {% else %}
+                    <td> </td>
+                    <td colspan="2"> </td>
+                {% endif %}
+            </tr>
+        {% endfor %}
+          <tr>
+            <td  style="font-weight: bold;"> </td>
+            <td  style="font-weight: bold;"> </td>
+            <td  style="font-weight: bold;"> </td>
+
+            
+            <td  style="font-weight: bold;"> </td>
+            <td colspan = 2  style="font-weight: bold;"> </td>
+           
+          </tr>
+          <tr>
+            <td  style="font-weight: bold;font-size:14px;"> Gross Pay </td>
+            <td  style="font-weight: bold;font-size:14px;">{{gross_fixed_total_amount}} {{net_pay_amount_currency}} </td>
+            <td  style="font-weight: bold;font-size:14px;"> {{gross_monthly_total_amount}} {{net_pay_amount_currency}}  </td>
+
+            
+            <td  style="font-weight: bold;font-size:14px;"> Net Pay</td>
+            <td colspan = 2  style="font-weight: bold;font-size:14px;">{{net_pay_amount}} {{net_pay_amount_currency}} </td>
+           
+          </tr>
+        </table>
+    </div>
+  </body>
+</html>
+
+
+

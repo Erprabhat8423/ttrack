@@ -1,0 +1,125 @@
+{% load static %}
+<div class="modal-AddOrganisation centered">
+    <div class="modal-body p-0">
+        <div class="row">
+            <div class="col-md-3 p-md-0" style="background-repeat: no-repeat;text-align: center;background-color: #0073e0;background-position: bottom left;background-size: 80%;">
+                <div class="transformImage">
+                    <img src="{% static 'img/png/townw.png' %}" class="w-30" style="width: 25% !important;" />
+                    <h4 class="modalColHead">Edit Salary Head</h4>
+                </div>
+            </div>
+            
+            <div class="col-md-9 p-md-4">
+                <form id="updateSalaryHeadForm" method="POST" autocomplete="off" action="" aria-label="Product">
+                    <input type="hidden" name="id" value="{{salary_head_details.id}}">
+                    {% csrf_token %}
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h5><b>Salary Head Details </b></h5>
+                        </div>
+                        <div class="col-md-6 p-md-0">
+                            <button class="btn btn-save float-right" type="button" onclick="updateSalaryHead('{{salary_head_details.id}}')">
+                                Save
+                            </button>
+                            <button class="btn btn-close float-right" type="button"
+                            onclick="manipulateModal('addProductModal','close')">
+                            Close
+                        </button>
+                    </div>
+                </div>
+                
+                 <div class="row ">
+                    <div class="col-md-12 col-12 px-0 mt-3">
+                            <h6 class="font-wt-b">Salary Head Type</h6>
+                    </div>
+                    <div class="col-md-12 col-12 pr-0 p-0 mt-2  width-side-left">
+                        <select class="inputField selectField " style="width: 100%;" name="salary_head_type" >
+                            <option value="">Select</option>
+                            {% for salary_head_type in salary_head_types %}
+                            <option value="{{salary_head_type.id}}" {% if salary_head_type.id == salary_head_details.salary_head_type%}selected{% endif %}>{{salary_head_type.salary_head_type_name}}</option>
+                            {% endfor %}
+                        </select>
+                        <label class="error_msg float-right" id=""></label>
+                    </div>
+                </div>
+                
+                <div class="row mt-md-3">
+                    <div class="col-md-12">
+                        <div class="row">
+                            <div class="col-md-12 p-md-0">
+                                <h6 style="display: inline-block;"><b>Salary Head Name</b></h6>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-12 p-md-0">
+                        <input class="inputField" type="text" placeholder="Salary Head Name*"  value="{{salary_head_details.salary_head_name}}" name="salary_head_name" maxlength="100" />
+                        <label class="error_msg float-right" id="route_error"></label>
+                    </div>
+                </div>
+                
+            </form>
+        </div>
+    </div>
+</div>
+</div>
+<script>
+    
+    function updateSalaryHead(id) {
+        showLoader();
+        if(validateSalaryHeadForm()){
+            hideLoader();
+            return false;
+        }else{
+            url = "{% url 'src:edit-salary-head' '1' %}";
+            url = url.replace('1',id)
+
+            $.ajax({
+                url: url,
+                method: 'POST',
+                data: $('#updateSalaryHeadForm').serialize(),
+                success: function (data) {
+                    hideLoader();
+                    if(data.flag){
+                        $("#addProductModal").html('');
+                        $("#addProductModal").hide();
+                        getList('SalaryHead');
+                        openToaster("success", data.message);
+                    }else{
+                        openToaster("danger", data.message);
+                    }
+                },
+                error: function (err) {
+                    hideLoader();
+                    console.log(err)
+                }
+            }).always(function() {
+                    // hideLoader();
+                });
+        } 
+    }
+
+
+    function validateSalaryHeadForm(){
+        error = 0;
+        $('.error_msg ').text('');
+        $('.inputField').css("border", "");
+        if($.trim($('[name="salary_head_name"]').val()) == ""){
+            $('[name="salary_head_name"]').parent().find('.error_msg').text('Please enter Salary Head Name');
+            $('[name="salary_head_name"]').css("border", "1px solid #db8305");
+            error = error + 1;
+        }
+       
+        if($('[name="salary_head_type"]').val() == ""){
+            $('[name="salary_head_type"]').parent().find('.error_msg').text('Please select Salary head Type');
+            $('[name="salary_head_type"]').siblings(".select2-container").css("border", "1px solid #db8305").css("border-radius", "0.6rem");
+            error = error + 1;
+        }
+        
+        if(error > 0){
+            return true;
+        }else{
+            return false;
+        }
+    }
+
+</script>

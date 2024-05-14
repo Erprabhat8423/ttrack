@@ -1,0 +1,370 @@
+{% load static %}
+<style>
+    .imgStyleRound {
+        object-fit: cover;
+        height: 100%;
+        /* width: 100%; */
+        transform: scale(1) !important;
+        border-radius: 50%;
+    }
+    .leadCopy{
+		-index: 1;
+		color: #ffffff;
+		background-color: #1b7fe2;
+		width: 49px;
+		padding: 0px 2px 3px 6px;
+		/* position: absolute; */
+		top: 50%;
+		right: 20%;
+		-ms-transform: translate(50%, -50%);
+		transform: translate(80%, -50%);
+		font-size: 11px;
+		border-radius: 10px;
+	}
+	.revcopy{
+		-index: 1;
+		color: #ffffff;
+		background-color: #1b7fe2;
+		width: 49px;
+		padding: 0px 2px 3px 6px;
+		/* position: absolute; */
+		top: 50%;
+		right: 20%;
+		-ms-transform: translate(50%, -50%);
+		transform: translate(80%, -50%);
+		font-size: 11px;
+		border-radius: 10px;
+	}
+	.leadclear{
+		color: #ffffff;
+		background-color: #e05f00;
+		width: 49px;
+		padding: 0px 4px 3px 2px;
+		top: 50%;
+		right: 20%;
+		-ms-transform: translate(50%, -50%);
+		transform: translate(80%, -50%);
+		font-size: 11px;
+		border-radius: 10px;
+		z-index: 1;
+	}
+	.revclear{
+		color: #ffffff;
+		background-color: #e05f00;
+		width: 49px;
+		padding: 0px 4px 3px 2px;
+		top: 50%;
+		right: 20%;
+		-ms-transform: translate(50%, -50%);
+		transform: translate(80%, -50%);
+		font-size: 11px;
+		border-radius: 10px;
+		z-index: 1;
+	}
+</style>
+<div class="modal-AddUser centered" style='width: 59%;height:90%'>
+	<form name="addBasicDetailsForms" id="addBasicDetailsForms" method="POST" enctype="multipart/form-data" >
+		{% csrf_token %}
+		
+		
+		<input type="hidden" name="page-step" id="page-step" value="1" />
+		<div class="modal-header" id="headerStep1">
+			<div class="col-12 p-0">
+				<div class="row">
+					<div class="col-6">
+						<h5 class="mt-md-2">Edit Target  </h5>
+					</div>
+					<div class="col-6">
+						<button class="btn btn-save float-right" type="submit" >
+							Save
+						</button>
+						<button class="btn btn-close float-right" type="button" onclick="closeUserModal()">
+							Close
+						</button>
+					</div>
+				</div>
+			</div>
+		</div>
+		
+		<div class="modal-body" id="addUserModalBody" style="overflow: auto">
+			<div class="row">
+				<div class="col-md-12 p-0 h-100 w-100" id="step1Emp">
+					<div class="row">
+						
+						<div class="container">
+							<div class="row mb-2">
+
+								<div class="col-md-6">
+									<div class="row">
+										<div class="col-md-6">
+											<label for="currency">Select Currency:</label>
+										</div>
+										<div class="col-md-6">
+											<select id="currency" name="currency_id " c="{{currency_obj.id }}" class="inputField selectField">
+
+												{% for c in currency %}
+												<option value="{{ c.id }}"{% if c.id == currency_obj.id %}
+                                                  selected
+                                                {% endif %}
+                                                 >{{ c.currency_code }}</option>
+												{% endfor %}
+								
+											</select>
+										</div>
+									</div>
+								</div>
+
+								<div class="col-md-6">
+									<div class="row">
+										<div class="col-md-6">
+											<label for="financial_year">Select FY:</label>
+											<input type="hidden" name="employee_id" value="{{ employee_id }}">
+											<input type="hidden" name="year_id" value="{{year.id}}">
+										</div>
+										<div class="col-md-6">
+											<select id="financial_year" name='financial_year' class="inputField selectField" onchange="updateTargetMonthYear()">
+											
+											
+												<option value="{{ year.FY.id }}" 
+														start_month="{{ year.FY.start_month }}" 
+														start_month_name="{{ year.FY.start_month_name }}" 
+														start_year="{{ year.FY.start_year }}" 
+														end_month="{{ year.FY.end_month }}" 
+														end_month_name="{{ year.FY.end_month_name }}" 
+														end_year="{{ year.FY.end_year }}">
+													{{ year.FY.financial_year }}
+												</option>
+										
+											</select>
+
+										</div>
+									</div>
+									<label class="error_msg float-right" id=""></label>
+								</div>
+							</div>
+							
+						
+							<table class="table table-striped">
+								<thead>
+									<tr>
+										<th scope="col">Month</th>
+										<th scope="col">Lead Target</th>
+										<th scope="col">Revenue Target</th>
+									</tr>
+								</thead>
+								<tbody id="target">
+									{% for target in target_data %}
+									<tr>
+										<td>{{target.month_year}}
+											<input type="hidden" name="month[]" value="{{target.month_year}}">
+											<input type="hidden" name="ids[]" value="{{target.id}}">
+
+										</td>
+										<td>
+										    <input type="number" style="border: 1px solid #69b6ff;" class="inputField leadInput" min="0" name="lead_target[]" value="{{target.lead_target}}">
+										    {% if forloop.first  %}
+						
+											<span class="leadCopy">copy <i class="fa fa-angle-down" aria-hidden="true"></i></span>
+										     {% endif %}
+											{% if forloop.last  %}
+										
+											 <span class="leadclear">clear <i class="fa fa-angle-up" aria-hidden="true"></i></span>
+										    {% endif %}
+
+										</td>
+										<td>
+										    <input type="number" style="border: 1px solid #69b6ff;" class="inputField  revInput" min="0" name="rev_target[]" value="{{target.revenue_target}}">
+										    
+										    {% if forloop.first  %}
+											 <span class="revcopy">copy <i class="fa fa-angle-down" aria-hidden="true"></i></span>
+										    {% endif %}
+
+											{% if forloop.last  %}
+											<span class="revclear">clear <i class="fa fa-angle-up" aria-hidden="true"></i></span>'
+										   {% endif %}
+										 </td>
+									</tr>
+									{% endfor %}
+									
+								</tbody>
+							</table>
+						</div>
+				</div>
+			</div>
+		</div>
+		
+	</div>
+	<div  id="addProductModal" data-keyboard="false" data-backdrop="static">    
+    </div>
+	<script>
+		function generateMonthYearOptions(startMonth, startYear, endMonth, endYear) {
+			var months = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'];
+			var options = [];
+		
+			for (var year = startYear; year <= endYear; year++) {
+				var monthStart = (year == startYear) ? startMonth : 1;
+				var monthEnd = (year == endYear) ? endMonth : 12;
+		
+				for (var month = monthStart; month <= monthEnd; month++) {
+					var monthName = months[month - 1];
+					var yearDigits = year.toString().substring(2); // Extract last two digits of the year
+					var formattedMonth = (month < 10) ? '0' + month : month; // Add leading zero to single-digit months
+					options.push(monthName + '-' + yearDigits);
+				}
+			}
+		
+			return options;
+		}
+		
+		function updateTargetMonthYear() {
+			var financialYearSelect = document.getElementById("financial_year");
+			var selectedOption = financialYearSelect.options[financialYearSelect.selectedIndex];
+			var startMonth = parseInt(selectedOption.getAttribute("start_month"));
+			var startYear = parseInt(selectedOption.getAttribute("start_year"));
+			var endMonth = parseInt(selectedOption.getAttribute("end_month"));
+			var endYear = parseInt(selectedOption.getAttribute("end_year"));
+		
+			var monthsarray = generateMonthYearOptions(startMonth, startYear, endMonth, endYear);
+		
+			var tbody = document.getElementById("target");
+			tbody.innerHTML = ""; // Clear existing rows
+		
+			for (var i = 0; i < monthsarray.length; i++) {
+				var row = document.createElement("tr");
+				var monthYear = monthsarray[i];
+				var monthInput = '<input type="hidden" name="month[]" value="' + monthYear + '" />'; // Hidden input for month
+				var leadInput = '<input type="number" class="inputField selectField" name="lead_target[]" value="0" />';
+				var revInput = '<input type="number" class="inputField selectField" name="rev_target[]" value="0" />';
+		
+				row.innerHTML = "<td>" + monthYear + monthInput+ "</td><td>" + leadInput + "</td><td>" + revInput + "</td>";
+				tbody.appendChild(row);
+			}
+		}
+		
+		document.addEventListener('DOMContentLoaded', function() {
+			var financialYearSelect = document.getElementById("financial_year");
+			if(financialYearSelect) {
+				financialYearSelect.selectedIndex = financialYearSelect.options.length - 1; // Select the last option
+				updateTargetMonthYear(); // Update targets based on default selection
+			}
+		});
+		
+		
+	</script>
+	<script>
+		employee_id = {{ employee_id }}
+		year_id     = {{ year_id }}
+
+
+		$('#addBasicDetailsForms').submit(function(e){
+			showLoader();
+			if(validateForm()){
+				hideLoader();
+				return false;
+			}else{
+				showLoader();
+				e.preventDefault();
+				$form = $(this)
+				var formData = new FormData(this);
+				
+				url =  "{% url 'src:edit-employee-target' %}";
+
+				$.ajax({
+					url: url,
+					type: 'POST',
+					data: formData,
+					success: function (response) {
+						$('.error').remove();
+						console.log("Success: ", response)
+						if(response.error){
+							hideLoader();
+							openToaster("danger", response.message)
+							
+						} else {
+							hideLoader();
+							openToaster("success", response.message)
+							$('#addUserModal').html("");
+							$("#addUserModal").hide();
+
+						}
+					},
+					cache: false,
+					contentType: false,
+					processData: false
+				});
+			}
+		});
+		
+
+	
+
+		function validateForm(){
+			error = 0;
+			
+			$('.error_msg').text('');
+			$('[name="financial_year"]').css("border", "");
+			if ($('[name="financial_year"]').val() == null || $('[name="financial_year"]').val() == "") {
+				$('[name="financial_year"]').parent().find('.error_msg').text("Please select Fy year");
+				$('[name="financial_year"]').css("border", "1px solid #db8305");
+				error = error + 1;
+			}
+			
+				if(error > 0){
+					return true;
+				}else{
+					return false;
+				}
+		}
+
+			
+	</script>
+<script>
+        // Attach click event listener to leadCopy spans
+		var leadCopySpans = document.getElementsByClassName("leadCopy");
+		for (var i = 0; i < leadCopySpans.length; i++) {
+			leadCopySpans[i].addEventListener("click", function() {
+				// Get the value from the first leadInput
+				var leadValue = document.querySelector(".leadInput").value;
+				
+				// Assign the leadValue to all leadInput elements
+				var leadInputs = document.getElementsByClassName("leadInput");
+				for (var j = 0; j < leadInputs.length; j++) {
+					leadInputs[j].value = leadValue;
+				}
+			});
+		}
+		var revClear = document.getElementsByClassName("revclear");
+		for (var i = 0; i < revClear.length; i++) {
+			revClear[i].addEventListener("click", function() {
+				// Assign the leadValue to all leadInput elements
+				var leadInputs = document.getElementsByClassName("revInput");
+				for (var j = 0; j < leadInputs.length; j++) {
+					leadInputs[j].value = 0;
+				}
+			});
+		}
+		var leadClear = document.getElementsByClassName("leadclear");
+		for (var i = 0; i < leadClear.length; i++) {
+			leadClear[i].addEventListener("click", function() {
+	
+				var leadInputs = document.getElementsByClassName("leadInput");
+				for (var j = 0; j < leadInputs.length; j++) {
+					leadInputs[j].value = 0;
+				}
+			});
+		}
+		var revCopySpans = document.getElementsByClassName("revcopy");
+		for (var i = 0; i < revCopySpans.length; i++) {
+			revCopySpans[i].addEventListener("click", function() {
+				// Get the value from the first leadInput
+				var leadValue = document.querySelector(".revInput").value;
+				
+				// Assign the leadValue to all leadInput elements
+				var revInput = document.getElementsByClassName("revInput");
+				for (var j = 0; j < revInput.length; j++) {
+					revInput[j].value = leadValue;
+				}
+			});
+		}  
+</script>
+

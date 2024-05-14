@@ -1,0 +1,682 @@
+{% extends 'layout/layout.html' %}
+
+{% load helper_tags %}
+
+{% block content %}
+
+{% load static %}
+
+{% block style %} 
+<link rel="stylesheet" href="{% static 'css/jquery-confirm.min.css' %}">
+<style>
+    .table td, .table th{
+        padding:0.65rem!important;
+    }
+    .ui-widget.ui-widget-content{
+        z-index: 999999999!important;
+    }
+    .ui-datepicker-prev span,
+    .ui-datepicker-next span {
+        background-image: none !important;
+    }
+    
+    .ui-datepicker-prev:before,
+    .ui-datepicker-next:before {
+        font-family: FontAwesome;
+        position: absolute;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        display: flex;
+        font-weight: normal;
+        align-items: center;
+        justify-content: center;
+        z-index: 999999999!important;
+    }
+    
+    .ui-datepicker-prev:before {
+        content: "\f100";
+    }
+    
+    .ui-datepicker-next:before {
+        content: "\f101";
+    }
+    .header{
+        background-color: #006400;
+        color: #ffffff;
+    }
+    
+    #user_wise_order {
+        width: 100%;
+        height: 200px;
+        border-top:1px solid rgb(223, 223, 223);
+        border-left:1px solid rgb(223, 223, 223);
+        border-bottom:1px solid rgb(223, 223, 223);
+        box-shadow: 0px 0px 18px 0px rgba(135, 169, 224, 0.3);
+    }
+    
+    #product_wise_order {
+        width: 100%;
+        height: 200px;
+        border:1px solid rgb(223, 223, 223);
+        box-shadow: 0px 0px 18px 0px rgba(135, 169, 224, 0.3);
+    }
+    #weekly {
+        width: 100%;
+        height: 280px;
+        border:1px solid rgb(223, 223, 223);
+        box-shadow: 0px 0px 18px 0px rgba(135, 169, 224, 0.3);
+    }
+    .select2-container--default .select2-selection--single .select2-selection__rendered{
+        text-align:left!important;
+    }
+</style>
+{% endblock %}
+
+<div class="row" id="containerHeight">
+    <div class="col-md-8 pr-md-0 h-100">
+        <div class="primaryContainer h-100" id="mainbox">
+            <div class="row mb-2 mt-4" id="topRow" >
+                <div class="col-md-3 p-md-0">
+                    <h6><b>{{page_title}} ({{tarequest_list}}) &nbsp;&nbsp;</b><span class="fa fa-star add_to_fav {% checkedFavorite page_title request.get_full_path %}" onclick="updateFavorite(this,'{{page_title}}','{{ request.get_full_path }}')"></span></h6>
+                    
+                </div>
+                <div class="col-md-9" >
+                    <div class="col-md-2 p-md-1"  style="float: right;">
+                        
+                        <button type="button" class="btn btn-primary" onclick="exports('excel')" href="javascript:void(0)">Export</button>
+                    </div> 
+                    <div class="col-md-3 p-md-1" style="float: right;">
+                        <input class="inputField" placeholder="Order Date" name="order_date" id="order_datepicker" value="{{ today_date }}" style="width: 90%; height:2.4rem;padding: 0.3rem;" onchange="getOrderRecord()" readonly>
+
+                    </div>
+                    
+                        <div class="col-md-3 p-md-1" style="float: right;">
+                            <select class="inputField selectField" style="width: 100% !important; padding: 0.3rem;" name="customer_id" id="customer_id" onchange="getOrderRecord()">
+                                <option value="">Select Employee</option>
+                                {% for users_list in users %}
+                                <option value="{{ users_list.id }}">{{ users_list.first_name }} {{ users_list.middle_name }} {{ users_list.last_name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    <div class="row mb-2 mt-2" id="secondRow">
+                        <div class="col-md-12 p-md-0 text-right">
+                            <div class="dropdown" style="display: inline-block;">
+                                
+                               
+                                <div class="dropdown-menu dropdown-menu-right logoutContainer"
+                                aria-labelledby="dropdownMenuButton">
+                                <input type="hidden" name="show_columns" id="show_columns" value="" >
+                                </div>
+                                </div>
+                                <div class="dropdown show-hide" style="display: inline-block;" id="hideColumn">
+                                    
+                                    <div class="dropdown-menu dropdown-menu-right logoutContainer"
+                                    aria-labelledby="dropdownMenuButton">
+                                    <a class="dropdown-item columnHideItem">
+                                        <input type="checkbox" class="colCheck" name="order_id" id="order_id" data-id="1"
+                                        onclick="showHideColumns(this.id,2)"
+                                        />
+                                        <label class="mb-0" for="order_id"style="width:45%;">Employee Name</label>
+                                    </a>
+                                    
+                                    <a class="dropdown-item columnHideItem">
+                                        <input type="checkbox" class="colCheck" name="distributor_name" id="distributor_name" data-id="2"
+                                        onclick="showHideColumns(this.id, 2)"
+                                        />
+                                        <label class="mb-0" for="distributor_name" style="width:10%">Visit Place</label>
+                                    </a>
+                                    <a class="dropdown-item columnHideItem">
+                                        <input type="checkbox" class="colCheck" name="distributor_name" id="distributor_name" data-id="2"
+                                        onclick="showHideColumns(this.id, 2)"
+                                        />
+                                        <label class="mb-0" for="distributor_name">Visit Date (From-To)</label>
+                                    </a>
+                                    
+                                    <a class="dropdown-item columnHideItem">
+                                        <input type="checkbox" class="colCheck" name="retailer_name" id="retailer_name" data-id="4"
+                                        onclick="showHideColumns(this.id, 4)"
+                                        />
+                                        <label class="mb-0" for="retailer_name">Total Expenses</label>
+                                    </a>
+                                    <a class="dropdown-item columnHideItem">
+                                        <input type="checkbox" class="colCheck" name="created_by_name" id="created_by_name" data-id="5"
+                                        onclick="showHideColumns(this.id, 5)"
+                                        />
+                                        <label class="mb-0" for="created_by_name">Company Paid</label>
+                                    </a>
+                                    <a class="dropdown-item columnHideItem">
+                                        <input type="checkbox" class="colCheck" name="status_name" id="status_name" data-id="6"
+                                        onclick="showHideColumns(this.id, 6)"
+                                        />
+                                        <label class="mb-0" for="status_name">Blance</label>
+                                    </a>
+                                    <a class="dropdown-item columnHideItem">
+                                        <input type="checkbox" class="colCheck" name="request_date" id="request_date" data-id="7"
+                                        onclick="showHideColumns(this.id, 7)"
+                                        />
+                                        <label class="mb-0" for="request_date">Status</label>
+                                    </a>
+                                    <a class="dropdown-item columnHideItem">
+                                        <input type="checkbox" class="colCheck" name="request_date" id="request_date" data-id="7"
+                                        onclick="showHideColumns(this.id, 7)"
+                                        />
+                                        <label class="mb-0" for="request_date">Created At</label>
+                                    </a>
+                                </div>
+                            </div>
+                            
+                            <div class="dropdown fixed-column" style="display: inline-block;" id="lockColumn">
+                               
+                                <div class="dropdown-menu dropdown-menu-right logoutContainer"
+                                aria-labelledby="dropdownMenuButton">
+                                <a class="dropdown-item columnHideItem">
+                                    <input type="checkbox" class="colFreezeCheck" name="order_id" id="lock_order_id" data-id="1"
+                                    onclick="toggleFreeze(this.id,'order_id',1)" />
+                                    <label class="mb-0" for="lock_order_id" >Employee Name</label>
+                                </a>
+                                <a class="dropdown-item columnHideItem">
+                                    <input type="checkbox" class="colFreezeCheck" name="distributor_name"id="lock_distributor_name" data-id="2" 
+                                    onclick="toggleFreeze(this.id,'distributor_name',2)" />
+                                    <label class="mb-0" for="lock_distributor_name">Visit Place</label>
+                                </a>
+                                <a class="dropdown-item columnHideItem">
+                                    <input type="checkbox" class="colFreezeCheck" name="distributor_name"id="lock_distributor_name" data-id="2" 
+                                    onclick="toggleFreeze(this.id,'distributor_name',2)" />
+                                    <label class="mb-0" for="lock_distributor_name">Visit Date (From-To)</label>
+                                </a>
+                                
+        
+                                <a class="dropdown-item columnHideItem">
+                                    <input type="checkbox" class="colFreezeCheck" name="retailer_name" id="lock_retailer_name" data-id="4"
+                                    onclick="toggleFreeze(this.id,'retailer_name',4)" />
+                                    <label class="mb-0" for="lock_retailer_name">Total Expenses</label>
+                                </a>
+                                <a class="dropdown-item columnHideItem">
+                                    <input type="checkbox" class="colFreezeCheck" name="created_by_name" id="lock_created_by_name" data-id="5"
+                                    onclick="toggleFreeze(this.id,'created_by_name',5)" />
+                                    <label class="mb-0" for="lock_created_by_name">Company Paid</label>
+                                </a>
+                                <a class="dropdown-item columnHideItem">
+                                    <input type="checkbox" class="colFreezeCheck" name="created_by_name" id="lock_created_by_name" data-id="5"
+                                    onclick="toggleFreeze(this.id,'created_by_name',5)" />
+                                    <label class="mb-0" for="lock_created_by_name">Status</label>
+                                </a>
+                                <a class="dropdown-item columnHideItem">
+                                    <input type="checkbox" class="colFreezeCheck" name="status_name" id="lock_status_name" data-id="6"
+                                    onclick="toggleFreeze(this.id,'status_name',6)" />
+                                    <label class="mb-0" for="lock_status_name">Status</label>
+                                </a>
+                                <a class="dropdown-item columnHideItem">
+                                    <input type="checkbox" class="colFreezeCheck" name="request_date" id="lock_request_date" data-id="7"
+                                    onclick="toggleFreeze(this.id,'request_date',7)" />
+                                    <label class="mb-0" for="lock_request_date">Created At</label>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row" id="tableBox">
+            <div class="col-md-12 primaryContainerBG h-100 p-0 commonTableBg" id="ajax-div">
+                <input type="hidden" name="employee_page" id="employee_page" value="2" />
+                <input type="hidden" name="employee_page_status" id="employee_page_status" value="0" />
+                <input type="hidden" name="employee_total_pages" id="employee_total_pages" value="{{ employee_total_pages }}" />
+                <table id="addEmployeeTable" class="table table-borderless table-striped table-hover mt-0"
+                style="width: 100%;">
+                <thead>
+                    <tr>
+                       
+                        <th class="order_id" id="order_id" style="width:15%;">Employee Name
+                            <i class="fa fa-fw fa-sort float-right"></i>
+                            
+                        </th>
+                      
+                        <th class="distributor_ss" id="distributor_ss" style="width:15%;">Visit Place
+                            <i class="fa fa-fw fa-sort float-right"></i>
+                            
+                        </th>
+                        <th class="distributor_ss" id="distributor_ss" style="width:15%;">Visit Date(From-To)
+                            <i class="fa fa-fw fa-sort float-right"></i>
+                            
+                        </th>
+                        
+                        <th class="route" id="route" style="width:15%;">Total Expenses
+                            <i class="fa fa-fw fa-sort float-right"></i>
+                            
+                        </th>
+                        <th class="created_by_name" id="created_by_name">Company Paid
+                            <i class="fa fa-fw fa-sort float-right"></i>
+                           
+                        </th>
+                        <th class="request_date" id="request_date">Balance
+                            <i class="fa fa-fw fa-sort float-right"></i>
+                            
+                        </th>
+                        <th class="status_name" id="status_name">Status
+                            <i class="fa fa-fw fa-sort float-right"></i>
+                            
+                        </th>
+                        
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody id="tablebody">
+                    {% if tarequest_lists %}
+                    {% for tarequest_list in tarequest_lists %}
+                    <tr class="odd {% if forloop.counter == 1 %}selected{% endif %}">
+                       
+                        <td class="order_id" onclick="getOrderDetails('{{ tarequest_list.id }}')">{{tarequest_list.user_name }}</td>
+                        <td class="distributor_name" onclick="getOrderDetails('{{ tarequest_list.id }}')">{{tarequest_list.visit_place}}</td>
+                       
+                        <td class="created_by_name" onclick="getOrderDetails('{{ tarequest_list.id }}')">{{ tarequest_list.visit_to_date| date:"d/m/Y"}}-{{tarequest_list.visit_from_date| date:"d/m/Y" }}</td>
+                        <td class="status_name" onclick="getOrderDetails('{{ tarequest_list.id }}')">{{ tarequest_list.total_expenses}}</td>
+                        <td class="request_date" onclick="getOrderDetails('{{ tarequest_list.id }}')">{{ tarequest_list.company_paid}}</td>
+                        <td class="request_date" onclick="getOrderDetails('{{ tarequest_list.id }}')">{{ tarequest_list.balance }}</td>
+                        <td class="request_date" onclick="getOrderDetails('{{ tarequest_list.id }}')">{% if tarequest_list.status == 0 %} Pending {% elif tarequest_list.status == 1 %} Approved   {% else %} {% endif %}</td>
+                        
+                         <td>
+                            <div class="row" style="display:flex; ">
+                                {% if tarequest_list.status == 1 %} 
+                                <img src="{% static 'img/svg/Check.svg' %}" class="tableRowIcon"  />  
+                                {% else %}
+                                <img src="{% static 'img/svg/Pending.svg' %}" class="checkbox" name="is_active"
+                                id="is_active_{{ tarequest_list.id }}"   onclick="updateStatus('{{ tarequest_list.id }}')"/>  
+                                {% endif %} 
+                            </div>
+                         </td>
+                     
+                        </tr>
+                        {% endfor %}
+                        <tr id="loading" style="display: none;">
+                            <td class="text-center" colspan="6"><i class="fa fa-spinner fa-spin" style="font-size:2rem"></i>
+                            </td>
+                        </tr>
+                        {% else %}
+                        <tr>
+                            <td colspan="6" style="text-align: center;">No Record Found...</td>
+                        </tr>
+                        {% endif %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="col-md-4 h-100">
+    <div class="primaryContainerBG h-100" id="detailsBox">
+    
+    </div>
+    </div>
+</div>
+
+<!-- *************************************Modal********************************** -->
+<div class="overlayModal" id="addUserModal" data-keyboard="false" data-backdrop="static">
+    
+</div>
+
+
+<!-- *************************************Modal********************************** -->
+{% endblock content %}
+{% block script %}
+<!-- Resources -->
+
+<script src="{% static 'js/jquery-confirm.min.js' %}"></script>
+
+<!-- Chart code -->
+<script>
+    function updateStatus(id) {
+              
+      
+        var question = "Do you really want to update the status?";
+        $.confirm({
+            title: 'Confirm!',
+            content: question,
+            buttons: {
+                confirm: function () {
+                     
+                    $.ajax({
+                        url: "{% url 'src:update-taRequest-status' %}",
+                        method: 'POST',
+                        data: {
+                            id: id,
+                           
+                            csrfmiddlewaretoken: '{{ csrf_token }}'
+                        },
+                        success: function (data) {
+                            if (data.error == false) {
+                                hideLoader();
+                                getOrderRecord();
+                                openToaster("success", data.message);
+                                
+                            }
+                        },
+                        error: function (err) {
+                            console.log(err)
+                        }
+                    });
+                    
+                },
+                cancel: function () {
+                    
+                    
+                }
+            }
+        });
+        //showLoader();
+       
+    }
+   
+
+   
+    
+    function exports(type){
+        var customer_id         = $('#customer_id').val();
+       
+        var order_date          = $('#order_datepicker').val();
+        if(customer_id){ customer_id = customer_id; }else{ customer_id = '0' }
+        
+        if(order_date){ 
+            order_date = order_date.split('/');
+            order_date = order_date[2]+'-'+order_date[1]+'-'+order_date[0]
+        }else{ order_date = '0' }
+        
+        if(type == 'excel'){
+            var url = "{% url 'src:export-tarequest-to-xlsx' 'customer_id'  'order_date' %}";
+            url = url.replace('customer_id',customer_id).replace('order_date',order_date);
+            console.log(url);
+            window.location.href = url;
+        }
+    
+        
+    } 
+    function freezeColumn(id, colNo) {
+        $('#' + id).addClass("frezedIcon frezedCell");
+        $("#addOrgTable tbody tr").each(function (index) {
+            $("#addOrgTable tbody tr td:nth-child(" + colNo + ")").addClass("frezedCell");
+            $("#addOrgTable tbody tr td:nth-child(" + colNo + ")").attr("data-sorter", "false");
+        });
+        $('#' + id + ' #freeze').show();
+        $('#' + id + ' #unfreeze').hide();
+    }
+    
+    function unfreezeColumn(id, colNo) {
+        $('#' + id).removeClass("frezedIcon frezedCell");
+        $("#addOrgTable tbody tr").each(function (index) {
+            $("#addOrgTable tbody tr td:nth-child(" + colNo + ")").removeClass("frezedCell");
+            $("#addOrgTable tbody tr td:nth-child(" + colNo + ")").attr("data-sorter");
+        });
+        $('#' + id + ' #unfreeze').show();
+        $('#' + id + ' #freeze').hide();
+    }
+    
+    function toggleFreeze(inputid, colid, colNo) {
+        var checkbox = document.getElementById(inputid);
+        
+        if (checkbox.checked == true) {
+            $("#addOrgTable thead tr th:nth-child(" + colNo + ")").addClass("frezedCell sorter-false");
+            $("#addOrgTable tbody tr").each(function (index) {
+                $("#addOrgTable tbody tr td:nth-child(" + colNo + ")").addClass("frezedCell");
+                $("#addOrgTable tbody tr td:nth-child(" + colNo + ")").addClass("sorter-false");
+            });
+            $('#' + colid + ' #freeze').show();
+            $('#' + colid + ' #unfreeze').hide();
+        } else {
+            $("#addOrgTable thead tr th:nth-child(" + colNo + ")").removeClass("frezedCell sorter-false");
+            $("#addOrgTable tbody tr").each(function (index) {
+                $("#addOrgTable tbody tr td:nth-child(" + colNo + ")").removeClass("frezedCell");
+                $("#addOrgTable tbody tr td:nth-child(" + colNo + ")").removeClass("sorter-false");
+            });
+            $('#' + colid + ' #unfreeze').show();
+            $('#' + colid + ' #freeze').hide();
+        }
+    }
+    
+    function showHideColumns(inputid, colNo) {
+        var checkbox_val = [];
+        var checkbox = document.getElementById(inputid);
+        if (checkbox.checked == true) {
+            $('.'+inputid).hide();
+        }else{
+            $('.'+inputid).show();
+        }
+        $("input:checkbox[class=colCheck]").each(function () {
+            if(!$(this).is(':checked')){
+                checkbox_val.push($(this).attr("id"))
+            }
+        });
+        checkbox_str = checkbox_val.join(',');
+        $('#show_columns').val(checkbox_str);
+    }
+    
+    $(document).ready(function () {
+        setHeightWidth();
+        
+        $('#addEmployeeTable').tablesorter({
+            widgets: ["zebra", "resizable", "stickyHeaders"],
+            widgetOptions: {
+                resizable_addLastColumn: true,
+                resizable: false,
+                //resizable_widths: ["30px","14.5%", "13.5%", "10.5%", "11.5%", "13.5%", "16%"],
+                stickyHeaders_attachTo: ".primaryContainerBG",
+                filter_columnFilters: false,
+            }
+        });
+        $("#addEmployeeTable tbody tr").click(function () {
+            $(this).addClass("selected").siblings().removeClass("selected");
+        });
+        $(".deptRow").click(function () {
+            $(this).addClass("deptSelected").siblings().removeClass("deptSelected");
+        });
+        
+        
+        $(".primaryContainerBG").scroll(function () {
+            var divTable = $(".primaryContainerBG");
+            $(".frezedCell").css("left", 0 + divTable.scrollLeft());
+        });
+        
+        $(".mobileCode").mask("+00");
+        $(".phoneCode").mask("000");
+        $(".landLineNo").mask("00000000");
+        $(".mobileNo").mask("0000000000");
+        $(".pincode").mask("000000");
+        
+        $("#order_datepicker").datepicker({  
+            changeMonth: true,
+            changeYear: true,  
+            yearRange: "-100:+0"
+            ,maxDate: 0,
+            dateFormat: 'dd/mm/yy' 
+        });
+        
+        
+        {% if orders %}
+        $(".checked_all").attr("disabled", false);
+        {% else %}    
+        $(".checked_all").attr("disabled", true);
+        {% endif %}
+        
+        {% if role_id == 0 %}
+        $(".all_checkbox_class").css("display", "none");
+        $(".checked_class").css("display", "none");
+        {% endif %}
+        
+    });
+    
+    $(document).ready(function () {
+        getOrderDetails('{{first_order_id}}');
+        {% if order_status %}
+       
+        {% endif %}
+        var checkbox_val = ["order_id","distributor_ss","route","amount","status","order_date"];
+        checkbox_str = checkbox_val.join(',');
+        $('#show_columns').val(checkbox_str);
+        
+        $(".colCheck").change(function () {
+            if ($(".colCheck:not(:checked)").length == $(".colCheck").length) {
+                //do something
+                $(".iconHide").css("background-image", "url(/static/img/png/hide.png)");
+            } else {
+                $(".iconHide").css("background-image", "url(/static/img/svg/hideblue.svg)");
+            }
+        });
+        
+        $(".colFreezeCheck").change(function () {
+            if ($(".colFreezeCheck:not(:checked)").length == $(".colFreezeCheck").length) {
+                //do something
+                $(".iconUnfreeze").css("background-image", "url(/static/img/svg/unfreeze.svg)");
+            } else {
+                $(".iconUnfreeze").css("background-image", "url(/static/img/svg/freeze.svg)");
+            }
+        });
+        
+        $('.checked_all').on('change', function() {     
+            $('.checkbox').prop('checked', $(this).prop("checked")); 
+            if($('.checkbox:checked').length > 0){
+                $('#forward').show();
+            }else{
+                $('#forward').hide();
+            }             
+        });
+        
+        $('.checkbox').change(function(){ 
+            if($('.checkbox:checked').length == $('.checkbox').length){
+                $('.checked_all').prop('checked',true);
+            }else{
+                $('.checked_all').prop('checked',false);
+            }
+            if($('.checkbox:checked').length > 0){
+                $('#forward').show();
+            }else{
+                $('#forward').hide();
+            }
+        });
+    });
+    
+    $(window).resize(function () {
+        setHeightWidth();
+    });
+    
+    
+    function getOrderDetails(id) {
+        showLoader();
+        $('#detailsBox').html('<div style="margin-top:40px; text-align:center"><i class="fa fa-spinner fa-spin" style="font-size:2rem"></div>');
+        if(id == '0'){
+            $('#detailsBox').html('<div style="margin-top:40px; text-align:center; color:red; text-decoration: underline">No Record Found.</div>');
+        } else {
+           
+            $.ajax({
+                url: "{% url 'src:get-tarequest-details' %}",
+                method: 'GET',
+                data: { id: id },
+                success: function (data) {
+                   hideLoader();
+                    $('#detailsBox').html(data);
+                },
+                error: function (err) {
+                    hideLoader();
+                    console.log(err)
+                }
+            });   
+        }
+    } 
+        
+    function getOrderRecord(){
+        var customer_id         = $('#customer_id').val();
+        
+        var order_date          = $('#order_datepicker').val();
+       
+        
+        $('#tablebody').html('<tr><td colspan="7"><div style="text-align:center"><i class="fa fa-spinner fa-spin" style="font-size:2rem"></div></td></tr>');
+            $.ajax({
+                url: "{% url 'src:ajax-ta-request-lists' %}",
+                method: 'GET',
+                data: { customer_id:customer_id, order_date:order_date},
+                success: function (data) {
+                    if(typeof data.flag !== "undefined" && !data.flag){
+                        hideLoader();
+                        openToaster("danger", data.message);
+                    }else{
+                        $('#tablebody').html(data);
+                        $('#addOrgTable').trigger('update');
+                    }
+                },
+                error: function (err) {
+                    
+                }
+            });
+    } 
+    function changeStatus(id) {
+        $('#addUserModal').html('');
+        showLoader();
+        url = "{% url 'src:change-tarequest-status-request' %}";
+        $.ajax({
+            url: url,
+            method: 'GET',
+            data: { id:id },
+            success: function (data) {
+                hideLoader();
+                $("#addUserModal").show();
+                $('#addUserModal').html(data);
+                $('.selectField').select2();
+            },
+            error: function (err) {
+                console.log(err)
+            }
+        });
+    } 
+    $(document).ready(function (){
+            var employee_prevTop = 0;
+                $('.commonTableBg').on('scroll', function () {
+                    
+                    var employee_page = $('#employee_page').val();
+                    var employee_totalPages = $('#employee_total_pages').val();
+                    
+                    var currentTop = $(this).scrollTop();
+                    if (employee_prevTop !== currentTop) {
+                        employee_prevTop = currentTop;
+                        if ($(this).scrollTop() + $(this).innerHeight() >= $(this)[0].scrollHeight) {
+                            
+                            if($('#employee_page_status').val() == 0 && employee_page  <= employee_totalPages){
+                                $('#loading').show(); 
+                                $('#employee_page_status').val('1');
+                                var customer_id = $('#customer_id').val()
+                                var order_date = $('#order_datepicker').val()
+                                debugger;
+                                $.ajax({
+                                   
+                                    url: "{% url 'src:ajax-ta-request-lists' %}",
+                                    method: 'GET',
+                                    // data: { employee_page:employee_page },
+                                    data: { employee_page:employee_page, customer_id:customer_id, order_date:order_date},
+
+                                    success: function (data) {
+                                        setTimeout(() => {
+                                            $('#employee_tablebody').find('tr:last').prev().after(data);
+                                            $('#employee_page').val(parseInt(employee_page)+1);
+                                            $('#loading').hide();
+                                            $('#employee_page_status').val('0');
+                                            $('#addEmployeeTable').trigger('update');
+                                        }, 2000);
+                                    },
+                                    error: function (err) {
+                                        alert(err.message);
+                                        window.location.reload();
+                                    }
+                                });
+                            }
+                        }
+                    }
+                })
+    });
+
+</script>
+<!-- Add this JavaScript code to your template -->
+
+
+        
+{% endblock %}        
+        
+        

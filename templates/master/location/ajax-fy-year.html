@@ -1,0 +1,105 @@
+{% load static %}
+<style>
+    .fixTableHead tbody {
+        display: block;
+        max-height: 520px;
+        overflow-y: scroll;
+    }
+
+    .fixTableHead thead,
+    .fixTableHead tbody tr {
+        display: table;
+        width: 100%;
+        table-layout: fixed;
+    }
+
+    .fixTableHead thead tr th,
+    .fixTableHead tbody tr td {
+        width: 2% !important;
+    }
+
+    .fixTableHead thead tr th.actionsec {
+        width: 10% !important;
+    }
+
+    .fixTableHead tbody tr td.actionsec {
+        width: 9.6% !important;
+    }
+</style>
+
+<div class="row">
+    <div class="col-md-5 p-md-0">
+        <h6><b> Financial Years</b></h6>
+    </div>
+    <div class="col-md-7 p-md-0">
+        <div class="row">
+            <div class="col-md-12 p-md-0 text-right">
+                <input class="searchTable master_type_search" placeholder="Search" type="search" data-column="all" id="Reasons_search" onkeyup="master_search_bar(this)">
+                <button type="button" class="btn iconBox iconAddNew" onclick="addMaster('fy_year')"></button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mb-2">
+    <div class="col-md-12 pr-md-0 h-100" id="masterListTable">
+        <div class="primaryContainerBG h-100 commonTableBg tableBox" id="detailsBox" style="border-radius: 12px !important;">
+            <input type="hidden" name="page" id="page" value="2" />
+            <input type="hidden" name="page_status" id="page_status" value="0" />
+            <table id="addOrgTable" class="table table-borderless table-striped table-hover mt-0 fixTableHead" style="width: 100%;">
+                <thead>
+                    <tr>
+                        <th class="core_business_area_name">
+                            FY Year
+                            <i class="fa fa-fw fa-sort float-right"></i>
+                        </th>
+                        <th class="core_business_area_name">
+                            Start Month
+                            <i class="fa fa-fw fa-sort float-right"></i>
+                        </th>
+                        <th class="core_business_area_name">
+                            End Month
+                            <i class="fa fa-fw fa-sort float-right"></i>
+                        </th>
+                        {% comment %} <th>Action</th> {% endcomment %}
+                    </tr>
+                </thead>
+                <tbody id="tablebody">
+                    {% if years %}
+                        {% for year in years %}
+                            <tr>
+                                <td class="State_name">{{ year.financial_year }}<br> </td>
+                                <td class="State_name">{{ year.start_month_name|upper }}<br> </td>
+                                <td class="State_name">{{ year.end_month_name|upper  }}<br> </td>
+                                <!-- <td>
+                                    <div class="row">
+                                        <div class="col-md-2">
+                                            <a href="javascript:void(0)" onclick="editMaster('year','{{ year.id }}')">
+                                                <img src="{% static 'img/svg/editcopy.svg' %}" title="Edit" class="tableRowIcon"/>
+                                            </a> 
+                                        </div>
+                                        {% comment %} <div class="col-md-1">
+                                            <label class="switch">
+                                                <input type="checkbox" class="checkbox" name="reason"
+                                                    {% if rea.status == 1 %} checked="" {% endif %}
+                                                    onclick="changeMasterStatus('Reason','{{ rea.id }}')">
+                                                <span class="slider round" title="Enable/Disable"></span>
+                                            </label>
+                                        </div> {% endcomment %}
+                                    </div>
+                                </td> -->
+                            </tr>
+                        {% endfor %}
+                        <tr id="loading" style="display: none;">
+                            <td class="text-center" colspan="2"><i class="fa fa-spinner fa-spin" style="font-size:2rem"></i></td>
+                        </tr>
+                    {% else %}
+                        <tr>
+                            <td colspan="2" style="text-align: center;">No Record Found...</td>
+                        </tr>
+                    {% endif %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
